@@ -1,0 +1,6 @@
+{
+    "journal" : [{
+        "description" : "Research centers on wireless communication, 5G, and relay systems, with a particular emphasis on path loss analysis. By integrating urban models such as the Okumura-Hata model with machine learning techniques like Random Forests and Artificial Neural Networks (ANNs), my study tackles the challenges of reliable communication. This approach demonstrates adaptability in both urban and UAV environments, offering valuable insights into enhancing communication systems.",
+        "link" : "https://github.com/wick19/PathLossML_Prediction/blob/main/ResearchPaper95_99.pdf"
+    }]
+}

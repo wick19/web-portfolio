@@ -1,0 +1,16 @@
+{
+    "schools" : [{
+        "logo" : "./img/usm.png",
+        "name" : "University of Southern Mississippi",
+        "degree" : "MS, Computer and Information Science",
+        "location" : "Hattiesburg, MS",
+        "time" : "Jan 2022 - Dec 2023"
+    },{
+        "logo" : "./img/Srmseal.png",
+        "name" : "SRM Institute of Science And Technology",
+        "degree" : "B. Tech, Computer Science Engineering",
+        "location" : "Chennai, Tamil Nadu",
+        "time" : "Jun 2017 - Jun 2021"
+    }
+   ]
+}

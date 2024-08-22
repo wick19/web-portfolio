@@ -1,0 +1,12 @@
+{
+    "projects" : [
+        {
+            "project_img" : "./img/bhp.png",
+            "project_name" : "Boston Home Prices through MLP",
+            "project_about" : "Predicting house prices in the Boston area based on 13 input variables, such as crime rate, average number of rooms, and age of the property, etc.",
+            "project_tool" : "PyTorch, Scikit-learn, Pandas, Numpy",
+            "project_link" : "https://github.com/wick19/BostonHousePricesRegression.git"
+        }
+        
+    ]
+}

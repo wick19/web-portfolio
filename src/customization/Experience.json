@@ -1,0 +1,18 @@
+{
+    "companies" : [
+        {
+            "logo" : "./img/ons.jpeg",
+            "name" : "Onshape Inc.",
+            "position":"Software Development Intern",
+            "position_time" : "Jun 2019 – Aug 2019",
+            "discription" : "Optimized data organization with a binary tree structure, implemented error-handling, used Gradle for builds, developed with React and Angular, and streamlined development with Jenkins CI/CD."
+        },
+        {
+            "logo" : "./img/adi.png",
+            "name" : "Adidas",
+            "position":"Campus Ambassador",
+            "position_time" : "May 2020 to March 2021",
+            "discription" : "Built and led a high-performing team, defining roles and mentoring junior members. I managed online events from planning to execution and developed social media strategies to boost brand visibility and adapt to changing conditions."
+        }
+    ]
+}

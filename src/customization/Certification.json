@@ -1,0 +1,23 @@
+{
+    "Certifications" : [
+        {
+            "entry1" : "JavaScript (intermediate)"
+        },
+        {
+            "entry2" : "Problem Solving (intermediate)"
+        },
+        {
+            "entry3" : "Programming for Everybody (Getting Started with Python)"
+        },
+        {
+            "entry4" : "Python Data Structures"
+        },
+        {
+            "entry5" : "Introduction to the Internet of Things and Embedded Systems"
+        },
+        {
+            "entry6" : "Introduction to programming with MATLAB"
+        }
+
+    ]
+}
