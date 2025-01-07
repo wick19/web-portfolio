@@ -1,6 +1,13 @@
 {
     "companies" : [
         {
+            "logo" : "./img/tpp.jpeg",
+            "name" : "TekGigz LLC",
+            "position":"Python Developer",
+            "position_time" : "Jun 2019 – Aug 2019",
+            "discription" : "Loaded and cleaned datasets using pandas, ensuring data completeness and quality, and visualized feature correlations with Seaborn. Trained various machine learning models, including Linear Regression, KNN, Naive Bayes, Random Forest, and MLPRegressor, using scikit-learn, while standardizing data for optimal performance. Leveraged Matplotlib and Seaborn to visualize data insights and model performance effectively. Additionally, created a 3D ray-tracing diagram for radio wave propagation using Matplotlib and NumPy, enhancing data analysis and visualization capabilities."
+        },
+        {
             "logo" : "./img/ons.jpeg",
             "name" : "Onshape Inc.",
             "position":"Software Development Intern",

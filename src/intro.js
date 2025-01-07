@@ -1,5 +1,5 @@
 import React from "react";
-import head from "./img/me5.png";
+import head from "./img/pp.jpeg";
 import "./styles/main.css";
 import Introraw from './customization/Introduction.json'
 import Eduraw from './customization/Education.json'
