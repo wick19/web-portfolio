@@ -1,5 +1,6 @@
 {
     "projects" : [
+        
         {
             "project_img" : "./img/bhp.png",
             "project_name" : "Boston Home Prices through MLP",

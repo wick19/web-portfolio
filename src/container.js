@@ -19,7 +19,7 @@ function Menu() {
                             }\
                         "}</style>
                     </i> 
-                    &nbsp;root@fnu-ritwik-Home-Page
+                    &nbsp;root@Ritwik-Home-Page
                 </h1>
             </div>
             <div class="buttons-flex2">

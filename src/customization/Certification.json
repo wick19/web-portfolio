@@ -1,22 +1,25 @@
 {
     "Certifications" : [
         {
-            "entry1" : "JavaScript (intermediate)"
+            "entry1" : "Python"
         },
         {
-            "entry2" : "Problem Solving (intermediate)"
+            "entry2" : "JavaScript (intermediate)"
         },
         {
-            "entry3" : "Programming for Everybody (Getting Started with Python)"
+            "entry3" : "Problem Solving (intermediate)"
         },
         {
-            "entry4" : "Python Data Structures"
+            "entry4" : "Programming for Everybody (Getting Started with Python)"
         },
         {
-            "entry5" : "Introduction to the Internet of Things and Embedded Systems"
+            "entry5" : "Python Data Structures"
         },
         {
-            "entry6" : "Introduction to programming with MATLAB"
+            "entry6" : "Introduction to the Internet of Things and Embedded Systems"
+        },
+        {
+            "entry7" : "Introduction to programming with MATLAB"
         }
 
     ]

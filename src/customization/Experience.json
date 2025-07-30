@@ -3,23 +3,23 @@
         {
             "logo" : "./img/tpp.jpeg",
             "name" : "TekGigz LLC",
-            "position":"Python Developer",
-            "position_time" : "Jun 2019 – Aug 2019",
-            "discription" : "Loaded and cleaned datasets using pandas, ensuring data completeness and quality, and visualized feature correlations with Seaborn. Trained various machine learning models, including Linear Regression, KNN, Naive Bayes, Random Forest, and MLPRegressor, using scikit-learn, while standardizing data for optimal performance. Leveraged Matplotlib and Seaborn to visualize data insights and model performance effectively. Additionally, created a 3D ray-tracing diagram for radio wave propagation using Matplotlib and NumPy, enhancing data analysis and visualization capabilities."
+            "position":"Python Full Stack Developer",
+            "position_time" : "Feb 2024 – Jan 2025",
+            "discription" : "Worked on a finance-focused web application used by internal teams and small businesses to track transactions and generate real-time reports. The technology included Flask/Django for the backend, PostgreSQL as the relational DB, MongoDB/Redis for NoSQL support, and we deployed it using Docker and Jenkins on Heroku."
         },
         {
             "logo" : "./img/ons.jpeg",
             "name" : "Onshape Inc.",
             "position":"Software Development Intern",
             "position_time" : "Jun 2019 – Aug 2019",
-            "discription" : "Optimized data organization with a binary tree structure, implemented error-handling, used Gradle for builds, developed with React and Angular, and streamlined development with Jenkins CI/CD."
+            "discription" : "Built a custom data structure in Python to detect and trace system errors across modules, improving reliability and observability. I used MongoDB for error logs, Redis for real-time session data, and developed modular UI components in React and Angular with built-in validators and error indicators to highlight misconfigurations, streamlined development with Jenkins CI/CD."
         },
         {
             "logo" : "./img/adi.png",
             "name" : "Adidas",
             "position":"Campus Ambassador",
             "position_time" : "May 2020 to March 2021",
-            "discription" : "Built and led a high-performing team, defining roles and mentoring junior members. I managed online events from planning to execution and developed social media strategies to boost brand visibility and adapt to changing conditions."
+            "discription" : "Led a student team using Microsoft Teams and Google Workspace to manage timelines and communication. Organized virtual events via Zoom and Google Meet, and ran social media campaigns on Instagram and WhatsApp using Canva and Facebook Insights. Used basic data analysis to refine engagement strategies, aligning with Adidas’s digital outreach goals."
         }
     ]
 }
