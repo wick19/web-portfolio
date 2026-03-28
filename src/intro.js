@@ -5,13 +5,13 @@ import Introraw from './customization/Introduction.json'
 import Eduraw from './customization/Education.json'
 
 
-export function Read_Intro() {
+export function ReadIntro() {
     return (
-        <span class="text blcok-long">
+        <span className="text blcok-long">
             {Introraw.intro}
             <p>
-                <a target="_blank" href={Introraw.github} rel="noreferrer"><i class="fa-brands fa-github"></i></a>
-                <a target="_blank" href={Introraw.linkedin} rel="noreferrer"><i class="fa-brands fa-linkedin"></i></a>
+                <a target="_blank" href={Introraw.github} rel="noreferrer"><i className="fa-brands fa-github"></i></a>
+                <a target="_blank" href={Introraw.linkedin} rel="noreferrer"><i className="fa-brands fa-linkedin"></i></a>
             </p>
         </span>
     );
@@ -19,34 +19,31 @@ export function Read_Intro() {
 
 export function Intro() {
     return (
-        <div class="intro">
+        <div className="intro">
             <span id="blcok">
-                <img src={head}/>
+                <img src={head} alt="Portrait" />
             </span>
-            <Read_Intro />
+            <ReadIntro />
         </div>
     );
 }
 
 export function Edu() {
-    const result = [];
-    Eduraw.schools.map((school) => {
-        result.push(
-            <div class="edu">
-                <span id="logo-block">
-                <img src={require(`${school.logo}`)}  alt={"school"} />
-                </span>
-                <span class="text">
-                    <p class="school">{school.name}  </p>
-                    <p class="dep">{school.degree} </p>
-                    <p class="loc">{school.location}</p>
-                    <p class="time">{school.time}  </p>
-                </span>
-            </div>
-        );
-    });
-
     return (
-        result
+        <>
+            {Eduraw.schools.map((school) => (
+                <div className="edu" key={school.name}>
+                    <span id="logo-block">
+                        <img src={require(`${school.logo}`)} alt="school" />
+                    </span>
+                    <span className="text">
+                        <p className="school">{school.name}</p>
+                        <p className="dep">{school.degree}</p>
+                        <p className="loc">{school.location}</p>
+                        <p className="time">{school.time}</p>
+                    </span>
+                </div>
+            ))}
+        </>
     );
 }

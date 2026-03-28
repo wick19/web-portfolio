@@ -4,15 +4,15 @@ import React, { Component } from 'react';
  
 function Menu() {
     return (
-        <div class="menu">
-            <div class="buttons-flex">
-                <div class="button bg-red"></div>
-                <div class="button bg-yellow"></div>
-                <div class="button bg-green"></div>
+        <div className="menu">
+            <div className="buttons-flex">
+                <div className="button bg-red"></div>
+                <div className="button bg-yellow"></div>
+                <div className="button bg-green"></div>
             </div>
-            <div class="title">
+            <div className="title">
                 <h1>
-                    <i class="fa fa-folder fa-lg">
+                    <i className="fa fa-folder fa-lg">
                         <style> { "\
                             .fa-folder {\
                                 color: #6094ee;\
@@ -22,7 +22,7 @@ function Menu() {
                     &nbsp;root@Ritwik-Home-Page
                 </h1>
             </div>
-            <div class="buttons-flex2">
+            <div className="buttons-flex2">
                 &#8997;&#8984;1
             </div>
         </div>
@@ -32,51 +32,51 @@ function Menu() {
 class Container extends Component {
     constructor() {
         super();
-        this.state = {Index: 1};
-        let value = localStorage.getItem('index');
-        this.state.Index = (value == null) ? 1 : value;
+        const value = localStorage.getItem('index');
+        this.state = {Index: value == null ? 1 : Number(value)};
       }
  
     goPage(index) {
-        this.setState((state) => {
-            localStorage.setItem('index', index);
-            return {Index: index}
+        const nextIndex = Number(index);
+        this.setState(() => {
+            localStorage.setItem('index', nextIndex);
+            return {Index: nextIndex};
         });
     }
 
 
     render() {
         return (
-            <div class="container">
+            <div className="container">
                 <Menu />
-                <div class="nav">
-                    <button className={Number(this.state.Index) === Number(1) ? 'active': null}  onClick={() => this.goPage(1)}>
+                <div className="nav">
+                    <button className={Number(this.state.Index) === 1 ? 'active': null} onClick={() => this.goPage(1)}>
                         <span>~/Home</span>
-                        <span class="left-command">
+                        <span className="left-command">
                             &#8984;1
                         </span>
                     </button>
-                    <button className={Number(this.state.Index) === Number(2) ? 'active': null} onClick={() => this.goPage(2)}>
+                    <button className={Number(this.state.Index) === 2 ? 'active': null} onClick={() => this.goPage(2)}>
                         <span>~/Project</span>
-                        <span class="left-command">
+                        <span className="left-command">
                             &#8984;2
                         </span>
                     </button> 
-                    <button className={Number(this.state.Index) === Number(3) ? 'active': null} onClick={() => this.goPage(3)}>
+                    <button className={Number(this.state.Index) === 3 ? 'active': null} onClick={() => this.goPage(3)}>
                         <span>~/Thesis</span>
-                        <span class="left-command">
+                        <span className="left-command">
                             &#8984;3
                         </span>
                     </button> 
-                    <button className={Number(this.state.Index) === Number(4) ? 'active': null} onClick={() => this.goPage(4)}>
+                    <button className={Number(this.state.Index) === 4 ? 'active': null} onClick={() => this.goPage(4)}>
                         <span>~/Experience</span>
-                        <span class="left-command">
+                        <span className="left-command">
                             &#8984;4
                         </span>
                     </button>
-                    <button className={Number(this.state.Index) === Number(5) ? 'active': null} onClick={() => this.goPage(5)}>
+                    <button className={Number(this.state.Index) === 5 ? 'active': null} onClick={() => this.goPage(5)}>
                         <span>~/Certification</span>
-                        <span class="left-command">
+                        <span className="left-command">
                             &#8984;5
                         </span>
                     </button>

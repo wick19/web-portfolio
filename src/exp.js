@@ -3,25 +3,22 @@ import Expraw from "./customization/Experience.json";
 import "./styles/main.css";
 
 export function Exp() {
-    const result = [];
-    Expraw.companies.map((company) => {
-        result.push(
-            <div class="edu">
-                <span id="logo-block">
-                <img src={require(`${company.logo}`)}  alt={"company"} />
-                </span>
-                <span class="text">
-                    <p class="school">{company.name}  </p>
-                    <p class="pos">{company.position}  </p>
-                    <p class="dep">{company.position_time} </p>
-                    <p class="time">{company.discription}  </p>
-                </span>
-            </div>
-        );
-    });
-
     return (
-        result
+        <>
+            {Expraw.companies.map((company) => (
+                <div className="edu" key={company.name}>
+                    <span id="logo-block">
+                        <img src={require(`${company.logo}`)} alt="company logo" />
+                    </span>
+                    <span className="text">
+                        <p className="school">{company.name}</p>
+                        <p className="pos">{company.position}</p>
+                        <p className="dep">{company.position_time}</p>
+                        <p className="time">{company.discription}</p>
+                    </span>
+                </div>
+            ))}
+        </>
     );
 }
 

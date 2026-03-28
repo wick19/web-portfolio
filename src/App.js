@@ -7,9 +7,9 @@ import Pro from "./pro";
 import {Path, Code, Contact} from "./tool";
 import "./styles/main.css";
 
-const paths = ['~\Home', '~\Project', '~\Thesis', '~\Experience', '~\Certification', '~\Project'];
+const paths = ['~\\Home', '~\\Project', '~\\Thesis', '~\\Experience', '~\\Certification', '~\\Project'];
 
-function Intro_content(p) {
+function IntroContent(p) {
 	return (
 		<div id='app'> 
 			<Path path={paths[p.index-1]}/>
@@ -25,7 +25,7 @@ function Intro_content(p) {
 	);
 }
 
-function Pro_content(p) {
+function ProContent(p) {
 	return (
 		<div id='app'> 
 			<Path path={paths[p.index-1]}/>
@@ -38,7 +38,7 @@ function Pro_content(p) {
 	);
 }
 
-function Tes_content(p) {
+function TesContent(p) {
 	return (
 		<div id='app'> 
 			<Path path={paths[p.index-1]}/>
@@ -51,7 +51,7 @@ function Tes_content(p) {
 	);
 }
 
-function Exp_content(p) {
+function ExpContent(p) {
 	return (
 		<div id='app'> 
 			<Path path={paths[p.index-1]}/>
@@ -64,7 +64,7 @@ function Exp_content(p) {
 	);
 }
 
-function Cert_content(p) {
+function CertContent(p) {
 	return (
 		<div id='app'> 
 			<Path path={paths[p.index-1]}/>
@@ -78,25 +78,25 @@ function Cert_content(p) {
 }
 
 function App(props) {
-	if (props.index == 1) {
-	  return <Intro_content  index={props.index}/>;
+	if (props.index === 1) {
+	  return <IntroContent index={props.index}/>;
 	}
-	else if (props.index == 2) {
-		return <Pro_content index={props.index}/>;
+	else if (props.index === 2) {
+		return <ProContent index={props.index}/>;
 	}
-	else if (props.index == 3) {
-		return <Tes_content index={props.index}/>;
+	else if (props.index === 3) {
+		return <TesContent index={props.index}/>;
 	}
-	else if (props.index == 4) {
-		return <Exp_content  index={props.index}/>;
+	else if (props.index === 4) {
+		return <ExpContent index={props.index}/>;
 	}
-	else if (props.index == 5) {
-		return <Cert_content  index={props.index}/>;
+	else if (props.index === 5) {
+		return <CertContent index={props.index}/>;
 	}
-	// TODO : Project
-	else if (props.index == 6) {
-		return <Intro_content  index={props.index}/>;
+	else if (props.index === 6) {
+		return <IntroContent index={props.index}/>;
 	}	
+	return null;
 }
 
 export default App;

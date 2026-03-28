@@ -4,32 +4,29 @@ import "./styles/main.css";
 
 
 export function Pro() {
-    const result = [];
-    Proraw.projects.map((project) => {
-        result.push(
-            <div class="probox">
-                <img src={require(`${project.project_img}`)}  alt={"project"} />
-                <div class="pro-content">
-                    <div class="pro-title">
-                        {project.project_name}
+    return (
+        <div className="pro">
+            {Proraw.projects.map((project) => (
+                <React.Fragment key={project.project_name}>
+                    <div className="probox">
+                        <img src={require(`${project.project_img}`)} alt="project" />
+                        <div className="pro-content">
+                            <div className="pro-title">{project.project_name}</div>
+                            <div className="pro-about">{project.project_about}</div>
+                            <div className="pro-bottom">
+                                <span className="pro-tool">Tools: {project.project_tool}</span>
+                                <span className="pro-link">
+                                    <a target="_blank" href={project.project_link} rel="noreferrer">
+                                        <i className="fa-brands fa-github"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pro-about">
-                        {project.project_about}
-                    </div>
-                    <div class="pro-bottom">
-                        <span class="pro-tool">Tools: {project.project_tool}</span>
-                        <span class="pro-link"><a target="_blank" href={project.project_link} rel="noreferrer"><i class="fa-brands fa-github"></i></a></span>
-                    </div>
-                </div>
-            </div>
-        );
-        result.push(<br></br>)
-    });
-    return (   
-        <div class="pro">
-            {result}
-		</div>
-        
+                    <br />
+                </React.Fragment>
+            ))}
+        </div>
     );
 }
 
