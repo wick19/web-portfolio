@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import portrait from "./img/pp.jpeg";
 import IntroRaw from "./customization/Introduction.json";
-import ProjectRaw from "./customization/Project.json";
 import ContactRaw from "./customization/Contact.json";
 import ThesisRaw from "./customization/Thesis.json";
 import Pro from "./pro";
+import ThesisPage from "./thesis";
+import ContactPage from "./contact";
 
 const techHighlights = [
   {
@@ -54,13 +55,47 @@ const socialLinks = [
   },
 ];
 
+const thesisHighlights = [
+  {
+    value: "95-99%",
+    label: "prediction band",
+  },
+  {
+    value: "5G/UAV",
+    label: "wireless focus",
+  },
+  {
+    value: "RF + ML",
+    label: "hybrid modeling",
+  },
+];
+
+const thesisMethods = [
+  "Okumura-Hata",
+  "Random Forest",
+  "ANN",
+  "Path Loss",
+];
+
 function getHashRoute(hashValue) {
-  return hashValue === "#projects-page" ? "projects" : "home";
+  if (hashValue === "#projects-page") {
+    return "projects";
+  }
+
+  if (hashValue === "#thesis-page") {
+    return "thesis";
+  }
+
+  if (hashValue === "#contact-page") {
+    return "contact";
+  }
+
+  return "home";
 }
 
 function HomePage() {
-  const featuredProject = ProjectRaw.projects[0];
   const thesisLink = ThesisRaw.journal[0]?.link;
+  const thesisDescription = ThesisRaw.journal[0]?.description;
 
   return (
     <main className="page-content">
@@ -147,38 +182,70 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="featured-work" id="thesis">
-        <div className="case-study-card">
-          <div className="lock-visual" aria-hidden="true">
-            <div className="lock-shackle" />
-            <div className="lock-body" />
-            <div className="case-study-badge">Explore Case Study</div>
+      <section className="featured-work thesis-feature" id="thesis">
+        <div className="case-study-card thesis-visual-card">
+          <div className="thesis-orbit" aria-hidden="true">
+            <div className="thesis-grid-lines" />
+            <div className="signal-ring ring-one" />
+            <div className="signal-ring ring-two" />
+            <div className="signal-ring ring-three" />
+            <span className="signal-node node-one" />
+            <span className="signal-node node-two" />
+            <span className="signal-node node-three" />
+            <span className="signal-node node-four" />
+            <div className="uav-glyph">
+              <span className="material-symbols-outlined" aria-hidden="true">
+                settings_input_antenna
+              </span>
+            </div>
+            <div className="thesis-card-label">
+              <span>Research Journal</span>
+              <strong>Path Loss ML Prediction</strong>
+            </div>
+          </div>
+
+          <div className="thesis-panel-strip" aria-hidden="true">
+            <div>
+              <span>Urban Model</span>
+              <strong>Okumura-Hata</strong>
+            </div>
+            <div>
+              <span>Inference</span>
+              <strong>Random Forest + ANN</strong>
+            </div>
           </div>
         </div>
 
-        <div className="featured-copy">
-          <span className="section-kicker">Latest Work</span>
-          <h3>{featuredProject.project_name}</h3>
-          <p>{featuredProject.project_about}</p>
+        <div className="featured-copy thesis-copy">
+          <span className="section-kicker">Thesis Page</span>
+          <h3>Intelligent Wireless Infrastructure.</h3>
+          <p>{thesisDescription}</p>
 
-          <div className="project-metrics">
-            <div>
-              <strong>99.8%</strong>
-              <span>Accuracy Rate</span>
-            </div>
-            <div>
-              <strong>40ms</strong>
-              <span>Avg Latency</span>
-            </div>
+          <div className="project-metrics thesis-metrics">
+            {thesisHighlights.map((item) => (
+              <div key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="thesis-methods" aria-label="Research methods">
+            {thesisMethods.map((method) => (
+              <span key={method}>{method}</span>
+            ))}
           </div>
 
           <div className="featured-links">
-            <a href="#projects-page">View Project</a>
+            <a href="#thesis-page">Open Thesis Page</a>
             {thesisLink ? (
               <a href={thesisLink} target="_blank" rel="noreferrer">
-                Read Thesis
+                Read Thesis Paper
               </a>
             ) : null}
+            <a href="https://github.com/wick19/PathLossML_Prediction" target="_blank" rel="noreferrer">
+              View Repository
+            </a>
           </div>
         </div>
       </section>
@@ -229,10 +296,10 @@ function App() {
           <a href="#projects-page" className={currentPage === "projects" ? "active" : ""}>
             Projects
           </a>
-          <a href="#thesis" className={currentPage === "home" && hash === "#thesis" ? "active" : ""}>
+          <a href="#thesis-page" className={currentPage === "thesis" ? "active" : ""}>
             Thesis
           </a>
-          <a href="#contact" className={currentPage === "home" && hash === "#contact" ? "active" : ""}>
+          <a href="#contact-page" className={currentPage === "contact" ? "active" : ""}>
             Contact
           </a>
         </nav>
@@ -241,10 +308,18 @@ function App() {
         </a>
       </header>
 
-      {currentPage === "projects" ? <Pro /> : <HomePage />}
+      {currentPage === "projects" ? (
+        <Pro />
+      ) : currentPage === "thesis" ? (
+        <ThesisPage />
+      ) : currentPage === "contact" ? (
+        <ContactPage />
+      ) : (
+        <HomePage />
+      )}
 
       <footer className="site-footer" id="contact">
-        <div className="footer-copy">© 2024 Digital Architect. Built for high-performance.</div>
+        <div className="footer-copy">© 2026 Digital Architect. Built for high-performance.</div>
         <div className="footer-links">
           <a href={IntroRaw.linkedin} target="_blank" rel="noreferrer">
             LinkedIn

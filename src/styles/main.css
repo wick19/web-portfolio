@@ -528,6 +528,20 @@ img {
   align-items: center;
 }
 
+.thesis-feature {
+  position: relative;
+  align-items: stretch;
+  padding: 8px 0;
+}
+
+.thesis-feature::before {
+  content: "";
+  position: absolute;
+  inset: 8% -4% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(40, 228, 255, 0.28), rgba(166, 120, 255, 0.18), transparent);
+}
+
 .case-study-card {
   min-height: 410px;
   padding: 28px;
@@ -535,6 +549,169 @@ img {
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(7, 12, 24, 0.96), rgba(9, 17, 32, 0.96));
   box-shadow: var(--shadow);
+}
+
+.thesis-visual-card {
+  position: relative;
+  display: flex;
+  min-height: 520px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-color: rgba(116, 236, 255, 0.2);
+  background:
+    linear-gradient(135deg, rgba(22, 34, 61, 0.9), rgba(8, 14, 28, 0.96)),
+    radial-gradient(circle at 22% 18%, rgba(40, 228, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 82% 78%, rgba(199, 125, 255, 0.12), transparent 30%);
+}
+
+.thesis-visual-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    repeating-linear-gradient(90deg, rgba(139, 163, 206, 0.05) 0 1px, transparent 1px 86px);
+}
+
+.thesis-orbit {
+  position: relative;
+  display: grid;
+  min-height: 390px;
+  place-items: center;
+}
+
+.thesis-grid-lines {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(122, 151, 202, 0.12);
+  border-radius: 22px;
+  background-image:
+    linear-gradient(rgba(119, 146, 196, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(119, 146, 196, 0.07) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(circle at center, black, transparent 76%);
+}
+
+.signal-ring {
+  position: absolute;
+  width: min(72%, 420px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(41, 231, 255, 0.34);
+  border-radius: 999px;
+  box-shadow: inset 0 0 34px rgba(40, 228, 255, 0.06), 0 0 42px rgba(40, 228, 255, 0.08);
+}
+
+.ring-two {
+  width: min(52%, 300px);
+  border-color: rgba(128, 255, 195, 0.24);
+}
+
+.ring-three {
+  width: min(32%, 190px);
+  border-color: rgba(186, 140, 255, 0.24);
+}
+
+.signal-node {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #8bffd2;
+  box-shadow: 0 0 0 8px rgba(139, 255, 210, 0.08), 0 0 24px rgba(139, 255, 210, 0.5);
+}
+
+.node-one {
+  top: 22%;
+  left: 28%;
+}
+
+.node-two {
+  top: 34%;
+  right: 18%;
+  background: var(--accent);
+  box-shadow: 0 0 0 8px rgba(40, 228, 255, 0.08), 0 0 24px rgba(40, 228, 255, 0.5);
+}
+
+.node-three {
+  right: 30%;
+  bottom: 18%;
+}
+
+.node-four {
+  bottom: 32%;
+  left: 18%;
+  background: #d7a6ff;
+  box-shadow: 0 0 0 8px rgba(215, 166, 255, 0.08), 0 0 24px rgba(215, 166, 255, 0.44);
+}
+
+.uav-glyph {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 132px;
+  height: 132px;
+  place-items: center;
+  border: 1px solid rgba(215, 235, 255, 0.16);
+  border-radius: 28px;
+  background: rgba(10, 19, 39, 0.78);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.uav-glyph .material-symbols-outlined {
+  color: #e9fbff;
+  font-size: 4.5rem;
+  font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 0, "opsz" 48;
+}
+
+.thesis-card-label {
+  position: absolute;
+  right: 26px;
+  bottom: 24px;
+  left: 26px;
+  z-index: 1;
+  padding: 18px;
+  border: 1px solid rgba(120, 144, 190, 0.18);
+  border-radius: 16px;
+  background: rgba(9, 18, 38, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.thesis-card-label span,
+.thesis-panel-strip span {
+  display: block;
+  color: rgba(190, 209, 240, 0.68);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.thesis-card-label strong,
+.thesis-panel-strip strong {
+  display: block;
+  margin-top: 6px;
+  color: #f2fbff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+}
+
+.thesis-panel-strip {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.thesis-panel-strip div {
+  padding: 18px;
+  border: 1px solid rgba(125, 154, 208, 0.14);
+  border-radius: 16px;
+  background: rgba(20, 31, 55, 0.72);
 }
 
 .lock-visual {
@@ -584,6 +761,15 @@ img {
   max-width: 520px;
 }
 
+.thesis-copy {
+  display: flex;
+  max-width: none;
+  min-height: 520px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px 0 36px 26px;
+}
+
 .section-kicker {
   color: var(--accent);
   font-size: 0.77rem;
@@ -604,16 +790,35 @@ img {
   line-height: 1.8;
 }
 
+.thesis-copy p {
+  max-width: 680px;
+}
+
 .project-metrics {
   display: flex;
   gap: 42px;
   margin-top: 30px;
 }
 
+.thesis-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .project-metrics div {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.thesis-metrics div {
+  min-height: 112px;
+  justify-content: center;
+  padding: 18px;
+  border: 1px solid rgba(128, 153, 204, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(21, 32, 57, 0.86), rgba(15, 25, 47, 0.72));
 }
 
 .project-metrics strong {
@@ -626,6 +831,26 @@ img {
   font-family: "Space Grotesk", sans-serif;
   font-size: 0.74rem;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.thesis-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.thesis-methods span {
+  padding: 8px 12px;
+  border: 1px solid rgba(139, 255, 210, 0.18);
+  border-radius: 999px;
+  background: rgba(15, 52, 54, 0.42);
+  color: #c8ffed;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -676,6 +901,772 @@ img {
   flex-direction: column;
   gap: 54px;
   padding: 58px 0 96px;
+}
+
+.thesis-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 44px 0 96px;
+}
+
+.thesis-hero,
+.thesis-journal,
+.thesis-grid-section,
+.thesis-cta {
+  width: 100%;
+}
+
+.thesis-hero,
+.thesis-grid-section,
+.thesis-cta {
+  padding-inline: 14px;
+}
+
+.thesis-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px;
+  align-items: end;
+  padding-bottom: 82px;
+}
+
+.thesis-eyebrow,
+.thesis-hero-meta span,
+.thesis-paper-tags span,
+.thesis-paper-actions a,
+.thesis-publication-meta,
+.thesis-primary-action,
+.thesis-secondary-action {
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.thesis-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.thesis-hero h1,
+.thesis-section-head h2,
+.thesis-paper-copy h3,
+.thesis-panel h4,
+.thesis-cta h2 {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.thesis-hero h1 {
+  max-width: 760px;
+  font-size: clamp(4rem, 7vw, 5.8rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+}
+
+.thesis-hero h1 span,
+.thesis-cta h2 span {
+  color: var(--accent);
+}
+
+.thesis-hero p {
+  max-width: 620px;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.thesis-hero-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding-bottom: 10px;
+}
+
+.thesis-hero-meta strong {
+  color: rgba(185, 199, 228, 0.34);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 3rem;
+  line-height: 0.9;
+}
+
+.thesis-hero-meta span {
+  color: var(--accent);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.thesis-journal {
+  padding: 74px 14px 88px;
+  border-top: 1px solid rgba(126, 151, 205, 0.12);
+  border-bottom: 1px solid rgba(126, 151, 205, 0.12);
+  background: linear-gradient(180deg, rgba(24, 34, 59, 0.64), rgba(16, 24, 45, 0.36));
+}
+
+.thesis-section-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.thesis-section-head h2 {
+  font-size: 1.9rem;
+  letter-spacing: -0.05em;
+}
+
+.thesis-section-head span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(40, 228, 255, 0.25), transparent 72%);
+}
+
+.thesis-paper {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.84fr) minmax(0, 1.16fr);
+  overflow: hidden;
+  border: 1px solid rgba(116, 146, 202, 0.14);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(8, 14, 27, 0.95), rgba(13, 20, 37, 0.98));
+  box-shadow: 0 28px 65px rgba(2, 8, 23, 0.32);
+}
+
+.thesis-paper-visual {
+  position: relative;
+  min-height: 340px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 46% 58%, rgba(133, 239, 255, 0.24), transparent 14%),
+    radial-gradient(circle at 50% 52%, rgba(40, 228, 255, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(17, 25, 44, 0.86), rgba(11, 18, 34, 0.98));
+}
+
+.thesis-paper-glow {
+  position: absolute;
+  inset: auto 16% 8% 16%;
+  height: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(40, 228, 255, 0.22), transparent 66%);
+  filter: blur(12px);
+}
+
+.thesis-paper-rings {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  width: 210px;
+  height: 210px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(40, 228, 255, 0.14);
+  box-shadow:
+    0 0 0 18px rgba(40, 228, 255, 0.06),
+    0 0 0 36px rgba(40, 228, 255, 0.05),
+    0 0 0 58px rgba(40, 228, 255, 0.04);
+}
+
+.thesis-paper-city {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 42%;
+  background:
+    linear-gradient(90deg, rgba(16, 28, 51, 0.98) 0 8%, transparent 8% 13%, rgba(16, 28, 51, 0.98) 13% 20%, transparent 20% 25%, rgba(16, 28, 51, 0.98) 25% 37%, transparent 37% 41%, rgba(16, 28, 51, 0.98) 41% 49%, transparent 49% 55%, rgba(16, 28, 51, 0.98) 55% 62%, transparent 62% 69%, rgba(16, 28, 51, 0.98) 69% 78%, transparent 78% 83%, rgba(16, 28, 51, 0.98) 83% 92%, transparent 92% 100%);
+  opacity: 0.94;
+}
+
+.thesis-paper-city::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 70%;
+  background:
+    linear-gradient(180deg, transparent, rgba(9, 18, 38, 0.88)),
+    linear-gradient(90deg, rgba(115, 230, 255, 0.14), transparent 22%, rgba(115, 230, 255, 0.08) 40%, transparent 58%);
+}
+
+.thesis-drone-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(217, 245, 255, 0.72);
+  box-shadow: 0 0 16px rgba(217, 245, 255, 0.38);
+}
+
+.dot-one {
+  top: 16%;
+  left: 10%;
+}
+
+.dot-two {
+  top: 20%;
+  right: 16%;
+}
+
+.dot-three {
+  top: 31%;
+  left: 18%;
+}
+
+.dot-four {
+  top: 28%;
+  right: 8%;
+}
+
+.thesis-paper-uav {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: rgba(6, 15, 30, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(214, 245, 255, 0.12),
+    0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.thesis-paper-uav .material-symbols-outlined {
+  color: #e7fbff;
+  font-size: 3rem;
+  transform: rotate(90deg);
+}
+
+.thesis-paper-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px 34px;
+}
+
+.thesis-paper-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.thesis-paper-tags span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(42, 54, 85, 0.95);
+  color: var(--accent-soft);
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.thesis-paper-copy h3 {
+  max-width: 680px;
+  font-size: clamp(2rem, 3.3vw, 2.95rem);
+  line-height: 1.03;
+  letter-spacing: -0.05em;
+}
+
+.thesis-paper-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.thesis-paper-body p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.thesis-paper-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.thesis-paper-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.thesis-action-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(138, 162, 208, 0.28);
+}
+
+.thesis-paper-actions a .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+.thesis-publication-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(206, 220, 247, 0.7);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.thesis-publication-meta .material-symbols-outlined {
+  font-size: 0.92rem;
+}
+
+.thesis-grid-section {
+  padding-top: 84px;
+  padding-bottom: 74px;
+}
+
+.thesis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.thesis-panel {
+  position: relative;
+  min-height: 146px;
+  padding: 24px 22px;
+  border: 1px solid rgba(122, 147, 199, 0.12);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(32, 42, 74, 0.92), rgba(27, 36, 65, 0.96));
+}
+
+.thesis-panel-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.thesis-panel-featured {
+  grid-column: span 2;
+  border-left: 3px solid var(--accent);
+}
+
+.thesis-panel-wide {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 102px;
+  gap: 18px;
+  align-items: center;
+}
+
+.thesis-panel-copy > .material-symbols-outlined {
+  color: var(--accent);
+  font-size: 1.45rem;
+}
+
+.thesis-panel-copy h4 {
+  margin-top: 18px;
+  font-size: 1.12rem;
+  letter-spacing: -0.04em;
+}
+
+.thesis-panel-copy p {
+  max-width: 520px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.thesis-panel-wide .thesis-panel-copy {
+  max-width: 620px;
+}
+
+.thesis-panel-wide .thesis-panel-copy h4 {
+  max-width: 280px;
+}
+
+.thesis-panel-illustration {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgba(122, 147, 199, 0.16);
+  border-radius: 6px;
+  background: rgba(16, 25, 49, 0.88);
+}
+
+.thesis-panel-illustration .material-symbols-outlined {
+  color: rgba(230, 241, 255, 0.22);
+  font-size: 3.2rem;
+}
+
+.thesis-cta {
+  padding-bottom: 20px;
+}
+
+.thesis-cta-shell {
+  position: relative;
+  overflow: hidden;
+  padding: 60px 28px;
+  border: 1px solid rgba(126, 151, 205, 0.12);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(40, 228, 255, 0.1), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(40, 228, 255, 0.06), transparent 28%),
+    linear-gradient(180deg, rgba(32, 42, 74, 0.82), rgba(23, 31, 58, 0.96));
+  text-align: center;
+}
+
+.thesis-cta h2 {
+  font-size: clamp(2.3rem, 4vw, 3.45rem);
+  letter-spacing: -0.06em;
+}
+
+.thesis-cta p {
+  max-width: 560px;
+  margin: 16px auto 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.thesis-cta-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.thesis-primary-action,
+.thesis-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 142px;
+  padding: 14px 20px;
+  border-radius: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.thesis-primary-action {
+  background: linear-gradient(135deg, #c5f8ff, #89efff);
+  color: #082030;
+}
+
+.thesis-secondary-action {
+  border: 1px solid rgba(138, 162, 208, 0.22);
+  background: rgba(17, 26, 48, 0.7);
+  color: #ebf8ff;
+}
+
+.contact-page {
+  display: flex;
+  flex-direction: column;
+  gap: 42px;
+  padding: 46px 0 96px;
+}
+
+.contact-hero h1,
+.contact-info-card h2,
+.contact-cta h2 {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.contact-hero {
+  max-width: 960px;
+  padding-inline: 2px;
+}
+
+.contact-hero h1 {
+  max-width: 1100px;
+  font-size: clamp(3.8rem, 7vw, 6.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+}
+
+.contact-hero h1 span {
+  color: #c8fbff;
+}
+
+.contact-hero p {
+  max-width: 760px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.3fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.contact-column {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.contact-info-card,
+.contact-status-card,
+.contact-form-shell,
+.contact-form-card {
+  border: 1px solid rgba(126, 151, 205, 0.1);
+  background: linear-gradient(180deg, rgba(29, 39, 67, 0.94), rgba(24, 34, 59, 0.96));
+}
+
+.contact-info-card {
+  padding: 40px;
+  border-radius: 10px;
+}
+
+.contact-info-card h2 {
+  margin-bottom: 34px;
+  color: #d3fbff;
+  font-size: 1.7rem;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.contact-icon-box {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(53, 64, 96, 0.85);
+  color: var(--accent);
+}
+
+.contact-icon-box .material-symbols-outlined {
+  font-size: 1.55rem;
+}
+
+.contact-info-item p,
+.contact-social-block p,
+.contact-field span,
+.contact-status-copy span {
+  color: rgba(191, 208, 240, 0.78);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contact-info-item a,
+.contact-info-item div > span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #edf7ff;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.contact-social-block {
+  margin-top: 38px;
+  padding-top: 38px;
+  border-top: 1px solid rgba(126, 151, 205, 0.1);
+}
+
+.contact-social-links {
+  display: flex;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.contact-social-links a {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(126, 151, 205, 0.22);
+  border-radius: 12px;
+  color: rgba(229, 236, 255, 0.86);
+  background: rgba(15, 24, 45, 0.58);
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.contact-social-links a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(40, 228, 255, 0.42);
+  color: var(--accent);
+}
+
+.contact-status-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 278px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(7, 12, 24, 0.94), rgba(11, 18, 34, 0.98));
+}
+
+.contact-status-graphic {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 8, 16, 0.08), rgba(4, 8, 16, 0.56)),
+    linear-gradient(90deg, rgba(188, 210, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(188, 210, 255, 0.06) 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.55));
+}
+
+.status-grid {
+  position: absolute;
+  inset: 12% 14%;
+  border: 1px solid rgba(183, 205, 247, 0.12);
+  transform: perspective(600px) rotateY(-32deg);
+  transform-origin: left center;
+}
+
+.status-beam {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(212, 238, 255, 0.25), transparent);
+  filter: blur(1px);
+}
+
+.beam-one {
+  bottom: 34%;
+}
+
+.beam-two {
+  bottom: 29%;
+}
+
+.beam-three {
+  bottom: 24%;
+}
+
+.contact-status-copy {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+}
+
+.contact-status-copy strong {
+  display: block;
+  margin-top: 8px;
+  color: rgba(230, 240, 255, 0.84);
+  font-size: 0.96rem;
+  font-weight: 500;
+}
+
+.contact-form-shell {
+  padding: 16px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(13, 20, 37, 0.98), rgba(10, 17, 31, 0.98));
+}
+
+.contact-form-card {
+  padding: 18px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(15, 24, 45, 0.98), rgba(15, 24, 45, 0.94));
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 28px;
+}
+
+.contact-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-field input,
+.contact-field select,
+.contact-field textarea {
+  width: 100%;
+  padding: 16px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(126, 151, 205, 0.28);
+  background: rgba(8, 15, 29, 0.95);
+  color: #edf7ff;
+  outline: none;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.contact-field textarea {
+  min-height: 150px;
+  resize: none;
+}
+
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: rgba(174, 188, 218, 0.34);
+}
+
+.contact-field input:focus,
+.contact-field select:focus,
+.contact-field textarea:focus {
+  border-bottom-color: rgba(40, 228, 255, 0.6);
+  background: rgba(10, 19, 36, 0.98);
+}
+
+.contact-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 18px 24px;
+  border: 0;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #c8f8ff 0%, #29d6ea 100%);
+  color: #03131c;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.contact-submit:hover {
+  opacity: 0.94;
+}
+
+.contact-submit:active {
+  transform: scale(0.99);
+}
+
+.contact-submit .material-symbols-outlined {
+  font-size: 1.18rem;
 }
 
 .project-page-header {
@@ -775,6 +1766,10 @@ img {
   transition: transform 180ms ease, border-color 180ms ease;
 }
 
+.project-icon-link .material-symbols-outlined {
+  font-size: 1.35rem;
+}
+
 .project-icon-link:hover {
   transform: translateY(-2px);
   border-color: rgba(40, 228, 255, 0.35);
@@ -864,6 +1859,10 @@ img {
   text-transform: uppercase;
 }
 
+.project-story-footer .material-symbols-outlined {
+  font-size: 1rem;
+}
+
 .project-sidebar-card {
   position: sticky;
   top: 126px;
@@ -941,12 +1940,12 @@ img {
   justify-content: space-between;
 }
 
-.support-card-top i:first-child {
+.support-card-top .material-symbols-outlined:first-child {
   color: var(--accent);
   font-size: 1.5rem;
 }
 
-.support-card-top i:last-child {
+.support-card-top .material-symbols-outlined:last-child {
   color: rgba(210, 224, 255, 0.54);
   font-size: 0.9rem;
 }
@@ -982,6 +1981,7 @@ img {
 
   .hero-section,
   .featured-work,
+  .thesis-paper,
   .bento-grid,
   .project-story-grid,
   .project-bento-grid {
@@ -1003,6 +2003,33 @@ img {
 
   .featured-copy {
     max-width: none;
+  }
+
+  .thesis-copy {
+    min-height: auto;
+    padding: 8px 0 0;
+  }
+
+  .thesis-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .thesis-hero-meta {
+    align-items: flex-start;
+    padding-bottom: 0;
+  }
+
+  .thesis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .thesis-panel-featured,
+  .thesis-panel-wide {
+    grid-column: span 2;
+  }
+
+  .contact-layout {
+    grid-template-columns: 1fr;
   }
 
   .project-sidebar-card {
@@ -1084,6 +2111,127 @@ img {
 
   .case-study-card {
     min-height: 340px;
+  }
+
+  .thesis-visual-card {
+    min-height: 480px;
+    padding: 18px;
+  }
+
+  .thesis-orbit {
+    min-height: 330px;
+  }
+
+  .thesis-panel-strip,
+  .thesis-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .thesis-card-label {
+    right: 18px;
+    left: 18px;
+  }
+
+  .thesis-page {
+    padding-top: 36px;
+  }
+
+  .contact-page {
+    padding-top: 34px;
+  }
+
+  .thesis-hero,
+  .thesis-journal,
+  .thesis-grid-section,
+  .thesis-cta {
+    padding-inline: 0;
+  }
+
+  .thesis-hero {
+    gap: 20px;
+    padding-bottom: 54px;
+  }
+
+  .thesis-hero h1 {
+    font-size: 3.45rem;
+  }
+
+  .thesis-hero p {
+    font-size: 0.96rem;
+  }
+
+  .thesis-journal {
+    padding-top: 52px;
+    padding-bottom: 60px;
+  }
+
+  .thesis-paper-copy {
+    padding: 24px 22px;
+  }
+
+  .thesis-paper-copy h3 {
+    font-size: 2rem;
+  }
+
+  .thesis-paper-visual {
+    min-height: 300px;
+  }
+
+  .thesis-paper-rings {
+    width: 180px;
+    height: 180px;
+    box-shadow:
+      0 0 0 18px rgba(40, 228, 255, 0.06),
+      0 0 0 40px rgba(40, 228, 255, 0.05),
+      0 0 0 58px rgba(40, 228, 255, 0.04);
+  }
+
+  .thesis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .thesis-panel-featured,
+  .thesis-panel-wide {
+    grid-column: auto;
+  }
+
+  .thesis-panel-wide {
+    grid-template-columns: 1fr;
+  }
+
+  .thesis-cta-shell {
+    padding: 44px 20px;
+  }
+
+  .contact-hero h1 {
+    font-size: 3.2rem;
+  }
+
+  .contact-hero p {
+    font-size: 0.94rem;
+  }
+
+  .contact-info-card {
+    padding: 24px;
+  }
+
+  .contact-form-shell,
+  .contact-form-card {
+    padding: 10px;
+  }
+
+  .contact-form {
+    padding: 14px;
+    gap: 22px;
+  }
+
+  .contact-field-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .contact-status-card {
+    min-height: 220px;
   }
 
   .project-page {

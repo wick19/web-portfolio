@@ -5,14 +5,14 @@ import skylineImage from "./img/background.jpg";
 
 const supportingProjects = [
   {
-    icon: "fa-solid fa-terminal",
+    icon: "terminal",
     title: "Neural Style Engine",
     description:
       "An optimized VGG-19 implementation for real-time video style transfer using CUDA acceleration and TensorRT optimization.",
     tools: ["C++", "CUDA", "OpenCV"],
   },
   {
-    icon: "fa-solid fa-database",
+    icon: "database",
     title: "Query Architect",
     description:
       "Distributed SQL optimization engine designed for multi-petabyte datasets, focusing on cold-storage retrieval latency.",
@@ -55,7 +55,9 @@ function Pro() {
               rel="noreferrer"
               aria-label="Open project repository"
             >
-              <i className="fa-solid fa-code" aria-hidden="true" />
+              <span className="material-symbols-outlined" aria-hidden="true">
+                code
+              </span>
             </a>
           </div>
 
@@ -95,7 +97,9 @@ function Pro() {
           <div className="project-story-footer">
             <a href={featuredProject.project_link} target="_blank" rel="noreferrer">
               Read Full Case Study
-              <i className="fa-solid fa-arrow-right" aria-hidden="true" />
+              <span className="material-symbols-outlined" aria-hidden="true">
+                arrow_forward
+              </span>
             </a>
           </div>
         </article>
@@ -119,8 +123,12 @@ function Pro() {
             className={project.highlighted ? "support-card support-card-highlighted" : "support-card"}
           >
             <div className="support-card-top">
-              <i className={project.icon} aria-hidden="true" />
-              <i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+              <span className="material-symbols-outlined" aria-hidden="true">
+                {project.icon}
+              </span>
+              <span className="material-symbols-outlined" aria-hidden="true">
+                open_in_new
+              </span>
             </div>
             <div className="support-card-body">
               <h3>{project.title}</h3>
