@@ -1,6 +1,7 @@
 import React from "react";
 import ThesisRaw from "./customization/Thesis.json";
 import ContactRaw from "./customization/Contact.json";
+import IntroRaw from "./customization/Introduction.json";
 
 const researchTags = ["Wireless Comm", "5G Network", "Machine Learning"];
 
@@ -168,7 +169,7 @@ function ThesisPage() {
             </a>
             <a
               className="thesis-secondary-action"
-              href="https://drive.google.com/file/d/1ZNzP0xzVURThlOplgm1bSEsur5zCmAjN/view?usp=sharing"
+              href={IntroRaw.resume}
               target="_blank"
               rel="noreferrer"
             >

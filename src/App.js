@@ -329,7 +329,7 @@ function App() {
         </nav>
         <a
           className="resume-button"
-          href="https://drive.google.com/file/d/1ZNzP0xzVURThlOplgm1bSEsur5zCmAjN/view?usp=sharing"
+          href={IntroRaw.resume}
           target="_blank"
           rel="noreferrer"
         >
