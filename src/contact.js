@@ -147,7 +147,7 @@ function ContactPage() {
             </div>
             <div className="contact-status-copy">
               <span>Current Project Status</span>
-              <strong>Available for Q4 collaborations</strong>
+              <strong>Open to full-time roles</strong>
             </div>
           </aside>
         </div>

@@ -3,3 +3,7 @@ node_modules/*
 .DS_Store
 build
 dist
+
+# MCP configs contain API keys — do not commit
+.vscode/mcp.json
+.cursor/mcp.json

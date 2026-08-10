@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#2d3449",
+              "inverse-on-surface": "#283044",
+              "tertiary-container": "#90daff",
+              "primary-fixed": "#9cf0ff",
+              "secondary": "#bcc7de",
+              "surface-container": "#171f33",
+              "primary": "#c3f5ff",
+              "inverse-surface": "#dae2fd",
+              "surface-tint": "#00daf3",
+              "surface-container-low": "#131b2e",
+              "surface-container-lowest": "#060e20",
+              "surface-container-high": "#222a3d",
+              "tertiary-fixed-dim": "#7bd1fa",
+              "primary-container": "#00e5ff",
+              "on-primary-fixed-variant": "#004f58",
+              "on-surface-variant": "#bac9cc",
+              "surface-bright": "#31394d",
+              "on-background": "#dae2fd",
+              "on-secondary-fixed": "#111c2d",
+              "on-tertiary": "#003547",
+              "on-primary-fixed": "#001f24",
+              "tertiary-fixed": "#c0e8ff",
+              "on-error": "#690005",
+              "on-tertiary-container": "#00607f",
+              "secondary-fixed": "#d8e3fb",
+              "surface-container-highest": "#2d3449",
+              "on-secondary-fixed-variant": "#3c475a",
+              "outline-variant": "#3b494c",
+              "secondary-container": "#3e495d",
+              "primary-fixed-dim": "#00daf3",
+              "on-tertiary-fixed-variant": "#004d66",
+              "outline": "#849396",
+              "inverse-primary": "#006875",
+              "surface-dim": "#0b1326",
+              "error": "#ffb4ab",
+              "surface": "#0b1326",
+              "background": "#0b1326",
+              "on-secondary-container": "#aeb9d0",
+              "on-error-container": "#ffdad6",
+              "on-surface": "#dae2fd",
+              "on-tertiary-fixed": "#001e2b",
+              "tertiary": "#d8f0ff",
+              "on-primary": "#00363d",
+              "secondary-fixed-dim": "#bcc7de",
+              "on-secondary": "#263143",
+              "on-primary-container": "#00626e",
+              "error-container": "#93000a"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0b1326;
+        color: #dae2fd;
+      }
+      h1, h2, h3, .font-headline {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl dark:bg-[#0b1326]/80 shadow-2xl shadow-cyan-950/20">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-6">
+<span class="text-2xl font-black text-[#c3f5ff] tracking-tighter">ARCHITECT.ENG</span>
+<div class="hidden md:flex items-center gap-10 font-['Space_Grotesk'] tracking-tight text-sm uppercase font-bold">
+<a class="text-slate-400 hover:text-[#c3f5ff] transition-colors transition-all duration-300 active:scale-95" href="#">Home</a>
+<a class="text-slate-400 hover:text-[#c3f5ff] transition-colors transition-all duration-300 active:scale-95" href="#">Projects</a>
+<a class="text-[#00e5ff] border-b-2 border-[#00e5ff] pb-1 transition-all duration-300 active:scale-95" href="#">Thesis</a>
+<a class="text-slate-400 hover:text-[#c3f5ff] transition-colors transition-all duration-300 active:scale-95" href="#">Contact</a>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2 rounded font-headline font-bold text-xs uppercase tracking-widest hover:opacity-80 transition-all active:scale-95">
+                Resume
+            </button>
+</div>
+<div class="h-[1px] w-full bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent"></div>
+</nav>
+<main class="pt-32 pb-20">
+<!-- Hero Section: Academic Intent -->
+<section class="max-w-7xl mx-auto px-8 mb-24">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+<div class="lg:col-span-8">
+<span class="inline-block text-primary-container font-headline font-bold text-sm tracking-[0.3em] uppercase mb-4">Research Portfolio</span>
+<h1 class="text-5xl md:text-7xl font-black tracking-tighter text-on-surface leading-none mb-8">
+                        The Future of <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-container">Wireless</span> Infrastructure.
+                    </h1>
+<p class="text-xl text-on-surface-variant max-w-2xl font-light leading-relaxed">
+                        Investigating the intersection of machine learning and telecommunications to solve real-world connectivity challenges in dynamic environments.
+                    </p>
+</div>
+<div class="lg:col-span-4 flex justify-end">
+<div class="text-right">
+<div class="text-4xl font-black text-outline-variant mb-1">01.</div>
+<div class="text-xs font-headline font-bold uppercase tracking-widest text-primary-container">Academic Thesis</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Research Journal Section -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex items-center gap-4 mb-16">
+<h2 class="text-3xl font-black tracking-tighter">Research Journal</h2>
+<div class="h-[2px] flex-grow bg-gradient-to-r from-primary/30 to-transparent"></div>
+</div>
+<!-- Main Paper Display -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-surface-container-lowest overflow-hidden group">
+<!-- Image/Abstract Column -->
+<div class="lg:col-span-5 relative min-h-[400px]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-700" data-alt="Technical visualization of a UAV drone flying above a stylized 3D urban city model with wireless signal waves connecting to other drones in the air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNAn5V83Q9jiT08kpdzX93gAvOH4QbYf4Abqp0mjklZXijVUTWwuxT_j4FQRPiiIcAA8NT7k4rOP-qhILDYEKEY1Vr_-As-zFfPh-6fsajtHIeYZd7WrNKlsKQMsIR6HqduOqe5xA1RG9By6UKtX6uYEYzBj_eMBLb1iEuob5Fcx6AJRkSz01F-CBrKax2xYUdYGJ7Ddq5OOc0Qda-qvaY8d2Jw_krczaHnxYN95URBinoAEA2ZT_BeJOYrV4bpMVNqR0Gswf_X9M"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-transparent to-transparent lg:hidden"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-surface-container-lowest/20 to-surface-container-lowest"></div>
+</div>
+<!-- Content Column -->
+<div class="lg:col-span-7 p-10 md:p-16 flex flex-col justify-center">
+<div class="flex flex-wrap gap-3 mb-8">
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label text-[10px] uppercase tracking-widest rounded-full">Wireless Comm</span>
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label text-[10px] uppercase tracking-widest rounded-full">5G Network</span>
+<span class="px-3 py-1 bg-surface-container-highest text-primary font-label text-[10px] uppercase tracking-widest rounded-full">Machine Learning</span>
+</div>
+<h3 class="text-3xl md:text-4xl font-black tracking-tight text-on-surface mb-8 leading-tight">
+                            Machine Learning-Based Path loss Models For the UAV Air-to-Air (A2A) Prediction
+                        </h3>
+<div class="space-y-6 text-on-surface-variant font-light leading-relaxed mb-10">
+<p>
+                                Research centers on wireless communication, 5G, and relay systems, with a particular emphasis on path loss analysis. By integrating urban models such as the Okumura-Hata model with machine learning techniques like Random Forests and Artificial Neural Networks (ANNs), my study tackles the challenges of reliable communication.
+                            </p>
+<p>
+                                This approach demonstrates adaptability in both urban and UAV environments, offering valuable insights into enhancing communication systems.
+                            </p>
+</div>
+<div class="flex items-center gap-8">
+<a class="inline-flex items-center gap-2 text-primary font-headline font-black text-sm uppercase tracking-widest group/link" href="#">
+                                [Paper]
+                                <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</a>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-outline text-xs font-medium">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                2024 PUBLICATION
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Methodology Bento Grid -->
+<section class="max-w-7xl mx-auto px-8 py-32">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Grid Item 1 -->
+<div class="md:col-span-2 bg-surface-container rounded-xl p-10 flex flex-col justify-between border-l-4 border-primary">
+<div>
+<div class="material-symbols-outlined text-primary-container mb-6 text-4xl">hub</div>
+<h4 class="text-2xl font-bold mb-4">Neural Network Integration</h4>
+<p class="text-on-surface-variant leading-relaxed">Utilizing deep learning architectures to predict signal attenuation in non-line-of-sight urban canyons, significantly outperforming traditional empirical models.</p>
+</div>
+</div>
+<!-- Grid Item 2 -->
+<div class="bg-surface-container-high rounded-xl p-10">
+<div class="material-symbols-outlined text-primary mb-6 text-4xl">flight_takeoff</div>
+<h4 class="text-xl font-bold mb-4">UAV Dynamics</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">Modeling Air-to-Air (A2A) links under varying altitudes and atmospheric conditions to ensure link stability during relay operations.</p>
+</div>
+<!-- Grid Item 3 -->
+<div class="bg-surface-container-high rounded-xl p-10">
+<div class="material-symbols-outlined text-primary mb-6 text-4xl">bar_chart</div>
+<h4 class="text-xl font-bold mb-4">Data Processing</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">Processing millions of data points from simulation and field tests to train Random Forest regressors for real-time inference.</p>
+</div>
+<!-- Grid Item 4 -->
+<div class="md:col-span-2 bg-surface-bright rounded-xl p-10 flex flex-col md:flex-row gap-8 items-center border border-outline-variant/20">
+<div class="flex-1">
+<h4 class="text-2xl font-bold mb-4">Okumura-Hata Hybridization</h4>
+<p class="text-on-surface-variant leading-relaxed">Enhancing classical propagation models with site-specific ML offsets to achieve +/- 2dB accuracy in dense urban environments.</p>
+</div>
+<div class="w-full md:w-48 aspect-square bg-surface-container-lowest rounded-lg flex items-center justify-center border border-outline-variant/30">
+<span class="material-symbols-outlined text-6xl text-primary/20">architecture</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact/Collaboration CTA -->
+<section class="max-w-7xl mx-auto px-8">
+<div class="bg-gradient-to-br from-surface-container-high to-surface-container-lowest rounded-2xl p-12 md:p-20 text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary-container/5 rounded-full -ml-32 -mb-32 blur-3xl"></div>
+<h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-6 relative z-10">Interested in <span class="text-primary-container">Collaboration?</span></h2>
+<p class="text-on-surface-variant max-w-xl mx-auto mb-10 text-lg font-light relative z-10">
+                    I am actively seeking research partnerships in the fields of 6G, autonomous aerial networks, and edge computing.
+                </p>
+<div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+<button class="bg-primary text-on-primary px-10 py-4 rounded font-headline font-bold uppercase tracking-widest text-sm hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/10">
+                        Email Me
+                    </button>
+<button class="border border-outline-variant text-on-surface px-10 py-4 rounded font-headline font-bold uppercase tracking-widest text-sm hover:bg-surface-container-high transition-all active:scale-95">
+                        Download CV
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 mt-20 bg-[#0b1326] dark:bg-[#0b1326]">
+<div class="max-w-7xl mx-auto">
+<div class="bg-[#161f35] h-[1px] w-full mb-12 opacity-30"></div>
+<div class="flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="font-['Inter'] text-xs text-slate-500 uppercase tracking-widest">
+                    © 2024 Digital Architect. Built for high-performance.
+                </div>
+<div class="flex gap-8 font-['Inter'] text-xs uppercase tracking-widest">
+<a class="text-slate-500 hover:text-[#00e5ff] transition-colors duration-200" href="#">LinkedIn</a>
+<a class="text-slate-500 hover:text-[#00e5ff] transition-colors duration-200" href="#">GitHub</a>
+<a class="text-slate-500 hover:text-[#00e5ff] transition-colors duration-200" href="#">Twitter</a>
+<a class="text-slate-500 hover:text-[#00e5ff] transition-colors duration-200" href="#">Email</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

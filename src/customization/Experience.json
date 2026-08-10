@@ -1,25 +1,73 @@
 {
-    "companies" : [
-        {
-            "logo" : "./img/tpp.jpeg",
-            "name" : "TekGigz LLC",
-            "position":"Python Full Stack Developer",
-            "position_time" : "Feb 2024 – Jan 2025",
-            "discription" : "Worked on a finance-focused web application used by internal teams and small businesses to track transactions and generate real-time reports. The technology included Flask/Django for the backend, PostgreSQL as the relational DB, MongoDB/Redis for NoSQL support, and we deployed it using Docker and Jenkins on Heroku."
-        },
-        {
-            "logo" : "./img/ons.jpeg",
-            "name" : "Onshape Inc.",
-            "position":"Software Development Intern",
-            "position_time" : "Jun 2019 – Aug 2019",
-            "discription" : "Built a custom data structure in Python to detect and trace system errors across modules, improving reliability and observability. I used MongoDB for error logs, Redis for real-time session data, and developed modular UI components in React and Angular with built-in validators and error indicators to highlight misconfigurations, streamlined development with Jenkins CI/CD."
-        },
-        {
-            "logo" : "./img/adi.png",
-            "name" : "Adidas",
-            "position":"Campus Ambassador",
-            "position_time" : "May 2020 to March 2021",
-            "discription" : "Led a student team using Microsoft Teams and Google Workspace to manage timelines and communication. Organized virtual events via Zoom and Google Meet, and ran social media campaigns on Instagram and WhatsApp using Canva and Facebook Insights. Used basic data analysis to refine engagement strategies, aligning with Adidas’s digital outreach goals."
-        }
-    ]
+  "companies": [
+    {
+      "logo": "./img/sprot_logo.jpeg",
+      "name": "Sprouts.ai",
+      "position": "AI Engineer",
+      "position_time": "Sep 2025 – Present",
+      "location": "Bengaluru, India",
+      "discription": "Owned design and development of two production FastAPI microservices for AI-driven contact enrichment, provider orchestration, and enterprise workflow automation. Built end-to-end features across Python, React, and TypeScript with PostgreSQL, Redis, OAuth2/JWT, Docker, Kubernetes, and GitHub Actions—combining LLM reasoning with deterministic backend services, caching, and async pipelines to improve reliability and cut unnecessary provider cost.",
+      "metrics": [
+        { "value": "2", "label": "prod FastAPI services" },
+        { "value": "LLM+API", "label": "hybrid AI workflows" },
+        { "value": "K8s", "label": "cloud-native deploys" }
+      ],
+      "tags": [
+        "FastAPI",
+        "Python",
+        "PostgreSQL",
+        "Redis",
+        "React",
+        "TypeScript",
+        "Docker",
+        "Kubernetes",
+        "LLMs"
+      ]
+    },
+    {
+      "logo": "./img/tpp.jpeg",
+      "name": "TekGigz LLC",
+      "position": "Python Full Stack Developer",
+      "position_time": "Feb 2024 – Jan 2025",
+      "location": "Frisco, Texas, USA",
+      "discription": "Built a finance-focused web application with Python, Flask, Django, and PostgreSQL for transaction processing, vendor management, and real-time reporting. Delivered secure REST APIs (−20% response time), optimized SQL (+25% query performance), automated tests with PyTest, and CI/CD with Jenkins/Docker (−15% deploy issues, +30% release speed) on Heroku.",
+      "tags": [
+        "Flask",
+        "Django",
+        "PostgreSQL",
+        "PyTest",
+        "Jenkins",
+        "Docker",
+        "Heroku"
+      ]
+    },
+    {
+      "logo": "./img/ons.jpeg",
+      "name": "PTC Onshape Inc.",
+      "position": "Software Development Intern",
+      "position_time": "Jun 2019 – Aug 2019",
+      "location": "Pune, Maharashtra, India",
+      "discription": "Contributed to a cloud engineering design platform with scalable error-handling infrastructure and performance-optimized frontend components. Built a custom structure to detect and propagate errors across interconnected models, shipped React/Angular validators with live error indicators, and improved frontend responsiveness by ~20% while integrating modules into Jenkins/Docker CI/CD.",
+      "tags": [
+        "Python",
+        "React",
+        "Angular",
+        "Jenkins",
+        "Docker"
+      ]
+    },
+    {
+      "logo": "./img/adi.png",
+      "name": "Adidas",
+      "position": "Campus Ambassador",
+      "position_time": "May 2020 – Mar 2021",
+      "location": "Chennai, Tamil Nadu, India",
+      "discription": "Led campus outreach by coordinating student teams and virtual events, and ran social campaigns with measurable engagement improvements using Canva and Facebook Insights.",
+      "tags": [
+        "Leadership",
+        "Digital Campaigns",
+        "Community"
+      ]
+    }
+  ]
 }

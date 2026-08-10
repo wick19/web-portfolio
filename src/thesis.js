@@ -166,9 +166,19 @@ function ThesisPage() {
             <a className="thesis-primary-action" href={`mailto:${ContactRaw.email}`}>
               Email Me
             </a>
-            <a className="thesis-secondary-action" href={thesisLink} target="_blank" rel="noreferrer">
-              Download CV
+            <a
+              className="thesis-secondary-action"
+              href="https://drive.google.com/file/d/1ZNzP0xzVURThlOplgm1bSEsur5zCmAjN/view?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Download Resume
             </a>
+            {thesisLink ? (
+              <a className="thesis-secondary-action" href={thesisLink} target="_blank" rel="noreferrer">
+                Read Paper
+              </a>
+            ) : null}
           </div>
         </div>
       </section>

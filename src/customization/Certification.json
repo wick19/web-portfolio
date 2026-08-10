@@ -1,26 +1,53 @@
 {
-    "Certifications" : [
-        {
-            "entry1" : "Python"
-        },
-        {
-            "entry2" : "JavaScript (intermediate)"
-        },
-        {
-            "entry3" : "Problem Solving (intermediate)"
-        },
-        {
-            "entry4" : "Programming for Everybody (Getting Started with Python)"
-        },
-        {
-            "entry5" : "Python Data Structures"
-        },
-        {
-            "entry6" : "Introduction to the Internet of Things and Embedded Systems"
-        },
-        {
-            "entry7" : "Introduction to programming with MATLAB"
-        }
-
-    ]
+  "credentials": [
+    {
+      "title": "JavaScript",
+      "detail": "(Intermediate)",
+      "issuer": "HackerRank",
+      "href": "https://www.hackerrank.com/certificates/0aaa58019fb5",
+      "featured": false
+    },
+    {
+      "title": "Problem Solving",
+      "detail": "(Intermediate)",
+      "issuer": "HackerRank",
+      "href": "https://www.hackerrank.com/certificates/cb01d714138b",
+      "featured": false
+    },
+    {
+      "title": "Programming for Everybody",
+      "detail": "Getting Started with Python",
+      "issuer": "Coursera",
+      "href": "https://drive.google.com/file/d/1xDQA2_KqiG9qkTOc_TSkAwqNdbnxfw3c/view?usp=sharing",
+      "featured": true
+    },
+    {
+      "title": "Python Data Structures",
+      "detail": "",
+      "issuer": "Coursera",
+      "href": "https://drive.google.com/file/d/1EQfJNSdV5l8oy_c4D7mTaoMJUTFBxIBN/view",
+      "featured": false
+    },
+    {
+      "title": "Intro to IoT and Embedded Systems",
+      "detail": "",
+      "issuer": "Coursera",
+      "href": "https://drive.google.com/file/d/12GyUSoWjIYm7wmaXNtxkd0vm2sLPK0a0/view",
+      "featured": false
+    },
+    {
+      "title": "Intro to programming with MATLAB",
+      "detail": "",
+      "issuer": "Coursera",
+      "href": "https://drive.google.com/file/d/1Y_AxUA4C6wo4NPjEmZitF80NeB4tu3st/view?usp=sharing",
+      "featured": false
+    },
+    {
+      "title": "Python",
+      "detail": "HackerRank certification",
+      "issuer": "HackerRank",
+      "href": "https://www.hackerrank.com/certificates/d6cc8996eda7",
+      "featured": false
+    }
+  ]
 }

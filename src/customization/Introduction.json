@@ -1,5 +1,7 @@
 {
-    "intro" : "Detail-oriented software engineer with practical experience in backend development, machine learning, and scalable system architecture. Proficient in Python with a strong foundation in data structures, algorithms, and modern development practices including CI/CD pipelines, containerization, cloud deployment, and NoSQL databases. Skilled in building robust, production-ready applications using Django, Flask, PostgreSQL, TensorFlow, and PyTorch. Recognized for a strong work ethic, analytical thinking, and a focus on writing clean, maintainable code. Eager to contribute to high-impact, innovation-driven engineering teams.",
-    "github" : "https://github.com/wick19",
-    "linkedin" : "https://www.linkedin.com/in/ritwik-k-527914151/"
+  "intro": "Python-first AI-native full stack engineer building production AI systems, FastAPI microservices, and scalable backend platforms. Experience spans LLM-powered workflows, provider orchestration, cloud-native deployment, and enterprise product delivery.",
+  "github": "https://github.com/wick19",
+  "linkedin": "https://www.linkedin.com/in/ritwik-k-527914151/",
+  "role": "AI Engineer · Full Stack",
+  "headline": "Building production AI systems and scalable backends."
 }

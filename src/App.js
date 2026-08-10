@@ -6,14 +6,16 @@ import ThesisRaw from "./customization/Thesis.json";
 import Pro from "./pro";
 import ThesisPage from "./thesis";
 import ContactPage from "./contact";
+import ExperiencePage from "./experience";
+import CertificationPage from "./certification";
 
 const techHighlights = [
   {
     icon: "psychology",
-    title: "Deep Learning & AI",
+    title: "AI Systems",
     description:
-      "Developing intelligent systems using TensorFlow and PyTorch, focusing on neural network optimization and predictive modeling.",
-    tags: ["TensorFlow", "PyTorch", "Keras"],
+      "LLM-powered workflows, provider orchestration, RAG patterns, and production AI services with cost-aware caching.",
+    tags: ["LLMs", "LangChain", "FastAPI"],
     featured: true,
     filled: true,
   },
@@ -21,19 +23,19 @@ const techHighlights = [
     icon: "terminal",
     title: "Backend Architecture",
     description:
-      "Scalable APIs and microservices built with Django, Flask, and high-concurrency Python patterns.",
+      "Production FastAPI/Django/Flask microservices with OAuth2, JWT, SQLAlchemy, and resilient REST APIs.",
   },
   {
     icon: "database",
     title: "Data Systems",
     description:
-      "PostgreSQL expertise with complex schema design and query optimization.",
+      "PostgreSQL, Redis, and Azure SQL—schema design, query optimization, and caching for scale.",
   },
   {
     icon: "cloud_done",
     title: "Cloud Native",
     description:
-      "Deployment automation and container orchestration for production loads.",
+      "Docker, Kubernetes, Helm, and GitHub Actions for reliable CI/CD and production releases.",
   },
 ];
 
@@ -86,6 +88,14 @@ function getHashRoute(hashValue) {
     return "thesis";
   }
 
+  if (hashValue === "#experience-page") {
+    return "experience";
+  }
+
+  if (hashValue === "#certification-page") {
+    return "certification";
+  }
+
   if (hashValue === "#contact-page") {
     return "contact";
   }
@@ -103,18 +113,26 @@ function HomePage() {
         <div className="hero-copy">
           <div className="availability-pill">
             <span className="status-dot" />
-            <span>Available for Projects</span>
+            <span>Open to full-time roles</span>
           </div>
 
           <h1 className="hero-name">Ritwik</h1>
 
-          <h2 className="hero-title">Engineering High-Performance Solutions</h2>
+          <h2 className="hero-title">{IntroRaw.headline}</h2>
 
           <p className="hero-description">{IntroRaw.intro}</p>
 
+          <div className="hero-proof-row" aria-label="Proof points">
+            <a href="#experience-page">Sprouts.ai</a>
+            <span aria-hidden="true">·</span>
+            <a href="#thesis-page">PathLoss ML</a>
+            <span aria-hidden="true">·</span>
+            <a href="#experience-page">MS CIS</a>
+          </div>
+
           <div className="hero-actions">
-            <a className="primary-cta" href="#projects-page">
-              <span>View Projects</span>
+            <a className="primary-cta" href="#experience-page">
+              <span>View Experience</span>
               <span className="material-symbols-outlined" aria-hidden="true">
                 arrow_forward
               </span>
@@ -143,8 +161,8 @@ function HomePage() {
           <div className="portrait-frame">
             <img src={portrait} alt="Ritwik portrait" />
             <div className="portrait-overlay">
-              <span className="eyebrow">Software Engineer</span>
-              <strong>System Architect</strong>
+              <span className="eyebrow">{IntroRaw.role}</span>
+              <strong>Sprouts.ai</strong>
             </div>
           </div>
         </aside>
@@ -287,7 +305,7 @@ function App() {
     <div className="site-shell">
       <header className="topbar">
         <a className="brand-mark" href="#home">
-          ARCHITECT.ENG
+          AI ENGINEER
         </a>
         <nav className="topnav" aria-label="Primary">
           <a href="#home" className={currentPage === "home" ? "active" : ""}>
@@ -299,11 +317,22 @@ function App() {
           <a href="#thesis-page" className={currentPage === "thesis" ? "active" : ""}>
             Thesis
           </a>
+          <a href="#experience-page" className={currentPage === "experience" ? "active" : ""}>
+            Experience
+          </a>
+          <a href="#certification-page" className={currentPage === "certification" ? "active" : ""}>
+            Certification
+          </a>
           <a href="#contact-page" className={currentPage === "contact" ? "active" : ""}>
             Contact
           </a>
         </nav>
-        <a className="resume-button" href={`mailto:${ContactRaw.email}`}>
+        <a
+          className="resume-button"
+          href="https://drive.google.com/file/d/1ZNzP0xzVURThlOplgm1bSEsur5zCmAjN/view?usp=sharing"
+          target="_blank"
+          rel="noreferrer"
+        >
           Resume
         </a>
       </header>
@@ -312,6 +341,10 @@ function App() {
         <Pro />
       ) : currentPage === "thesis" ? (
         <ThesisPage />
+      ) : currentPage === "experience" ? (
+        <ExperiencePage />
+      ) : currentPage === "certification" ? (
+        <CertificationPage />
       ) : currentPage === "contact" ? (
         <ContactPage />
       ) : (
@@ -319,7 +352,7 @@ function App() {
       )}
 
       <footer className="site-footer" id="contact">
-        <div className="footer-copy">© 2026 Digital Architect. Built for high-performance.</div>
+        <div className="footer-copy">© 2026 Ritwik · AI Engineer. Built for production.</div>
         <div className="footer-links">
           <a href={IntroRaw.linkedin} target="_blank" rel="noreferrer">
             LinkedIn

@@ -1,25 +1,53 @@
 import React from "react";
-import Certraw from "./customization/Certification.json";
-import "./styles/main.css";
+import CertRaw from "./customization/Certification.json";
 
-export function Cert() {
-    return (
-        <div className="tes-list">
-            {Certraw.Certifications.map((Certification) => (
-                <div key={Certification.entry1}>
-                    <p>
-                        <a href="https://www.hackerrank.com/certificates/d6cc8996eda7" target="_blank" rel="noreferrer">{Certification.entry1}</a>
-                        <a href="https://www.hackerrank.com/certificates/0aaa58019fb5" target="_blank" rel="noreferrer">{Certification.entry2}</a>
-                        <a href="https://www.hackerrank.com/certificates/cb01d714138b" target="_blank" rel="noreferrer">{Certification.entry3}</a>
-                        <a href="https://drive.google.com/file/d/1xDQA2_KqiG9qkTOc_TSkAwqNdbnxfw3c/view?usp=sharing" target="_blank" rel="noreferrer">{Certification.entry4}</a>
-                        <a href="https://drive.google.com/file/d/1EQfJNSdV5l8oy_c4D7mTaoMJUTFBxIBN/view" target="_blank" rel="noreferrer">{Certification.entry5}</a>
-                        <a href="https://drive.google.com/file/d/12GyUSoWjIYm7wmaXNtxkd0vm2sLPK0a0/view" target="_blank" rel="noreferrer">{Certification.entry6}</a>
-                        <a href="https://drive.google.com/file/d/1Y_AxUA4C6wo4NPjEmZitF80NeB4tu3st/view?usp=sharing" target="_blank" rel="noreferrer">{Certification.entry7}</a>
-                    </p>
-                </div>
-            ))}
-        </div>
-    );
+function CertificationPage() {
+  const credentials = CertRaw.credentials || [];
+
+  return (
+    <main className="certification-page">
+      <header className="project-page-header">
+        <h1>
+          Credentials<span>.</span>
+        </h1>
+        <p>
+          A verified record of technical proficiency and a commitment to continuous architectural
+          evolution.
+        </p>
+      </header>
+
+      <section className="credential-grid" aria-label="Certifications">
+        {credentials.map((credential) => (
+          <a
+            key={`${credential.issuer}-${credential.title}`}
+            className={
+              credential.featured ? "credential-card credential-card-featured" : "credential-card"
+            }
+            href={credential.href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="credential-card-top">
+              <span className="credential-issuer">{credential.issuer}</span>
+              <span className="material-symbols-outlined" aria-hidden="true">
+                open_in_new
+              </span>
+            </div>
+
+            <div className="credential-card-body">
+              <div className="credential-title-row">
+                <span className="material-symbols-outlined filled" aria-hidden="true">
+                  verified
+                </span>
+                <h3>{credential.title}</h3>
+              </div>
+              {credential.detail ? <p>{credential.detail}</p> : null}
+            </div>
+          </a>
+        ))}
+      </section>
+    </main>
+  );
 }
 
-export default Cert;
+export default CertificationPage;

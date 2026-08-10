@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCHITECT.OS | Kinetic Blueprint Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#33005b",
+                        "on-tertiary": "#004a5d",
+                        "tertiary-fixed": "#00cffc",
+                        "on-primary-container": "#0a0081",
+                        "surface-bright": "#1f2b49",
+                        "primary": "#a3a6ff",
+                        "background": "#060e20",
+                        "surface-container": "#0f1930",
+                        "tertiary-dim": "#00c0ea",
+                        "tertiary": "#69daff",
+                        "on-tertiary-container": "#004050",
+                        "inverse-surface": "#faf8ff",
+                        "surface-dim": "#060e20",
+                        "on-surface": "#dee5ff",
+                        "on-primary": "#0f00a4",
+                        "secondary": "#c180ff",
+                        "error-dim": "#d73357",
+                        "error-container": "#a70138",
+                        "on-error-container": "#ffb2b9",
+                        "surface-tint": "#a3a6ff",
+                        "surface-variant": "#192540",
+                        "surface": "#060e20",
+                        "on-surface-variant": "#a3aac4",
+                        "primary-dim": "#6063ee",
+                        "on-tertiary-fixed": "#002a35",
+                        "on-secondary-container": "#e9cdff",
+                        "on-secondary-fixed-variant": "#7511c3",
+                        "primary-container": "#9396ff",
+                        "surface-container-highest": "#192540",
+                        "tertiary-container": "#00cffc",
+                        "outline-variant": "#40485d",
+                        "on-error": "#490013",
+                        "primary-fixed-dim": "#8387ff",
+                        "on-background": "#dee5ff",
+                        "on-primary-fixed": "#000000",
+                        "primary-fixed": "#9396ff",
+                        "error": "#ff6e84",
+                        "outline": "#6d758c",
+                        "tertiary-fixed-dim": "#00c0ea",
+                        "inverse-primary": "#494bd7",
+                        "surface-container-high": "#141f38",
+                        "on-primary-fixed-variant": "#0e009d",
+                        "on-secondary-fixed": "#4f0089",
+                        "secondary-fixed": "#e5c6ff",
+                        "secondary-dim": "#9c48ea",
+                        "secondary-container": "#6f00be",
+                        "surface-container-low": "#091328",
+                        "surface-container-lowest": "#000000",
+                        "inverse-on-surface": "#4d556b",
+                        "secondary-fixed-dim": "#dbb4ff",
+                        "on-tertiary-fixed-variant": "#004a5c"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #060e20;
+            color: #dee5ff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(25, 37, 64, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #a3a6ff 0%, #6063ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-soft {
+            box-shadow: 0 0 40px -10px rgba(163, 166, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl rounded-2xl border border-slate-700/50 bg-slate-900/70 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] z-50 flex justify-between items-center px-8 py-3">
+<div class="text-xl font-bold tracking-tighter text-indigo-400 font-headline uppercase">ARCHITECT.OS</div>
+<div class="hidden md:flex items-center gap-8 font-space-grotesk tracking-tight text-sm font-medium">
+<a class="text-indigo-400 font-bold border-b-2 border-indigo-500 pb-1" href="#projects">Projects</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#experience">Experience</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#skills">Skills</a>
+<a class="text-slate-400 hover:text-slate-100 transition-colors" href="#contact">Contact</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-indigo-400 hover:bg-slate-800/50 p-2 rounded-lg transition-all duration-300">terminal</button>
+<button class="bg-gradient-to-br from-primary to-primary-dim text-on-primary-fixed px-5 py-2 rounded-md font-medium text-sm scale-95 active:scale-90 transition-transform">Resume</button>
+</div>
+</nav>
+<main>
+<!-- Hero Section: The Kinetic Blueprint -->
+<section class="relative min-h-screen flex flex-col justify-center px-6 md:px-12 pt-24 overflow-hidden">
+<div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-secondary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+<div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+<div class="lg:col-span-7">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/20 mb-8">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-xs font-mono text-tertiary uppercase tracking-widest">System Status: Operational</span>
+</div>
+<h1 class="font-headline text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter mb-8">
+                        ENGINEERING <br/>
+<span class="text-gradient-primary">DIGITAL ENTITIES</span>
+</h1>
+<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mb-10 leading-relaxed">
+                        A Senior Full-Stack Architect specializing in high-performance React ecosystems and cloud-native infrastructure. Building the next generation of modular web experiences.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-gradient-to-br from-primary to-primary-dim text-on-primary-fixed px-8 py-4 rounded-md font-bold tracking-tight shadow-xl hover:shadow-primary/20 transition-all flex items-center gap-2">
+                            Initialize Project <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-md font-bold border border-outline-variant/30 hover:bg-surface-bright transition-all">
+                            View Source
+                        </button>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<div class="bg-surface-container-low p-1 rounded-xl border border-outline-variant/10 shadow-2xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 font-mono text-[10px] text-tertiary/40 uppercase tracking-tighter">Instance: 0x4F2A</div>
+<img alt="Code display" class="w-full aspect-[4/5] object-cover rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-700" data-alt="Modern dark code editor showing complex React component structure with vibrant syntax highlighting and atmospheric neon reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt_cnq92Rt6_jAasspaLTyIXbP00RHnpWv6o00cIVpMUD0rjBZeOd-BTO6z2M88_lkhR963Lz4VZXZE9QTL8zisuG5cSHNylG9OwJMJPalmjD17SFDDAxKlV989iHQNphUkU_B-eGcgrKiPllFJ9X_z7JfamEi8Tg29Zt3o0rGnqxcUj0ejHb5nVIL9Hk9DVYBsSvT3uoe0VhYMX3mkwhM48VT5bAVDk4sL__ZcB4iWYmQ8Pg83jO6s0la-Qwg12ic25nUAOm9XZ1r"/>
+<div class="absolute bottom-6 left-6 right-6 p-6 glass-panel rounded-lg border border-white/5 glow-soft">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">developer_mode_tv</span>
+</div>
+<div>
+<div class="text-xs font-mono text-primary uppercase">Core Module</div>
+<div class="font-headline font-bold text-on-surface">Architectural.OS</div>
+</div>
+</div>
+<div class="h-[2px] w-full bg-outline-variant/20 mb-4">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono text-on-surface-variant">
+<span>RELIABILITY: 99.9%</span>
+<span>LATENCY: 14MS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Projects Bento Grid -->
+<section class="py-24 px-6 md:px-12 bg-surface" id="projects">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16">
+<span class="text-sm font-mono text-secondary uppercase tracking-[0.3em] mb-4 block">Deployed Systems</span>
+<h2 class="font-headline text-4xl md:text-5xl font-bold tracking-tight">Project Gallery</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Featured Project -->
+<div class="md:col-span-8 group relative bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5">
+<img alt="Data visualization dashboard" class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Sleek dark mode analytics dashboard with 3D glowing charts, neon data lines, and glassmorphic UI elements" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4HUyDHNXZBFqGl_p-CbYuJ7JQnTNvP5h66jooVumeOwSugVod12I_bKS3NKlTkfbxks2Qssss5WHzjCAcFIpQKLgU7bOrtPFMeYPv7FNpXzzFJ-tEXPwKRlVqdkm7hepznRhbWzwrAtzW6fVz8qAjEMMlPbb3t5i1qS1C-63G7VhZXAsW2uZASNhjwWoFkEt90sxaupMVluMGN-_O9FQpHv989FiSxtsnzCJprL3i3xE8Q0KeE_TeFmuJ0XZIrLLUwkz_yPp_xYYd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent flex flex-col justify-end p-8">
+<div class="flex gap-2 mb-4">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded text-[10px] font-mono border border-primary/30">NEXT.JS</span>
+<span class="bg-secondary/20 text-secondary px-3 py-1 rounded text-[10px] font-mono border border-secondary/30">WEBGL</span>
+</div>
+<h3 class="font-headline text-3xl font-bold mb-2">NEURAL.DASH</h3>
+<p class="text-on-surface-variant max-w-md mb-6">A real-time data orchestration platform featuring custom WebGL visualizations and predictive analytics modeling.</p>
+<button class="w-fit text-tertiary flex items-center gap-2 hover:underline font-bold tracking-tight">
+                                Launch Prototype <span class="material-symbols-outlined">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Side Card 1 -->
+<div class="md:col-span-4 bg-surface-container rounded-xl p-8 flex flex-col border border-outline-variant/10">
+<div class="w-12 h-12 rounded bg-tertiary-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3">SyncEngine.Core</h3>
+<p class="text-sm text-on-surface-variant mb-auto leading-relaxed">High-performance state management library for distributed React applications with zero-latency synchronization.</p>
+<div class="mt-8 pt-6 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-mono text-xs text-on-surface-variant">v4.2.0-STABLE</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface">youtube_activity</span>
+</div>
+</div>
+<!-- Side Card 2 -->
+<div class="md:col-span-4 bg-surface-container rounded-xl p-8 flex flex-col border border-outline-variant/10">
+<div class="w-12 h-12 rounded bg-secondary-container flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-3">Vault.Auth</h3>
+<p class="text-sm text-on-surface-variant mb-auto leading-relaxed">A custom identity provider built on top of WebAuthn for passwordless biometric authentication flows.</p>
+<div class="mt-8 pt-6 border-t border-outline-variant/10">
+<button class="text-xs font-bold uppercase tracking-widest text-secondary hover:text-white transition-colors">Documentation</button>
+</div>
+</div>
+<!-- Small Card 3 -->
+<div class="md:col-span-8 relative bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/5 h-[300px]">
+<img alt="Industrial hardware" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-1000" data-alt="Close up of futuristic blue circuit board components with precise lighting and technical aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-jPPs9OTYkXLjwv87F14iweFSM5OvmK1aapV7O1QTyqfbRKdkgWzzvtZ1MFmKfSQtvZe5K0QPoH8q2dOiB0q3AYE0VRpbeplv7GOAzzkeDF7mn5lyX6ZxXtHC9bsjuJUYvbQqxpgCrWFmyQzjCENpKrX0PCzGG-CdgkkOsJXl2IJow-Rr3bbKzahFFCzlQ9iResJardfrN8rHO_oABR0_3Kv0P5C2R8gCAtFtTpxcHHyfYgYBeeosv-t2P3jYqTxwrZK2lsbqy--p"/>
+<div class="relative h-full p-8 flex flex-col justify-end bg-gradient-to-r from-background via-background/60 to-transparent">
+<h3 class="font-headline text-2xl font-bold mb-2">Hard-Link.IO</h3>
+<p class="text-on-surface-variant max-w-sm text-sm">IoT management interface for industrial sensor arrays with real-time telemetry streaming.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Experience Timeline Section -->
+<section class="py-24 px-6 md:px-12 bg-surface-container-low" id="experience">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
+<div class="lg:col-span-4">
+<h2 class="font-headline text-4xl md:text-5xl font-bold tracking-tight mb-6">Professional <br/>Execution</h2>
+<p class="text-on-surface-variant leading-relaxed">A history of scaling engineering teams and building production-grade digital architecture for global leaders.</p>
+<div class="mt-12 p-6 rounded-lg bg-surface-container-highest border border-outline-variant/10">
+<div class="text-4xl font-headline font-bold text-primary mb-1">10+</div>
+<div class="text-xs font-mono uppercase tracking-widest text-on-surface-variant">Years of Architecture</div>
+</div>
+</div>
+<div class="lg:col-span-8 space-y-12">
+<!-- Exp Item -->
+<div class="group relative pl-12 border-l border-outline-variant/30">
+<div class="absolute left-[-5px] top-0 w-[10px] h-[10px] rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+<h3 class="font-headline text-2xl font-bold text-on-surface group-hover:text-primary transition-colors">Lead Solutions Architect</h3>
+<span class="font-mono text-xs text-tertiary px-3 py-1 rounded-full bg-tertiary/10 border border-tertiary/20">2021 — PRESENT</span>
+</div>
+<div class="font-mono text-sm text-secondary mb-4 uppercase tracking-tighter">HyperScale Systems, Inc.</div>
+<p class="text-on-surface-variant leading-relaxed mb-6">Orchestrated the migration of legacy monoliths to a distributed micro-frontend architecture using Module Federation, resulting in a 40% improvement in deployment velocity.</p>
+<div class="flex flex-wrap gap-2">
+<span class="text-[10px] font-mono text-outline border border-outline/20 px-2 py-1">KUBERNETES</span>
+<span class="text-[10px] font-mono text-outline border border-outline/20 px-2 py-1">REACT 18</span>
+<span class="text-[10px] font-mono text-outline border border-outline/20 px-2 py-1">TERRAFORM</span>
+</div>
+</div>
+<!-- Exp Item -->
+<div class="group relative pl-12 border-l border-outline-variant/30">
+<div class="absolute left-[-5px] top-0 w-[10px] h-[10px] rounded-full bg-outline group-hover:bg-secondary transition-all"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+<h3 class="font-headline text-2xl font-bold text-on-surface group-hover:text-secondary transition-colors">Senior Product Engineer</h3>
+<span class="font-mono text-xs text-on-surface-variant px-3 py-1 rounded-full bg-surface-variant border border-outline-variant/20">2018 — 2021</span>
+</div>
+<div class="font-mono text-sm text-secondary mb-4 uppercase tracking-tighter">Vortex Digital Lab</div>
+<p class="text-on-surface-variant leading-relaxed">Built and maintained a library of core UI components used by 200+ developers. Focused on accessibility (A11y) and ultra-smooth framerate animations.</p>
+</div>
+<!-- Exp Item -->
+<div class="group relative pl-12 border-l border-outline-variant/30">
+<div class="absolute left-[-5px] top-0 w-[10px] h-[10px] rounded-full bg-outline"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+<h3 class="font-headline text-2xl font-bold text-on-surface">Full Stack Developer</h3>
+<span class="font-mono text-xs text-on-surface-variant px-3 py-1 rounded-full bg-surface-variant border border-outline-variant/20">2014 — 2018</span>
+</div>
+<div class="font-mono text-sm text-secondary mb-4 uppercase tracking-tighter">Proto.Typed Web Agency</div>
+<p class="text-on-surface-variant leading-relaxed">Developed custom CMS solutions and high-traffic e-commerce platforms using Node.js and specialized Vue.js frontends.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Skills Section: The Tech Stack Matrix -->
+<section class="py-24 px-6 md:px-12 bg-background relative" id="skills">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none overflow-hidden font-mono text-[180px] leading-none select-none font-bold">
+                COMPONENTS CODE BASE BUILD DEPLOY REPEAT
+            </div>
+<div class="max-w-7xl mx-auto relative z-10">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl md:text-5xl font-bold tracking-tight mb-4 uppercase">The Tech Matrix</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Weaponizing the modern web stack to create uncompromised user experiences.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">⚛️</div>
+<div class="font-headline font-bold text-on-surface text-sm">React 19</div>
+<div class="text-[10px] font-mono text-primary mt-2">EXPERT</div>
+</div>
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🔷</div>
+<div class="font-headline font-bold text-on-surface text-sm">TypeScript</div>
+<div class="text-[10px] font-mono text-primary mt-2">ADVANCED</div>
+</div>
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🟢</div>
+<div class="font-headline font-bold text-on-surface text-sm">Node.js</div>
+<div class="text-[10px] font-mono text-primary mt-2">ARCHITECTURE</div>
+</div>
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🌥️</div>
+<div class="font-headline font-bold text-on-surface text-sm">AWS/Cloud</div>
+<div class="text-[10px] font-mono text-primary mt-2">CERTIFIED</div>
+</div>
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🐍</div>
+<div class="font-headline font-bold text-on-surface text-sm">Python</div>
+<div class="text-[10px] font-mono text-primary mt-2">SCRIPTS/AI</div>
+</div>
+<!-- Skill Badge -->
+<div class="bg-surface-container p-6 rounded-xl border border-outline-variant/10 text-center hover:bg-surface-bright transition-all group">
+<div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🏗️</div>
+<div class="font-headline font-bold text-on-surface text-sm">GraphQL</div>
+<div class="text-[10px] font-mono text-primary mt-2">FEDERATION</div>
+</div>
+</div>
+<!-- Technical Snippet Section -->
+<div class="mt-20 p-8 md:p-12 rounded-2xl bg-surface-container-low border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-secondary-container/20 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div>
+<h3 class="font-headline text-3xl font-bold mb-6 italic tracking-tight">"Clean code is not about perfection, it's about intentional scalability."</h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+<img alt="Profile Portrait" class="w-full h-full object-cover" data-alt="Professional portrait of a male developer in a dark studio setting with soft cyan lighting highlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQCDv0ObjEhJfBgkSX1k1eIxUVonkUg2FFzfvMThdE7wd7kyjSTa4N8TYVcrsgNkwjaLTEAxsRZmr2h-6E1x8Z2nXzsCnnRAv_duGkqWiLJfCtXpmoyjGWV3kQZ2M4VBDzxYZdXRhETGzhlNueMcE5AwzHc4U4BZjq2SwKY3rCPlHpNmFwLGeDf5uzl1pfPUKPmSgYlIpJuxu1yeuYcYeLprd4QAHVHnjDOO8Tkvrr--a5jSk331TyypIgXTof7amNvtVk2a_PxguW"/>
+</div>
+<div>
+<div class="font-bold">Alex Thorne</div>
+<div class="text-xs text-on-surface-variant font-mono">CHIEF SYSTEMS ARCHITECT</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/20 font-mono text-xs leading-relaxed overflow-x-auto">
+<div class="flex gap-2 mb-4">
+<div class="w-3 h-3 rounded-full bg-error/50"></div>
+<div class="w-3 h-3 rounded-full bg-secondary/50"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary/50"></div>
+</div>
+<pre class="text-on-surface-variant"><span class="text-secondary">const</span> <span class="text-primary">deploy</span> = <span class="text-tertiary">async</span> (entity) =&gt; {
+  <span class="text-secondary">try</span> {
+    <span class="text-secondary">const</span> artifact = <span class="text-secondary">await</span> Architect.compile(entity);
+    <span class="text-secondary">return await</span> Cloud.push(artifact, {
+      strategy: <span class="text-tertiary">'BLUE_GREEN'</span>,
+      vitals: <span class="text-tertiary">true</span>
+    });
+  } <span class="text-secondary">catch</span> (err) {
+    Terminal.log(<span class="text-error">'INITIALIZATION_FAILED'</span>, err);
+  }
+};</pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-32 px-6 md:px-12 bg-surface text-center" id="contact">
+<div class="max-w-4xl mx-auto">
+<h2 class="font-headline text-5xl md:text-7xl font-bold mb-8 tracking-tighter">READY TO <span class="text-gradient-primary">OPTIMIZE?</span></h2>
+<p class="text-on-surface-variant text-lg mb-12 max-w-2xl mx-auto">Currently accepting partnerships for high-impact architecture projects and core-system engineering.</p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<a class="bg-primary text-on-primary-fixed px-10 py-5 rounded-md font-bold text-lg hover:bg-primary-dim transition-all shadow-lg shadow-primary/10" href="mailto:hello@architect.os">init_comms@architect.os</a>
+<div class="flex gap-4">
+<button class="w-14 h-14 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-bright transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">hub</span>
+</button>
+<button class="w-14 h-14 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-bright transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">alternate_email</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-950 w-full py-12 px-8 border-t border-slate-900">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="font-inter text-xs uppercase tracking-widest text-slate-500">
+                © 2024 Kinetic Blueprint. Built with React Bits.
+            </div>
+<div class="flex gap-8 font-inter text-xs uppercase tracking-widest">
+<a class="text-slate-500 hover:text-indigo-300 transition-colors opacity-80 hover:opacity-100" href="#">Github</a>
+<a class="text-slate-500 hover:text-indigo-300 transition-colors opacity-80 hover:opacity-100" href="#">LinkedIn</a>
+<a class="text-slate-500 hover:text-indigo-300 transition-colors opacity-80 hover:opacity-100" href="#">Twitter</a>
+<a class="text-slate-500 hover:text-indigo-300 transition-colors opacity-80 hover:opacity-100" href="#">Source</a>
+</div>
+</div>
+</footer>
+</body></html>
