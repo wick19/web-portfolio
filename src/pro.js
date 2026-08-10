@@ -4,6 +4,7 @@ import chartImage from "./img/bhp.png";
 import skylineImage from "./img/background.jpg";
 
 const iconByName = {
+  "Production AI Contact Enrichment Platform": "hub",
   "AI-Powered Contact Enrichment Platform": "hub",
   "UAV Air-to-Air Path Loss Prediction": "settings_input_antenna",
   "Boston Home Prices through MLP": "home_work",

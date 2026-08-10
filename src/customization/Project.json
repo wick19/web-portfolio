@@ -2,14 +2,14 @@
   "projects": [
     {
       "project_img": "",
-      "project_name": "AI-Powered Contact Enrichment Platform",
-      "project_about": "Production AI-powered contact enrichment platform with intelligent provider orchestration, workflow automation, distributed processing, authentication, caching, and scalable REST APIs.",
+      "project_name": "Production AI Contact Enrichment Platform",
+      "project_about": "Production AI-powered contact enrichment platform at Sprouts.ai supporting intelligent provider orchestration, workflow automation, distributed processing, authentication, caching, and scalable REST APIs.",
       "project_tool": "Python, FastAPI, PostgreSQL, Redis, Docker, Kubernetes",
       "project_link": "",
       "featured": true,
       "badge": "Proprietary · Sprouts.ai",
       "challenge": "Coordinate multiple external enrichment providers with async workflows, retries, rate limits, and cost-aware orchestration without sacrificing reliability.",
-      "outcome": "Shipped two production FastAPI microservices with SQLAlchemy, Redis caching, OAuth2/JWT, Alembic, and cloud-native CI/CD for enterprise GTM intelligence surfaces."
+      "outcome": "Shipped production FastAPI microservices with SQLAlchemy, Redis caching, OAuth2/JWT, Alembic, and cloud-native CI/CD—improving reliability, maintainability, and infrastructure efficiency."
     },
     {
       "project_img": "",
@@ -20,7 +20,18 @@
       "featured": false,
       "badge": "Public · Research",
       "challenge": "Improve wireless path-loss prediction accuracy for UAV A2A links beyond classical empirical models alone.",
-      "outcome": "Comparative ML evaluation with feature engineering, visualization, and hybrid modeling aligned to published research."
+      "outcome": "Feature engineering, visualization, model evaluation, and comparative analysis to improve wireless communication prediction accuracy."
+    },
+    {
+      "project_img": "",
+      "project_name": "Distributed Hotel Management Platform",
+      "project_about": "Scalable distributed database platform for hotel management using Django, PostgreSQL, and Azure SQL supporting secure multi-user operations and efficient data management.",
+      "project_tool": "Python, Django, PostgreSQL, Azure SQL",
+      "project_link": "",
+      "featured": false,
+      "badge": "Academic / coursework",
+      "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
+      "outcome": "Optimized relational performance, backend APIs, and modular architecture for scalability and maintainability."
     },
     {
       "project_img": "./img/bhp.png",
@@ -29,20 +40,9 @@
       "project_tool": "PyTorch, Scikit-learn, Pandas, NumPy",
       "project_link": "https://github.com/wick19/BostonHousePricesRegression",
       "featured": false,
-      "badge": "ML fundamentals",
+      "badge": "ML fundamentals · GitHub",
       "challenge": "Model non-linear relationships between fragmented urban indicators and housing prices.",
       "outcome": "Trained a 13→64→32→1 MLP with Adam/MSE; notebook documents loss convergence and R² ≈ 0.81 on held-out data."
-    },
-    {
-      "project_img": "",
-      "project_name": "Distributed Hotel Management Platform",
-      "project_about": "Scalable distributed database platform for hotel management using Django, PostgreSQL, and Azure SQL for secure multi-user operations. Academic / coursework system design project.",
-      "project_tool": "Python, Django, PostgreSQL, Azure SQL",
-      "project_link": "",
-      "featured": false,
-      "badge": "Academic / coursework",
-      "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
-      "outcome": "Modular Django architecture with optimized schemas/APIs for maintainability and scalability."
     }
   ]
 }
