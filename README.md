@@ -1,6 +1,6 @@
 # Ritwik — Portfolio
 
-AI Engineer / Python-first full-stack portfolio (FastAPI, LLMs, cloud-native backends).
+AI Engineer / Python full-stack portfolio (FastAPI, LLMs, cloud-native backends).
 
 ## Live site
 
