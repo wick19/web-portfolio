@@ -6,7 +6,7 @@
       "position": "AI Engineer",
       "position_time": "Sep 2025 – Present",
       "location": "Bengaluru, India",
-      "discription": "Owned design and development of two production FastAPI microservices for AI-driven contact enrichment, provider orchestration, and enterprise workflow automation. Built end-to-end features across Python, React, and TypeScript with PostgreSQL, Redis, OAuth2/JWT, Docker, Kubernetes, and GitHub Actions—combining LLM reasoning with deterministic backend services, caching, and async pipelines to improve reliability and cut unnecessary provider cost.",
+      "discription": "Owned design and development of two production FastAPI microservices for AI-driven contact enrichment, provider orchestration, and enterprise workflow automation. Built end-to-end features across Python, React, and TypeScript—enterprise dashboards, relationship intelligence, and organization insights—on PostgreSQL, Redis, OAuth2/JWT, Docker, Kubernetes, Helm, and GitHub Actions. Combined LLM reasoning with deterministic services, async pipelines, Redis rate limiting, and retries to improve reliability and cut unnecessary provider cost.",
       "metrics": [
         { "value": "2", "label": "prod FastAPI services" },
         { "value": "LLM+API", "label": "hybrid AI workflows" },
@@ -21,6 +21,7 @@
         "TypeScript",
         "Docker",
         "Kubernetes",
+        "Helm",
         "LLMs"
       ]
     },

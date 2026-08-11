@@ -9,18 +9,7 @@
       "featured": true,
       "badge": "Proprietary · Sprouts.ai",
       "challenge": "Coordinate multiple external enrichment providers with async workflows, retries, rate limits, and cost-aware orchestration without sacrificing reliability.",
-      "outcome": "Shipped production FastAPI microservices with SQLAlchemy, Redis caching, OAuth2/JWT, Alembic, and cloud-native CI/CD—improving reliability, maintainability, and infrastructure efficiency."
-    },
-    {
-      "project_img": "",
-      "project_name": "UAV Air-to-Air Path Loss Prediction",
-      "project_about": "Machine learning models for UAV air-to-air path loss prediction using terrain, clutter height, and communication parameters with Random Forest, ANN, KNN, and Naive Bayes. Public research code + paper.",
-      "project_tool": "Python, Scikit-Learn, TensorFlow",
-      "project_link": "https://github.com/wick19/PathLossML_Prediction",
-      "featured": false,
-      "badge": "Public · Research",
-      "challenge": "Improve wireless path-loss prediction accuracy for UAV A2A links beyond classical empirical models alone.",
-      "outcome": "Feature engineering, visualization, model evaluation, and comparative analysis to improve wireless communication prediction accuracy."
+      "outcome": "Shipped production FastAPI microservices with SQLAlchemy, Redis caching, OAuth2/JWT, Alembic, GitHub Actions, and cloud-native CI/CD—improving reliability, maintainability, and infrastructure efficiency."
     },
     {
       "project_img": "",
@@ -32,6 +21,17 @@
       "badge": "Academic / coursework",
       "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
       "outcome": "Optimized relational performance, backend APIs, and modular architecture for scalability and maintainability."
+    },
+    {
+      "project_img": "",
+      "project_name": "UAV Path Loss Prediction using Machine Learning",
+      "project_about": "Random Forest, ANN, KNN, and Naive Bayes models for UAV air-to-air path loss prediction using terrain, elevation, clutter height, and communication parameters. Public research code + paper.",
+      "project_tool": "Python, Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch",
+      "project_link": "https://github.com/wick19/PathLossML_Prediction",
+      "featured": false,
+      "badge": "Public · Research",
+      "challenge": "Improve wireless path-loss prediction accuracy for UAV A2A links beyond classical empirical models alone.",
+      "outcome": "Feature engineering, visualization, and comparative model evaluation across propagation scenarios to improve wireless communication prediction accuracy."
     },
     {
       "project_img": "./img/bhp.png",
