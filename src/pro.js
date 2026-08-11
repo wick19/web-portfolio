@@ -7,6 +7,7 @@ const iconByName = {
   "Production AI Contact Enrichment Platform": "hub",
   "AI-Powered Contact Enrichment Platform": "hub",
   "UAV Air-to-Air Path Loss Prediction": "settings_input_antenna",
+  "UAV Path Loss Prediction using Machine Learning": "settings_input_antenna",
   "Boston Home Prices through MLP": "home_work",
   "Distributed Hotel Management Platform": "apartment",
 };
@@ -33,8 +34,8 @@ function Pro() {
           Selected <span>Works.</span>
         </h1>
         <p>
-          Production AI at Sprouts.ai, public PathLoss research, then verified ML fundamentals—honest
-          labeling for proprietary and academic work.
+          Resume order: Sprouts enrichment → hotel platform → UAV PathLoss research, plus verified ML
+          fundamentals—honest labeling for proprietary and academic work.
         </p>
       </header>
 

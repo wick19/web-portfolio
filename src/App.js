@@ -14,8 +14,8 @@ const techHighlights = [
     icon: "psychology",
     title: "AI Systems",
     description:
-      "LLM-powered workflows, provider orchestration, RAG patterns, and production AI services with cost-aware caching.",
-    tags: ["LLMs", "LangChain", "FastAPI"],
+      "LLMs, agentic workflows, LangChain/LangGraph, RAG, prompt engineering, and cost-aware provider orchestration in production.",
+    tags: ["LLMs", "LangGraph", "RAG"],
     featured: true,
     filled: true,
   },
@@ -23,19 +23,19 @@ const techHighlights = [
     icon: "terminal",
     title: "Backend Architecture",
     description:
-      "Production FastAPI/Django/Flask microservices with OAuth2, JWT, SQLAlchemy, and resilient REST APIs.",
+      "Production FastAPI/Django/Flask microservices with OAuth2, JWT, SQLAlchemy, Alembic, Celery, and resilient REST APIs.",
   },
   {
     icon: "database",
     title: "Data Systems",
     description:
-      "PostgreSQL, Redis, and Azure SQL—schema design, query optimization, and caching for scale.",
+      "PostgreSQL, Redis, Elasticsearch, and Azure SQL—schema design, query optimization, and caching for scale.",
   },
   {
     icon: "cloud_done",
     title: "Cloud Native",
     description:
-      "Docker, Kubernetes, Helm, and GitHub Actions for reliable CI/CD and production releases.",
+      "Docker, Kubernetes, Helm, AWS, Terraform, and GitHub Actions for reliable CI/CD and production releases.",
   },
 ];
 

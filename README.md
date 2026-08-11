@@ -8,7 +8,7 @@ AI Engineer / Python-first full-stack portfolio (FastAPI, LLMs, cloud-native bac
 
 ## Resume
 
-[View resume (PDF)](https://drive.google.com/file/d/1wCi9uvgms4Ypjfy7rh0oySJ7nsaKb4xY/view?usp=sharing)
+[View resume (PDF)](https://drive.google.com/file/d/1Zi2NyiEVGfKP0HmY24K6QCJUNFrpHy7U/view?usp=sharing)
 
 ## Stack
 
