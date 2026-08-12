@@ -244,6 +244,14 @@ img {
   color: var(--accent);
 }
 
+.hero-name-blur {
+  margin: 0;
+}
+
+.hero-name-blur span {
+  color: inherit;
+}
+
 .hero-title {
   max-width: 620px;
   margin-top: 28px;
@@ -432,6 +440,59 @@ img {
   box-shadow: var(--shadow);
 }
 
+.portrait-tilt-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5.2;
+  border: 1px solid rgba(141, 164, 207, 0.14);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.16));
+  box-shadow: var(--shadow);
+}
+
+.portrait-tilt-wrap .tilted-card-figure {
+  width: 100%;
+  height: 100%;
+}
+
+.portrait-tilt-wrap .tilted-card-inner {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.portrait-tilt-wrap .tilted-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  border-radius: 28px;
+  filter: grayscale(1) contrast(1.05);
+}
+
+.portrait-tilt-wrap .tilted-card-overlay {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.portrait-tilt-wrap .tilted-card-caption {
+  background: rgba(5, 12, 27, 0.92);
+  color: #d9f7ff;
+  border: 1px solid rgba(40, 228, 255, 0.28);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.portrait-tilt-wrap .portrait-overlay {
+  width: 100%;
+  height: 100%;
+  justify-content: flex-end;
+}
+
 .portrait-frame img {
   width: 100%;
   aspect-ratio: 4 / 5.2;
@@ -497,6 +558,13 @@ img {
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(22, 33, 58, 0.96), rgba(15, 24, 43, 0.96));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.stack-card.card-spotlight {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(22, 33, 58, 0.96), rgba(15, 24, 43, 0.96));
+  padding: 28px;
 }
 
 .stack-card-featured {

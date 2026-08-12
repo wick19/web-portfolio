@@ -1,0 +1,7 @@
+[
+  "@react-three/fiber",
+  "gsap",
+  "motion",
+  "ogl",
+  "three"
+]
