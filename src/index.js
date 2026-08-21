@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/main.css';
 import './styles/system.css';
-import './styles/fa-all.css';
 import Container from './container';
 import reportWebVitals from './reportWebVitals';
 
