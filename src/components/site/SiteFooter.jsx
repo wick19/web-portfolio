@@ -51,6 +51,13 @@ const ICONS = {
       <circle cx="4" cy="4" r="2" />
     </Icon>
   ),
+  leetcode: (
+    <Icon>
+      <path d="M9 4 4 9l5 5" />
+      <path d="m15 4 5 5-5 5" />
+      <path d="M7.5 14.5 12 19l8-8" />
+    </Icon>
+  ),
   thesis: (
     <Icon>
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -89,6 +96,14 @@ export default function SiteFooter() {
       icon: ICONS.linkedin,
       external: true,
     },
+    IntroRaw.leetcode
+      ? {
+          href: IntroRaw.leetcode,
+          label: "LeetCode",
+          icon: ICONS.leetcode,
+          external: true,
+        }
+      : null,
     thesisLink
       ? {
           href: thesisLink,

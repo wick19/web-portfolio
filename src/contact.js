@@ -1,6 +1,7 @@
 import { useState } from "react";
 import IntroRaw from "./customization/Introduction.json";
 import ContactRaw from "./customization/Contact.json";
+import LeetCodeProof from "./components/home/LeetCodeProof";
 
 export default function ContactPage() {
   const [copied, setCopied] = useState(false);
@@ -121,7 +122,19 @@ export default function ContactPage() {
         >
           LinkedIn
         </a>
+        {IntroRaw.leetcode ? (
+          <a
+            className="btn-secondary"
+            href={IntroRaw.leetcode}
+            target="_blank"
+            rel="noreferrer"
+          >
+            LeetCode
+          </a>
+        ) : null}
       </div>
+
+      <LeetCodeProof />
     </main>
   );
 }

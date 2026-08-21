@@ -22,7 +22,7 @@ Do not invent claims. Text edits only for hierarchy/display.
 - [x] intro summary
 - [x] github `https://github.com/wick19`
 - [x] linkedin
-- [x] resume Drive id `1Zi2NyiEVGfKP0HmY24K6QCJUNFrpHy7U`
+- [x] resume Drive id `1Zg3EcBev7zBV2fthIor6eBJa_4lVp91s`
 
 ## Experience.json — 4 roles
 
