@@ -1,145 +1,162 @@
-import React from "react";
+import { useMemo, useState } from "react";
 import ExpRaw from "./customization/Experience.json";
 import EduRaw from "./customization/Education.json";
+import sproutsLogo from "./img/sprot_logo.jpeg";
 import tekgigzLogo from "./img/tpp.jpeg";
 import onshapeLogo from "./img/ons.jpeg";
 import adidasLogo from "./img/adi.png";
-import sproutsLogo from "./img/sprot_logo.jpeg";
 import usmLogo from "./img/usm.png";
 import srmLogo from "./img/Srmseal.png";
 
-const logoByCompany = {
-  "Sprouts.ai": sproutsLogo,
-  "TekGigz LLC": tekgigzLogo,
-  "PTC Onshape Inc.": onshapeLogo,
-  "Onshape Inc.": onshapeLogo,
-  Adidas: adidasLogo,
+const LOGO_BY_PATH = {
+  "./img/sprot_logo.jpeg": sproutsLogo,
+  "./img/tpp.jpeg": tekgigzLogo,
+  "./img/ons.jpeg": onshapeLogo,
+  "./img/adi.png": adidasLogo,
+  "./img/usm.png": usmLogo,
+  "./img/Srmseal.png": srmLogo,
 };
 
-const eduMeta = [
-  {
-    match: "Southern Mississippi",
-    icon: "school",
-    filled: true,
-    logo: usmLogo,
-  },
-  {
-    match: "SRM",
-    icon: "science",
-    filled: false,
-    logo: srmLogo,
-  },
-];
+function resolveLogo(path) {
+  return LOGO_BY_PATH[path] || null;
+}
 
-function ExperiencePage() {
+export default function ExperiencePage() {
   const roles = ExpRaw.companies || [];
   const schools = EduRaw.schools || [];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = useMemo(() => roles[activeIndex] || roles[0], [roles, activeIndex]);
+  const activeLogo = resolveLogo(active?.logo);
+
+  if (!active) return null;
 
   return (
-    <main className="experience-page">
-      <header className="project-page-header">
-        <h1>
-          Career Trajectory<span>.</span>
-        </h1>
-        <p>
-          Production AI systems, FastAPI microservices, and scalable backends—from Sprouts.ai to
-          fintech full-stack delivery.
+    <main className="depth-page experience-v2">
+      <header className="page-intro">
+        <p className="section-label">// Experience</p>
+        <h1>Career history</h1>
+        <p className="page-intro-lede">
+          Production AI systems, full-stack delivery, and verified impact — scan
+          the timeline, then read the active story.
         </p>
       </header>
 
-      <section className="experience-timeline" aria-label="Work experience">
-        {roles.map((role, index) => {
-          const tags = role.tags || [];
-          const logo = logoByCompany[role.name];
-          const featured = index === 0;
-
-          return (
-            <article
-              key={`${role.name}-${role.position_time}`}
-              className={featured ? "experience-row experience-row-featured" : "experience-row"}
-            >
-              <aside className="experience-meta">
-                <span className={featured ? "timeline-dot timeline-dot-active" : "timeline-dot"} />
-                {logo ? (
-                  <img className="experience-logo" src={logo} alt="" aria-hidden="true" />
-                ) : (
-                  <span className="experience-logo-fallback" aria-hidden="true">
-                    {role.name.slice(0, 1)}
-                  </span>
-                )}
-                <h3>{role.name}</h3>
-                <p>{role.position_time}</p>
-                {role.location ? <span className="experience-location">{role.location}</span> : null}
-              </aside>
-
-              <div className="experience-card">
-                <h4>{role.position}</h4>
-                <p>{role.discription}</p>
-                {role.metrics?.length ? (
-                  <div className="experience-metrics">
-                    {role.metrics.map((metric) => (
-                      <div key={metric.label}>
-                        <strong>{metric.value}</strong>
-                        <span>{metric.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-                {tags.length ? (
-                  <div className="project-badges">
-                    {tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </article>
-          );
-        })}
-      </section>
-
-      <section className="education-section" aria-label="Education">
-        <div className="section-heading">
-          <h3>Academic Foundation</h3>
-          <span />
-        </div>
-
-        <div className="education-strip">
-          {schools.map((school) => {
-            const meta =
-              eduMeta.find((item) => school.name.includes(item.match)) || {
-                icon: "school",
-                filled: false,
-                logo: null,
-              };
-
+      <div className="experience-layout">
+        <div className="experience-rail" role="tablist" aria-label="Roles">
+          {roles.map((role, index) => {
+            const selected = index === activeIndex;
+            const logo = resolveLogo(role.logo);
             return (
-              <article key={school.name} className="education-card">
-                <span
-                  className={
-                    meta.filled
-                      ? "material-symbols-outlined filled education-icon"
-                      : "material-symbols-outlined education-icon"
-                  }
-                  aria-hidden="true"
-                >
-                  {meta.icon}
+              <button
+                key={`${role.name}-${role.position_time}`}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                className={
+                  selected
+                    ? "experience-rail-item is-active"
+                    : "experience-rail-item"
+                }
+                onClick={() => setActiveIndex(index)}
+              >
+                <span className="experience-rail-head">
+                  {logo ? (
+                    <img
+                      className="experience-logo"
+                      src={logo}
+                      alt=""
+                      width={36}
+                      height={36}
+                    />
+                  ) : null}
+                  <span className="experience-rail-copy">
+                    <strong>{role.name}</strong>
+                    <span>{role.position}</span>
+                    <span className="muted">{role.position_time}</span>
+                  </span>
                 </span>
-                {meta.logo ? (
-                  <img className="education-logo" src={meta.logo} alt="" aria-hidden="true" />
-                ) : null}
-                <h3>{school.name}</h3>
-                <p>{school.degree}</p>
-                <span className="education-time">
-                  {school.location} · {school.time}
-                </span>
-              </article>
+              </button>
             );
           })}
         </div>
+
+        <article className="experience-story" role="tabpanel">
+          <div className="experience-meta-row">
+            <div className="experience-meta-main">
+              {activeLogo ? (
+                <img
+                  className="experience-logo experience-logo-lg"
+                  src={activeLogo}
+                  alt=""
+                  width={48}
+                  height={48}
+                />
+              ) : null}
+              <div>
+                <h2>{active.position}</h2>
+                <p>
+                  {active.name}
+                  {active.location ? ` · ${active.location}` : ""}
+                </p>
+              </div>
+            </div>
+            <span className="muted">{active.position_time}</span>
+          </div>
+
+          <p className="experience-narrative">{active.discription}</p>
+
+          {active.metrics?.length ? (
+            <div className="metric-strip" aria-label="Verified metrics">
+              {active.metrics.map((m) => (
+                <div key={`${m.value}-${m.label}`}>
+                  <strong>{m.value}</strong>
+                  <span>{m.label}</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {active.tags?.length ? (
+            <ul className="stack-list">
+              {active.tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          ) : null}
+        </article>
+      </div>
+
+      <section className="academic-foundation" aria-labelledby="edu-heading">
+        <p className="section-label">// Academic foundation</p>
+        <h2 id="edu-heading">Education</h2>
+        <ul>
+          {schools.map((school) => {
+            const logo = resolveLogo(school.logo);
+            return (
+              <li key={school.name} className="academic-row">
+                {logo ? (
+                  <img
+                    className="experience-logo experience-logo-lg"
+                    src={logo}
+                    alt=""
+                    width={48}
+                    height={48}
+                  />
+                ) : null}
+                <div className="academic-copy">
+                  <strong>{school.name}</strong>
+                  <span>
+                    {school.degree} · {school.time}
+                  </span>
+                  {school.location ? (
+                    <span className="muted">{school.location}</span>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </main>
   );
 }
-
-export default ExperiencePage;

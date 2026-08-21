@@ -1,229 +1,127 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import IntroRaw from "./customization/Introduction.json";
 import ContactRaw from "./customization/Contact.json";
 
-const initialFormState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  subject: "New Project Collaboration",
-  message: "",
-};
+export default function ContactPage() {
+  const [copied, setCopied] = useState(false);
 
-const subjects = [
-  "New Project Collaboration",
-  "System Architecture Consultation",
-  "Speaking Engagement",
-  "Other",
-];
-
-const socialDestinations = [
-  {
-    icon: "share",
-    href: IntroRaw.linkedin,
-    label: "LinkedIn",
-  },
-  {
-    icon: "code",
-    href: IntroRaw.github,
-    label: "GitHub",
-  },
-  {
-    icon: "groups",
-    href: `mailto:${ContactRaw.email}`,
-    label: "Email",
-  },
-];
-
-function buildMailtoUrl(formState) {
-  const sender = [formState.firstName, formState.lastName].filter(Boolean).join(" ").trim() || "Portfolio inquiry";
-  const bodyLines = [
-    `Name: ${sender}`,
-    `Professional Email: ${formState.email || "Not provided"}`,
-    "",
-    "Project Brief:",
-    formState.message || "No project brief provided.",
-  ];
-
-  const params = new URLSearchParams({
-    subject: formState.subject,
-    body: bodyLines.join("\n"),
-  });
-
-  return `mailto:${ContactRaw.email}?${params.toString()}`;
-}
-
-function ContactPage() {
-  const [formState, setFormState] = useState(initialFormState);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setFormState((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    window.location.href = buildMailtoUrl(formState);
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(ContactRaw.email);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
   }
 
   return (
-    <main className="contact-page">
-      <header className="contact-hero">
-        <h1>
-          Let&apos;s Build the <span>Next Generation</span>
-        </h1>
-        <p>
-          Whether it&apos;s a high-performance system architecture or a complex web interface, I&apos;m
-          ready to bring technical precision to your vision.
+    <main className="depth-page contact-v2">
+      <header className="page-intro contact-intro">
+        <p className="section-label">// Contact</p>
+        <h1>Let&apos;s talk</h1>
+        <p className="page-intro-lede">
+          Full-stack AI/ML Engineer currently shipping at Sprouts.ai — open to
+          full-time roles.
         </p>
       </header>
 
-      <section className="contact-layout">
-        <div className="contact-column">
-          <article className="contact-info-card">
-            <h2>Contact Information</h2>
-
-            <div className="contact-info-list">
-              <div className="contact-info-item">
-                <div className="contact-icon-box">
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    mail
-                  </span>
-                </div>
-                <div>
-                  <p>Email</p>
-                  <a href={`mailto:${ContactRaw.email}`}>{ContactRaw.email}</a>
-                </div>
-              </div>
-
-              <div className="contact-info-item">
-                <div className="contact-icon-box">
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    call
-                  </span>
-                </div>
-                <div>
-                  <p>Phone</p>
-                  <a href={`tel:${ContactRaw.phone.replace(/\s+/g, "")}`}>{ContactRaw.phone}</a>
-                </div>
-              </div>
-
-              <div className="contact-info-item">
-                <div className="contact-icon-box">
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    location_on
-                  </span>
-                </div>
-                <div>
-                  <p>Location</p>
-                  <span>Remote / Global Availability</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="contact-social-block">
-              <p>Connect Elsewhere</p>
-              <div className="contact-social-links">
-                {socialDestinations.map((item) => (
-                  <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label}>
-                    <span className="material-symbols-outlined" aria-hidden="true">
-                      {item.icon}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </article>
-
-          <aside className="contact-status-card" aria-hidden="true">
-            <div className="contact-status-graphic">
-              <div className="status-grid" />
-              <div className="status-beam beam-one" />
-              <div className="status-beam beam-two" />
-              <div className="status-beam beam-three" />
-            </div>
-            <div className="contact-status-copy">
-              <span>Current Project Status</span>
-              <strong>Open to full-time roles</strong>
-            </div>
-          </aside>
+      <div className="contact-rows">
+        <div className="contact-row">
+          <span className="muted">Email</span>
+          <div className="contact-row-main">
+            <a href={`mailto:${ContactRaw.email}`}>{ContactRaw.email}</a>
+            <button
+              type="button"
+              className="btn-secondary contact-copy-btn"
+              onClick={copyEmail}
+              aria-label={copied ? "Email copied" : "Copy email"}
+              title={copied ? "Copied" : "Copy email"}
+            >
+              {copied ? (
+                <svg
+                  className="contact-copy-icon"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="contact-copy-icon"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="9"
+                    y="9"
+                    width="11"
+                    height="11"
+                    rx="2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 15V7a2 2 0 0 1 2-2h8"
+                  />
+                </svg>
+              )}
+              <span className="sr-only">{copied ? "Copied" : "Copy email"}</span>
+            </button>
+          </div>
         </div>
 
-        <section className="contact-form-shell">
-          <div className="contact-form-card">
-            <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="contact-field-grid">
-                <label className="contact-field">
-                  <span>First Name</span>
-                  <input
-                    name="firstName"
-                    type="text"
-                    placeholder="John"
-                    value={formState.firstName}
-                    onChange={handleChange}
-                  />
-                </label>
+        <div className="contact-row">
+          <span className="muted">Phone</span>
+          <a href={`tel:${ContactRaw.phone.replace(/\s/g, "")}`}>
+            {ContactRaw.phone}
+          </a>
+        </div>
+      </div>
 
-                <label className="contact-field">
-                  <span>Last Name</span>
-                  <input
-                    name="lastName"
-                    type="text"
-                    placeholder="Doe"
-                    value={formState.lastName}
-                    onChange={handleChange}
-                  />
-                </label>
-              </div>
-
-              <label className="contact-field">
-                <span>Professional Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="j.doe@company.com"
-                  value={formState.email}
-                  onChange={handleChange}
-                />
-              </label>
-
-              <label className="contact-field">
-                <span>Subject</span>
-                <select name="subject" value={formState.subject} onChange={handleChange}>
-                  {subjects.map((subject) => (
-                    <option key={subject} value={subject}>
-                      {subject}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="contact-field">
-                <span>Project Brief</span>
-                <textarea
-                  name="message"
-                  rows="6"
-                  placeholder="Describe your vision and technical requirements..."
-                  value={formState.message}
-                  onChange={handleChange}
-                />
-              </label>
-
-              <button className="contact-submit" type="submit">
-                Initialize Contact
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  send
-                </span>
-              </button>
-            </form>
-          </div>
-        </section>
-      </section>
+      <div className="depth-cta-row">
+        <a
+          className="btn-primary"
+          href={IntroRaw.resume}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open Resume
+        </a>
+        <a
+          className="btn-secondary"
+          href={IntroRaw.github}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+        <a
+          className="btn-secondary"
+          href={IntroRaw.linkedin}
+          target="_blank"
+          rel="noreferrer"
+        >
+          LinkedIn
+        </a>
+      </div>
     </main>
   );
 }
-
-export default ContactPage;

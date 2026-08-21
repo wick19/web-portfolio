@@ -1,196 +1,115 @@
-import React from "react";
+import { useMemo, useState } from "react";
 import ProjectRaw from "./customization/Project.json";
-import chartImage from "./img/bhp.png";
-import skylineImage from "./img/background.jpg";
+import EvidenceTag from "./components/site/EvidenceTag";
 
-const iconByName = {
-  "Production AI Contact Enrichment Platform": "hub",
-  "AI-Powered Contact Enrichment Platform": "hub",
-  "UAV Air-to-Air Path Loss Prediction": "settings_input_antenna",
-  "UAV Path Loss Prediction using Machine Learning": "settings_input_antenna",
-  "Boston Home Prices through MLP": "home_work",
-  "Distributed Hotel Management Platform": "apartment",
-};
-
-function Pro() {
-  const projects = ProjectRaw.projects || [];
-  const featuredProject = projects.find((project) => project.featured) || projects[0];
-  const supportingProjects = projects.filter(
-    (project) => project.project_name !== featuredProject?.project_name
-  );
-  const featuredTools = (featuredProject?.project_tool || "")
+function stackList(tools) {
+  return (tools || "")
     .split(",")
-    .map((tool) => tool.trim())
+    .map((t) => t.trim())
     .filter(Boolean);
+}
 
-  if (!featuredProject) {
-    return null;
-  }
+export default function Pro() {
+  const projects = ProjectRaw.projects || [];
+  const [activeName, setActiveName] = useState(
+    projects.find((p) => p.featured)?.project_name || projects[0]?.project_name
+  );
+
+  const active = useMemo(
+    () => projects.find((p) => p.project_name === activeName) || projects[0],
+    [projects, activeName]
+  );
+
+  if (!active) return null;
+
+  const tools = stackList(active.project_tool);
+  const hasLink = Boolean(active.project_link);
 
   return (
-    <main className="project-page">
-      <header className="project-page-header">
-        <h1>
-          Selected <span>Works.</span>
-        </h1>
-        <p>
-          Resume order: Sprouts enrichment → hotel platform → UAV PathLoss research, plus verified ML
-          fundamentals—honest labeling for proprietary and academic work.
+    <main className="depth-page projects-v2">
+      <header className="page-intro">
+        <p className="section-label">// Projects</p>
+        <h1>Selected systems</h1>
+        <p className="page-intro-lede">
+          Production AI, computer vision, mobile, and research systems — with
+          honest provenance for proprietary and public work.
         </p>
       </header>
 
-      <section className="project-story-grid">
-        <article className="project-story-card">
-          <div className="project-story-head">
-            <div>
-              {featuredProject.badge ? (
-                <span className="project-status-badge">{featuredProject.badge}</span>
-              ) : null}
-              <h2>{featuredProject.project_name}</h2>
-              <div className="project-badges">
-                {featuredTools.map((tool) => (
-                  <span key={tool}>{tool}</span>
+      <div className="project-rail-layout">
+        <div
+          className="project-rail"
+          role="tablist"
+          aria-label="Projects"
+        >
+          {projects.map((project) => {
+            const selected = project.project_name === active.project_name;
+            return (
+              <button
+                key={project.project_name}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                className={selected ? "project-rail-item is-active" : "project-rail-item"}
+                onClick={() => setActiveName(project.project_name)}
+              >
+                {project.badge ? (
+                  <span className="project-rail-badge">{project.badge}</span>
+                ) : null}
+                <span className="project-rail-title">{project.project_name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <article
+          className="project-evidence"
+          role="tabpanel"
+          aria-label={active.project_name}
+        >
+          {active.badge ? <EvidenceTag>{active.badge}</EvidenceTag> : null}
+          <h2>{active.project_name}</h2>
+
+          <div className="evidence-block">
+            <h3>Challenge</h3>
+            <p>{active.challenge || active.project_about}</p>
+          </div>
+
+          <div className="evidence-block">
+            <h3>Outcome</h3>
+            <p>{active.outcome || active.project_about}</p>
+          </div>
+
+          {tools.length ? (
+            <div className="evidence-block">
+              <h3>Stack</h3>
+              <ul className="stack-list">
+                {tools.map((tool) => (
+                  <li key={tool}>{tool}</li>
                 ))}
-              </div>
+              </ul>
             </div>
-            {featuredProject.project_link ? (
+          ) : null}
+
+          <div className="project-evidence-actions">
+            {hasLink ? (
               <a
-                className="project-icon-link"
-                href={featuredProject.project_link}
+                className="btn-primary"
+                href={active.project_link}
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Open project repository"
               >
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  code
-                </span>
+                View repository
               </a>
             ) : (
-              <span className="project-icon-link project-icon-link-static" aria-hidden="true">
-                <span className="material-symbols-outlined">lock</span>
-              </span>
+              <span className="status-pill">{active.badge || "Proprietary"}</span>
             )}
-          </div>
-
-          <div className="project-story-body">
-            <p>{featuredProject.project_about}</p>
-
-            <div className="project-insights">
-              <div>
-                <h4>Core Challenge</h4>
-                <p>{featuredProject.challenge}</p>
-              </div>
-              <div>
-                <h4>Outcome</h4>
-                <p>{featuredProject.outcome}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="project-story-footer">
-            {featuredProject.project_link ? (
-              <a href={featuredProject.project_link} target="_blank" rel="noreferrer">
-                View Repository
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  arrow_forward
-                </span>
-              </a>
-            ) : (
-              <a href="#experience-page">
-                See Sprouts.ai experience
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  arrow_forward
-                </span>
-              </a>
-            )}
+            <a className="btn-secondary" href="#experience-page">
+              Related experience
+            </a>
           </div>
         </article>
-
-        <aside className="project-sidebar-card">
-          <div className="project-sidebar-media">
-            <img src={skylineImage} alt="" aria-hidden="true" />
-            <div className="project-sidebar-overlay" />
-            <div className="project-sidebar-copy">
-              <span>Proprietary · Production · FastAPI</span>
-              <p>&ldquo;LLM workflows with deterministic backends for reliable enrichment.&rdquo;</p>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section className="project-bento-grid">
-        {supportingProjects.map((project, index) => {
-          const tools = (project.project_tool || "")
-            .split(",")
-            .map((tool) => tool.trim())
-            .filter(Boolean);
-          const isBoston = project.project_name.includes("Boston");
-          const highlighted = index === 0;
-          const card = (
-            <>
-              <div className="support-card-top">
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  {iconByName[project.project_name] || "terminal"}
-                </span>
-                {project.project_link ? (
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    open_in_new
-                  </span>
-                ) : null}
-              </div>
-              <div className="support-card-body">
-                {project.badge ? <span className="project-status-badge">{project.badge}</span> : null}
-                <h3>{project.project_name}</h3>
-                <p>{project.project_about}</p>
-                {isBoston ? (
-                  <div className="project-chart-card support-chart">
-                    <img src={chartImage} alt="Boston home price model chart" />
-                    <div className="project-chart-meta">
-                      <span>PyTorch MLP</span>
-                      <span>Test R² ≈ 0.81</span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <div className="support-card-tags">
-                {tools.map((tool) => (
-                  <span key={tool}>{tool}</span>
-                ))}
-              </div>
-            </>
-          );
-
-          const className = [
-            "support-card",
-            highlighted ? "support-card-highlighted" : "",
-            project.project_link ? "support-card-link" : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
-
-          if (project.project_link) {
-            return (
-              <a
-                key={project.project_name}
-                className={className}
-                href={project.project_link}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {card}
-              </a>
-            );
-          }
-
-          return (
-            <article key={project.project_name} className={className}>
-              {card}
-            </article>
-          );
-        })}
-      </section>
+      </div>
     </main>
   );
 }
-
-export default Pro;

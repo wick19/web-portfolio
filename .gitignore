@@ -7,3 +7,6 @@ dist
 # MCP configs contain API keys — do not commit
 .vscode/mcp.json
 .cursor/mcp.json
+# Keep the proxy script; do not commit keys via env files
+.cursor/*.env
+.cursor/.env*

@@ -1,190 +1,112 @@
-import React from "react";
 import ThesisRaw from "./customization/Thesis.json";
-import ContactRaw from "./customization/Contact.json";
-import IntroRaw from "./customization/Introduction.json";
+import EvidenceTag from "./components/site/EvidenceTag";
+import thesisViz from "./img/thesis-uav-pathloss.jpg";
 
-const researchTags = ["Wireless Comm", "5G Network", "Machine Learning"];
-
-const thesisPanels = [
-  {
-    icon: "hub",
-    title: "Neural Network Integration",
-    description:
-      "Utilizing deep learning architectures to predict signal attenuation in non-line-of-sight urban canyons, significantly outperforming traditional empirical models.",
-    featured: true,
-  },
-  {
-    icon: "flight_takeoff",
-    title: "UAV Dynamics",
-    description:
-      "Modeling Air-to-Air (A2A) links under varying altitudes and atmospheric conditions to ensure link stability during relay operations.",
-  },
-  {
-    icon: "bar_chart",
-    title: "Data Processing",
-    description:
-      "Processing millions of data points from simulation and field tests to train Random Forest regressors for real-time inference.",
-  },
-  {
-    icon: "architecture",
-    title: "Okumura-Hata Hybridization",
-    description:
-      "Enhancing classical propagation models with site-specific ML offsets to achieve +/- 2dB accuracy in dense urban environments.",
-    wide: true,
-  },
+const FACTS = [
+  { value: "5G / UAV", label: "wireless focus" },
+  { value: "RF + ML", label: "hybrid modeling" },
+  { value: "95–99%", label: "prediction band (paper)" },
 ];
 
-function ThesisPage() {
-  const thesisLink = ThesisRaw.journal[0]?.link;
-  const thesisDescription = ThesisRaw.journal[0]?.description;
-  const thesisParagraphs = thesisDescription
-    ? thesisDescription
-        .split("This approach demonstrates")
-        .map((part, index) => (index === 0 ? part.trim() : `This approach demonstrates${part}`.trim()))
-        .filter(Boolean)
-    : [];
+const DEFAULT_METHODS = [
+  "Environment / features",
+  "Okumura–Hata · Log-distance",
+  "RF · ANN · KNN · NB · LR",
+  "Comparative evaluation",
+];
+
+const DEFAULT_TOOLS = [
+  "scikit-learn",
+  "pandas",
+  "NumPy",
+  "Matplotlib",
+  "Seaborn",
+  "MLPRegressor",
+];
+
+export default function ThesisPage() {
+  const thesis = ThesisRaw.journal[0] || {};
+  const paper = thesis.link;
+  const repo = thesis.repo || "https://github.com/wick19/PathLossML_Prediction";
+  const notebook = thesis.notebook;
+  const methods = thesis.methods?.length ? thesis.methods : DEFAULT_METHODS;
+  const tools = thesis.tools?.length ? thesis.tools : DEFAULT_TOOLS;
 
   return (
-    <main className="thesis-page">
-      <section className="thesis-hero">
+    <main className="depth-page thesis-v2">
+      <header className="thesis-hero">
         <div className="thesis-hero-copy">
-          <span className="thesis-eyebrow">Research Portfolio</span>
-          <h1>
-            The Future of <span>Wireless</span> Infrastructure.
-          </h1>
-          <p>
-            Investigating the intersection of machine learning and telecommunications to solve
-            real-world connectivity challenges in dynamic environments.
-          </p>
+          <p className="section-label">// Research Journal</p>
+          <h1>Path loss prediction for wireless &amp; UAV links</h1>
+          <p className="page-intro-lede">{thesis.description}</p>
         </div>
+        <figure className="thesis-viz">
+          <img
+            src={thesisViz}
+            alt="UAV air-to-air path loss diagram: A2A link, Okumura–Hata, and RF · ANN · ML hybrid modeling"
+            width={1264}
+            height={848}
+            decoding="async"
+          />
+        </figure>
+      </header>
 
-        <div className="thesis-hero-meta" aria-label="Academic thesis label">
-          <strong>01.</strong>
-          <span>Academic Thesis</span>
-        </div>
+      <section className="metric-strip" aria-label="Research facts">
+        {FACTS.map((fact) => (
+          <div key={fact.label}>
+            <strong>{fact.value}</strong>
+            <span>{fact.label}</span>
+          </div>
+        ))}
       </section>
 
-      <section className="thesis-journal">
-        <div className="thesis-section-head">
-          <h2>Research Journal</h2>
-          <span />
-        </div>
-
-        <article className="thesis-paper">
-          <div className="thesis-paper-visual">
-            <div className="thesis-paper-glow" />
-            <div className="thesis-paper-rings" />
-            <div className="thesis-paper-city" />
-            <span className="thesis-drone-dot dot-one" />
-            <span className="thesis-drone-dot dot-two" />
-            <span className="thesis-drone-dot dot-three" />
-            <span className="thesis-drone-dot dot-four" />
-            <div className="thesis-paper-uav">
-              <span className="material-symbols-outlined" aria-hidden="true">
-                flight
-              </span>
-            </div>
-          </div>
-
-          <div className="thesis-paper-copy">
-            <div className="thesis-paper-tags">
-              {researchTags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-
-            <h3>Machine Learning-Based Path loss Models For the UAV Air-to-Air (A2A) Prediction</h3>
-
-            <div className="thesis-paper-body">
-              {thesisParagraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-
-            <div className="thesis-paper-actions">
-              {thesisLink ? (
-                <a href={thesisLink} target="_blank" rel="noreferrer">
-                  [Paper]
-                  <span className="material-symbols-outlined" aria-hidden="true">
-                    arrow_right_alt
-                  </span>
-                </a>
-              ) : null}
-
-              <div className="thesis-action-divider" aria-hidden="true" />
-
-              <div className="thesis-publication-meta">
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  calendar_today
-                </span>
-                <span>2024 Publication</span>
-              </div>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section className="thesis-grid-section">
-        <div className="thesis-grid">
-          {thesisPanels.map((panel) => (
-            <article
-              key={panel.title}
-              className={[
-                "thesis-panel",
-                panel.featured ? "thesis-panel-featured" : "",
-                panel.wide ? "thesis-panel-wide" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              <div className="thesis-panel-copy">
-                <span className="material-symbols-outlined" aria-hidden="true">
-                  {panel.icon}
-                </span>
-                <h4>{panel.title}</h4>
-                <p>{panel.description}</p>
-              </div>
-              {panel.wide ? (
-                <div className="thesis-panel-illustration" aria-hidden="true">
-                  <span className="material-symbols-outlined">architecture</span>
-                </div>
-              ) : null}
-            </article>
+      <section className="method-flow" aria-labelledby="method-heading">
+        <p className="section-label">// Method flow</p>
+        <h2 id="method-heading">From features to evaluation</h2>
+        <ol>
+          {methods.map((step, i) => (
+            <li key={step}>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              <strong>{step}</strong>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
-      <section className="thesis-cta">
-        <div className="thesis-cta-shell">
-          <h2>
-            Interested in <span>Collaboration?</span>
-          </h2>
-          <p>
-            I am actively seeking research partnerships in the fields of 6G, autonomous aerial
-            networks, and edge computing.
-          </p>
-          <div className="thesis-cta-actions">
-            <a className="thesis-primary-action" href={`mailto:${ContactRaw.email}`}>
-              Email Me
-            </a>
-            <a
-              className="thesis-secondary-action"
-              href={IntroRaw.resume}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Download Resume
-            </a>
-            {thesisLink ? (
-              <a className="thesis-secondary-action" href={thesisLink} target="_blank" rel="noreferrer">
-                Read Paper
-              </a>
-            ) : null}
-          </div>
-        </div>
+      <section className="thesis-stack" aria-labelledby="stack-heading">
+        <p className="section-label">// ML stack</p>
+        <h2 id="stack-heading">Tools from the research repo</h2>
+        <p className="thesis-stack-lede">
+          Stack used in{" "}
+          <a href={repo} target="_blank" rel="noreferrer">
+            PathLossML_Prediction
+          </a>{" "}
+          for data prep, model training, and evaluation.
+        </p>
+        <ul className="stack-list thesis-tool-list">
+          {tools.map((tool) => (
+            <li key={tool}>
+              <EvidenceTag>{tool}</EvidenceTag>
+            </li>
+          ))}
+        </ul>
       </section>
+
+      <div className="depth-cta-row">
+        <a className="btn-primary" href={repo} target="_blank" rel="noreferrer">
+          View GitHub repo
+        </a>
+        {notebook ? (
+          <a className="btn-secondary" href={notebook} target="_blank" rel="noreferrer">
+            Open notebook
+          </a>
+        ) : null}
+        {paper ? (
+          <a className="btn-secondary" href={paper} target="_blank" rel="noreferrer">
+            Read paper
+          </a>
+        ) : null}
+      </div>
     </main>
   );
 }
-
-export default ThesisPage;
