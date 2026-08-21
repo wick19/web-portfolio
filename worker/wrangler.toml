@@ -1,0 +1,15 @@
+name = "ritwik-portfolio-concierge"
+main = "src/index.js"
+compatibility_date = "2025-08-01"
+workers_dev = true
+
+# Cloudflare Workers AI — free neurons, no paid Gemini/OpenAI key
+[ai]
+binding = "AI"
+
+[vars]
+# Set to "false" to instantly pause the Concierge without undeploying
+CONCIERGE_ENABLED = "true"
+
+# Optional shared token (also set the same value in site .env.local as VITE_CONCIERGE_TOKEN):
+#   npx wrangler secret put ACCESS_TOKEN

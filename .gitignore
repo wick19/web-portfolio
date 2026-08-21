@@ -4,6 +4,14 @@ node_modules/*
 build
 dist
 
+# Local env (Vite + Worker secrets)
+.env
+.env.local
+.env.*.local
+worker/.dev.vars
+worker/node_modules
+worker/.wrangler
+
 # MCP configs contain API keys — do not commit
 .vscode/mcp.json
 .cursor/mcp.json

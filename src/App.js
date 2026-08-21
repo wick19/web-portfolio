@@ -7,6 +7,7 @@ import CertificationPage from "./certification";
 import SiteHeader from "./components/site/SiteHeader";
 import SiteFooter from "./components/site/SiteFooter";
 import HomePage from "./components/home/HomePage";
+import Concierge from "./components/concierge/Concierge";
 
 function getHashRoute(hashValue) {
   if (hashValue === "#projects-page") return "projects";
@@ -65,6 +66,7 @@ function App() {
       )}
 
       <SiteFooter />
+      <Concierge />
     </div>
   );
 }
