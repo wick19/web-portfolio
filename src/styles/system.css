@@ -1763,3 +1763,224 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+/* Portfolio Concierge (Gemini via Worker) */
+.concierge-root {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.concierge-root > * {
+  pointer-events: auto;
+}
+
+.concierge-fab {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bg-deep);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.concierge-fab:hover,
+.concierge-fab:focus-visible {
+  outline: none;
+  filter: brightness(1.05);
+}
+
+.concierge-fab.is-open {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+
+.concierge-panel {
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(72vh, 560px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.concierge-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.concierge-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.concierge-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.concierge-icon-btn:hover,
+.concierge-icon-btn:focus-visible {
+  color: var(--text);
+  border-color: var(--line-strong);
+  outline: none;
+}
+
+.concierge-lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.concierge-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.concierge-chip {
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.concierge-chip:hover:not(:disabled),
+.concierge-chip:focus-visible:not(:disabled) {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.concierge-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.concierge-thread {
+  flex: 1;
+  min-height: 140px;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 2px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.concierge-empty,
+.concierge-typing {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.concierge-warn {
+  color: #e8b86d;
+}
+
+.concierge-error {
+  margin: 0;
+  color: #f0a8a0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.concierge-msg {
+  align-self: flex-start;
+  max-width: 92%;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+.concierge-msg-user {
+  align-self: flex-end;
+  background: var(--accent-dim);
+  border-color: var(--line-strong);
+}
+
+.concierge-msg p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.concierge-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.concierge-form input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 10px 12px;
+}
+
+.concierge-form input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.concierge-send {
+  padding-inline: 14px;
+}
+
+@media (max-width: 640px) {
+  .concierge-root {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .concierge-panel {
+    width: min(100vw - 24px, 380px);
+    max-height: min(78vh, 560px);
+  }
+}
+
