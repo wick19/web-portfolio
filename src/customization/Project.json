@@ -13,25 +13,47 @@
     },
     {
       "project_img": "",
-      "project_name": "Distributed Hotel Management Platform",
-      "project_about": "Scalable distributed database platform for hotel management using Django, PostgreSQL, and Azure SQL supporting secure multi-user operations and efficient data management.",
-      "project_tool": "Python, Django, PostgreSQL, Azure SQL",
-      "project_link": "",
+      "project_name": "Eye Tracker Workplace Wellness Platform",
+      "project_about": "Full-stack blink-tracking wellness system: PyQt6 desktop client with MediaPipe face mesh, FastAPI + JWT backend, offline SQLite sync queue, and a Next.js Chart.js dashboard.",
+      "project_tool": "Python, FastAPI, PyQt6, MediaPipe, OpenCV, Next.js, SQLAlchemy, JWT, SQLite, PostgreSQL, Docker",
+      "project_link": "https://github.com/wick19/eye_tracker_solution",
       "featured": false,
-      "badge": "Academic / coursework",
-      "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
-      "outcome": "Optimized relational performance, backend APIs, and modular architecture for scalability and maintainability."
+      "badge": "Public · Full-stack + CV",
+      "challenge": "Capture blink metrics on-device, keep working offline, then sync securely to a cloud API and read-only dashboard without storing raw camera frames.",
+      "outcome": "Shipped a three-tier product (desktop + API + web) with simulated/real tracker modes, JWT auth, per-user data scoping, Dockerized API, pytest coverage, and privacy/security docs."
+    },
+    {
+      "project_img": "",
+      "project_name": "Football Video Analysis with Pose + YOLO",
+      "project_about": "Computer-vision pipeline that combines MediaPipe pose landmarks with YOLOv8 detections to count foot–ball contacts, estimate velocity, infer ball direction, and export an annotated analysis video.",
+      "project_tool": "Python, OpenCV, MediaPipe, Ultralytics YOLOv8, NumPy",
+      "project_link": "https://github.com/wick19/SportsAnalysis",
+      "featured": false,
+      "badge": "Public · Computer vision",
+      "challenge": "Turn raw football footage into measurable touch and motion signals without calibrated lab cameras.",
+      "outcome": "Built a touch-release pipeline that overlays live touch counts, velocity estimates, and optical-flow direction onto an annotated output video (Git LFS for large media)."
     },
     {
       "project_img": "",
       "project_name": "UAV Path Loss Prediction using Machine Learning",
-      "project_about": "Random Forest, ANN, KNN, and Naive Bayes models for UAV air-to-air path loss prediction using terrain, elevation, clutter height, and communication parameters. Public research code + paper.",
-      "project_tool": "Python, Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch",
+      "project_about": "Random Forest, ANN, KNN, Naive Bayes, and linear models for UAV air-to-air path loss prediction using terrain, elevation, clutter height, and communication parameters—paired with Okumura–Hata / log-distance baselines. Public research code + paper.",
+      "project_tool": "Python, scikit-learn, pandas, NumPy, Matplotlib, Seaborn",
       "project_link": "https://github.com/wick19/PathLossML_Prediction",
       "featured": false,
       "badge": "Public · Research",
       "challenge": "Improve wireless path-loss prediction accuracy for UAV A2A links beyond classical empirical models alone.",
-      "outcome": "Feature engineering, visualization, and comparative model evaluation across propagation scenarios to improve wireless communication prediction accuracy."
+      "outcome": "Feature engineering, visualization, and comparative model evaluation across propagation scenarios; paper and notebook linked from the thesis page."
+    },
+    {
+      "project_img": "",
+      "project_name": "ShortVideo — React Native Reels App",
+      "project_about": "Vertical short-video mobile app with Google sign-in, Firebase Storage uploads, Firestore metadata, scroll-based autoplay feed, likes, mute toggle, profiles, and bottom-tab navigation.",
+      "project_tool": "React Native CLI, Firebase Auth, Firestore, Storage, React Navigation, react-native-video",
+      "project_link": "https://github.com/wick19/ShortVideo",
+      "featured": false,
+      "badge": "Public · Mobile",
+      "challenge": "Ship a Reels-style client loop—auth, upload, feed playback, and social actions—on React Native with a Firebase backend.",
+      "outcome": "Implemented Android-ready RN CLI app structure with auth gate, feed/upload/profile screens, and Firebase integration (client configs gitignored)."
     },
     {
       "project_img": "./img/bhp.png",
@@ -43,6 +65,28 @@
       "badge": "ML fundamentals · GitHub",
       "challenge": "Model non-linear relationships between fragmented urban indicators and housing prices.",
       "outcome": "Trained a 13→64→32→1 MLP with Adam/MSE; notebook documents loss convergence and R² ≈ 0.81 on held-out data."
+    },
+    {
+      "project_img": "",
+      "project_name": "BreCanDia — Breast Cancer Classification",
+      "project_about": "Classifier comparison on the Wisconsin Diagnostic Breast Cancer (WDBC) dataset to separate malignant vs benign cases, with notebook exploration and evaluation.",
+      "project_tool": "Python, scikit-learn, pandas, NumPy, Jupyter",
+      "project_link": "https://github.com/wick19/BreCanDia",
+      "featured": false,
+      "badge": "Public · ML classification",
+      "challenge": "Evaluate multiple classifiers on a clinical tabular dataset and surface malignant vs benign prediction quality.",
+      "outcome": "Public notebook + WDBC data demonstrating multi-classifier experimentation for diagnostic classification."
+    },
+    {
+      "project_img": "",
+      "project_name": "Distributed Hotel Management Platform",
+      "project_about": "Scalable distributed database platform for hotel management using Django, PostgreSQL, and Azure SQL supporting secure multi-user operations and efficient data management.",
+      "project_tool": "Python, Django, PostgreSQL, Azure SQL",
+      "project_link": "",
+      "featured": false,
+      "badge": "Academic / coursework",
+      "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
+      "outcome": "Optimized relational performance, backend APIs, and modular architecture for scalability and maintainability."
     }
   ]
 }

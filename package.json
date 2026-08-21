@@ -5,6 +5,9 @@
   "private": true,
   "dependencies": {
     "gh-pages": "^6.3.0",
+    "gsap": "^3.15.0",
+    "motion": "^13.1.0",
+    "ogl": "^1.0.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "web-vitals": "^2.1.4"
@@ -15,6 +18,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^5.0.0",
     "jsdom": "^26.1.0",
+    "shadcn": "^4.16.2",
     "vite": "^7.0.6",
     "vitest": "^3.2.4"
   },

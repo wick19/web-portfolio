@@ -32,6 +32,12 @@
       "position_time": "Feb 2024 – Jan 2025",
       "location": "Frisco, Texas, USA",
       "discription": "Built a finance-focused web application with Python, Flask, Django, and PostgreSQL for transaction processing, vendor management, and real-time reporting. Delivered secure REST APIs (−20% response time), optimized SQL (+25% query performance), automated tests with PyTest, and CI/CD with Jenkins/Docker (−15% deploy issues, +30% release speed) on Heroku.",
+      "metrics": [
+        { "value": "−20%", "label": "API response time" },
+        { "value": "+25%", "label": "query performance" },
+        { "value": "−15%", "label": "deploy issues" },
+        { "value": "+30%", "label": "release speed" }
+      ],
       "tags": [
         "Flask",
         "Django",
