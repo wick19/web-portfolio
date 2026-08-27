@@ -14,13 +14,13 @@
     {
       "project_img": "",
       "project_name": "Portfolio Concierge — Live AI Demo",
-      "project_about": "Interactive Ask AI concierge on this portfolio: grounded answers about experience, projects, and thesis via a Cloudflare Worker calling Workers AI (Llama), with origin checks, rate limits, and a daily free-quota kill-switch so the demo stays safe on the free tier.",
-      "project_tool": "React, Vite, Cloudflare Workers, Workers AI, rate limiting",
+      "project_about": "Interactive Ask AI concierge on this portfolio: typed or voice conversation with grounded answers about experience, projects, and thesis via a Cloudflare Worker calling Workers AI (Llama), with origin checks, rate limits, and a daily free-quota kill-switch so the demo stays safe on the free tier.",
+      "project_tool": "React, Vite, Web Speech API, Cloudflare Workers, Workers AI, rate limiting",
       "project_link": "https://wick19.github.io/web-portfolio/",
       "featured": false,
       "badge": "Public · Live on this site",
-      "challenge": "Ship a real LLM chat demo on a static GitHub Pages site without exposing provider keys, while bounding abuse and free-tier cost.",
-      "outcome": "Delivered a floating Concierge UI plus a Worker proxy with grounded portfolio knowledge, CORS/origin allowlisting, per-IP and daily caps, and auto-pause when Workers AI free Neurons are exhausted."
+      "challenge": "Ship a real LLM chat and voice demo on a static GitHub Pages site without exposing provider keys, while bounding abuse and free-tier cost.",
+      "outcome": "Delivered a floating Concierge UI with mic/voice mode plus a Worker proxy with grounded portfolio knowledge, CORS/origin allowlisting, per-IP and daily caps, and auto-pause when Workers AI free Neurons are exhausted."
     },
     {
       "project_img": "",

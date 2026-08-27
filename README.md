@@ -15,7 +15,7 @@ Full-stack AI/ML Engineer portfolio (FastAPI, LLMs, cloud-native backends).
 - React 18 + Vite
 - Custom carbon/cyan UI
 - Content driven from `src/customization/*.json`
-- **Portfolio Concierge** — live Ask AI demo (Cloudflare Workers AI / Llama 3.1 fast)
+- **Portfolio Concierge** — live Ask AI (text + voice) via Cloudflare Workers AI
 
 ## Local development
 
@@ -39,10 +39,15 @@ Floating **Ask AI** panel grounded in portfolio facts (experience, projects, the
 | Piece | Detail |
 |--------|--------|
 | Frontend | `src/components/concierge/Concierge.jsx` |
+| Voice | `src/lib/voice.js` — browser Web Speech API (mic + TTS; free, no Workers AI neurons) |
 | API client | `src/lib/conciergeApi.js` |
 | Backend | Cloudflare Worker in `worker/` |
 | Model | `@cf/meta/llama-3.1-8b-instruct-fast` (Workers AI free tier) |
 | Live Worker | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
+
+**Composer controls (icon row):** headset = hands-free voice mode on/off · mic = one-shot ask · Send = typed message. Best in Chrome/Edge (allow microphone).
+
+This is **prompt-grounded chat** (portfolio knowledge in the system prompt), not a full RAG pipeline. Voice STT/TTS stays in the browser so Whisper/Aura don’t burn the daily neuron quota.
 
 Deploy / update the Worker:
 
@@ -61,7 +66,7 @@ npm run deploy
 
 ### Cost & abuse protection (important)
 
-This Concierge uses **Cloudflare Workers AI free neurons**, not a paid OpenAI/Gemini bill — but abuse can still burn free quota or (if you leave paid billing on) create cost. Protections already in the Worker:
+This Concierge uses **Cloudflare Workers AI free neurons** for text replies only — voice capture/playback uses the browser. Abuse can still burn free quota or (if paid billing is on) create cost. Protections already in the Worker:
 
 | Control | What it does |
 |---------|----------------|
@@ -82,12 +87,11 @@ This Concierge uses **Cloudflare Workers AI free neurons**, not a paid OpenAI/Ge
 
 **Hardening plan (recommended next steps):**
 
-1. **Now (done in code):** origin lock + rate limits + kill switch + optional access token + small generations.
-2. **This week:** set `ACCESS_TOKEN` / `VITE_CONCIERGE_TOKEN` to a long random string; redeploy Worker + site.
-3. **Stronger bot filter:** add [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) (free) so only real browsers get a one-time token before chat.
-4. **Durable limits:** move counters to Workers KV or Durable Objects if traffic grows (Cache API is best-effort).
-5. **Observability:** enable Workers logs; alert on 429/502 spikes.
-6. **Nuclear option:** remove `VITE_CONCIERGE_URL` and redeploy the static site (UI shows disconnected), or unpublish the Worker.
+1. **Now (done in code):** origin lock + rate limits + kill switch + optional access token + small generations + browser voice.
+2. Prefer **Turnstile** over treating `VITE_CONCIERGE_TOKEN` as a real secret (Vite bakes `VITE_*` into public JS).
+3. **Durable limits:** move counters to Workers KV or Durable Objects if traffic grows (Cache API is best-effort).
+4. **Observability:** enable Workers logs; alert on 429/502 spikes.
+5. **Nuclear option:** remove `VITE_CONCIERGE_URL` and redeploy the static site (UI shows disconnected), or unpublish the Worker.
 
 Prompt injection cannot empty your bank on this design (no paid provider key in the app), but it can waste neurons — grounding + short outputs + rate limits keep that bounded.
 

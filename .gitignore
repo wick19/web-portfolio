@@ -12,6 +12,9 @@ worker/.dev.vars
 worker/node_modules
 worker/.wrangler
 
+# Stitch / design export mocks (not runtime assets)
+stitch-export/
+
 # MCP configs contain API keys — do not commit
 .vscode/mcp.json
 .cursor/mcp.json
