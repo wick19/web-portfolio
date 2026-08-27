@@ -1,2 +1,3 @@
-# Copy to worker/.dev.vars for local `npm run dev` in /worker
-GEMINI_API_KEY=your_google_ai_studio_key_here
+# Copy to worker/.dev.vars for local `wrangler dev` only (gitignored).
+# Production uses Cloudflare Workers AI binding — no external LLM key required.
+# CONCIERGE_ENABLED=true

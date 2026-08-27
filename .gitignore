@@ -15,9 +15,13 @@ worker/.wrangler
 # Stitch / design export mocks (not runtime assets)
 stitch-export/
 
-# MCP configs contain API keys — do not commit
+# Cursor / VS Code local tooling (do not publish)
+.cursor/
 .vscode/mcp.json
-.cursor/mcp.json
-# Keep the proxy script; do not commit keys via env files
 .cursor/*.env
 .cursor/.env*
+
+# Internal build notes (local only — not part of the public portfolio product)
+CURSOR_PORTFOLIO_BUILD_PLAN.md
+PORTFOLIO_FINISH_PLAN.md
+CONTENT_PRESERVATION_CHECKLIST.md
