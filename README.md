@@ -39,14 +39,14 @@ Live product demo: a grounded LLM concierge over portfolio knowledge (experience
 | Layer | Detail |
 |--------|--------|
 | UI | `src/components/concierge/Concierge.jsx` |
-| Speech I/O | `src/lib/voice.js` — client-side STT/TTS orchestration (Web Speech API) so inference quota stays on the chat model |
+| Speech I/O | `src/lib/voice.js` — client-side STT/TTS orchestration (Web Speech API); keeps Workers AI quota on the chat model |
 | Client API | `src/lib/conciergeApi.js` |
 | Edge inference | Cloudflare Worker (`worker/`) + Workers AI `@cf/meta/llama-3.1-8b-instruct-fast` |
 | Endpoint | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
 
-**Controls:** headset = continuous voice session · mic = single utterance · Send = text. Chromium browsers recommended for speech recognition.
+**Controls:** headset = continuous voice session · mic = single utterance · Send = text. Chromium recommended for speech recognition.
 
-Architecture note: **prompt-grounded generation** (curated portfolio context in the system prompt), not a vector RAG store — the right fit for a fixed personal knowledge pack. Speech stays on-device so Workers AI Neurons are spent on reasoning, not transcription/TTS.
+**Architecture:** prompt-grounded generation (curated portfolio context in the system prompt), not a vector RAG store — the right fit for a fixed personal knowledge pack. Speech stays on-device so Workers AI Neurons are spent on reasoning, not transcription/TTS.
 
 Deploy / update the Worker:
 
