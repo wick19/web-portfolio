@@ -4,7 +4,8 @@ node_modules/*
 build
 dist
 
-# Local env (Vite + Worker secrets)
+# Local env / secrets (never commit real values)
+# Keep .env.example and worker/.dev.vars.example tracked as templates only
 .env
 .env.local
 .env.*.local
@@ -12,9 +13,16 @@ worker/.dev.vars
 worker/node_modules
 worker/.wrangler
 
-# MCP configs contain API keys — do not commit
+# Stitch / design export mocks (not runtime assets)
+stitch-export/
+
+# Cursor / VS Code local tooling (API keys live in mcp.json)
+.cursor/
 .vscode/mcp.json
-.cursor/mcp.json
-# Keep the proxy script; do not commit keys via env files
 .cursor/*.env
 .cursor/.env*
+
+# Internal build notes — keep on disk locally; do not publish to GitHub
+CURSOR_PORTFOLIO_BUILD_PLAN.md
+PORTFOLIO_FINISH_PLAN.md
+CONTENT_PRESERVATION_CHECKLIST.md

@@ -4,6 +4,13 @@ import {
   getConciergeUrl,
   isConciergeConfigured,
 } from "../../lib/conciergeApi";
+import {
+  canUseVoiceInput,
+  canUseVoiceOutput,
+  createSpeechListener,
+  speakText,
+  stopSpeaking,
+} from "../../lib/voice";
 
 const SUGGESTIONS = [
   "What does Ritwik ship at Sprouts.ai?",
@@ -13,6 +20,48 @@ const SUGGESTIONS = [
 
 const WELCOME =
   "Ask about Ritwik’s experience, projects, thesis, or how to reach him. For the full picture, please go through the website — Home, Projects, Thesis, Experience, and Contact.";
+
+function IconHeadset({ className }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 12a8 8 0 0 1 16 0" />
+      <path d="M4 12v4a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2z" />
+      <path d="M20 12v4a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function IconMic({ className }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0" />
+      <path d="M12 18v3" />
+    </svg>
+  );
+}
 
 function MessageBubble({ role, content }) {
   return (
@@ -30,12 +79,20 @@ export default function Concierge() {
   const titleId = useId();
   const listRef = useRef(null);
   const inputRef = useRef(null);
+  const listenerRef = useRef(null);
+  const speakCancelRef = useRef(null);
+  const voiceLoopRef = useRef(false);
+
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
   const [lastSentAt, setLastSentAt] = useState(0);
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const [voiceSupported] = useState(() => canUseVoiceInput());
   const configured = isConciergeConfigured();
 
   useEffect(() => {
@@ -43,9 +100,38 @@ export default function Concierge() {
     const node = listRef.current;
     if (node) node.scrollTop = node.scrollHeight;
     window.setTimeout(() => inputRef.current?.focus(), 50);
-  }, [open, messages, busy, error]);
+  }, [open, messages, busy, error, listening]);
 
-  async function send(text) {
+  useEffect(() => {
+    return () => {
+      listenerRef.current?.abort();
+      speakCancelRef.current?.();
+      stopSpeaking();
+    };
+  }, []);
+
+  function stopVoiceCapture() {
+    listenerRef.current?.stop();
+    listenerRef.current = null;
+    setListening(false);
+  }
+
+  function haltSpeech() {
+    speakCancelRef.current?.();
+    speakCancelRef.current = null;
+    stopSpeaking();
+    setSpeaking(false);
+  }
+
+  function closePanel() {
+    voiceLoopRef.current = false;
+    setVoiceOn(false);
+    stopVoiceCapture();
+    haltSpeech();
+    setOpen(false);
+  }
+
+  async function send(text, { fromVoice = false } = {}) {
     const content = String(text || "").trim();
     if (!content || busy) return;
 
@@ -62,6 +148,9 @@ export default function Concierge() {
       return;
     }
 
+    stopVoiceCapture();
+    haltSpeech();
+
     const next = [...messages, { role: "user", content }];
     setMessages(next);
     setInput("");
@@ -72,11 +161,93 @@ export default function Concierge() {
     try {
       const { reply } = await askConcierge(next);
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+
+      if ((fromVoice || voiceLoopRef.current) && canUseVoiceOutput()) {
+        setSpeaking(true);
+        speakCancelRef.current = speakText(reply, {
+          onEnd: () => {
+            setSpeaking(false);
+            speakCancelRef.current = null;
+            if (voiceLoopRef.current) {
+              window.setTimeout(() => startListening({ loop: true }), 350);
+            }
+          },
+        });
+      }
     } catch (err) {
       setError(err?.message || "Something went wrong");
+      voiceLoopRef.current = false;
+      setVoiceOn(false);
     } finally {
       setBusy(false);
     }
+  }
+
+  function startListening({ loop = false } = {}) {
+    if (!voiceSupported || busy || listening) return;
+
+    haltSpeech();
+    setError("");
+
+    const listener = createSpeechListener({
+      onPartial: (partial) => setInput(partial),
+      onFinal: (finalText) => {
+        setInput(finalText);
+        stopVoiceCapture();
+        if (finalText) send(finalText, { fromVoice: true });
+      },
+      onError: (code) => {
+        setListening(false);
+        listenerRef.current = null;
+        if (code === "not-allowed") {
+          setError("Microphone permission blocked — allow mic access to talk.");
+        } else if (code !== "aborted" && code !== "no-speech") {
+          setError("Couldn’t catch that — try again or type your question.");
+        }
+        if (loop) {
+          voiceLoopRef.current = false;
+          setVoiceOn(false);
+        }
+      },
+      onEnd: () => {
+        setListening(false);
+        listenerRef.current = null;
+      },
+    });
+
+    if (!listener) {
+      setError("Voice input isn’t supported in this browser. Try Chrome.");
+      return;
+    }
+
+    listenerRef.current = listener;
+    setListening(true);
+    listener.start();
+  }
+
+  function toggleMic() {
+    if (listening) {
+      stopVoiceCapture();
+      return;
+    }
+    startListening({ loop: voiceLoopRef.current });
+  }
+
+  function toggleVoiceMode() {
+    if (voiceOn) {
+      voiceLoopRef.current = false;
+      setVoiceOn(false);
+      stopVoiceCapture();
+      haltSpeech();
+      return;
+    }
+    if (!voiceSupported) {
+      setError("Voice mode needs Chrome/Edge (or Safari with speech support).");
+      return;
+    }
+    voiceLoopRef.current = true;
+    setVoiceOn(true);
+    startListening({ loop: true });
   }
 
   function onSubmit(e) {
@@ -102,7 +273,7 @@ export default function Concierge() {
               type="button"
               className="concierge-icon-btn"
               aria-label="Close concierge"
-              onClick={() => setOpen(false)}
+              onClick={closePanel}
             >
               ×
             </button>
@@ -129,8 +300,8 @@ export default function Concierge() {
           <div className="concierge-thread" ref={listRef} aria-live="polite">
             {messages.length === 0 ? (
               <p className="concierge-empty">
-                Start a quick conversation about Ritwik — his AI work, projects,
-                research, or how to reach him.
+                Start a quick conversation about Ritwik — type, tap the mic, or
+                turn on Voice for a back-and-forth talk.
                 {!configured ? (
                   <>
                     {" "}
@@ -142,7 +313,11 @@ export default function Concierge() {
               </p>
             ) : (
               messages.map((m, i) => (
-                <MessageBubble key={`${m.role}-${i}`} role={m.role} content={m.content} />
+                <MessageBubble
+                  key={`${m.role}-${i}`}
+                  role={m.role}
+                  content={m.content}
+                />
               ))
             )}
             {busy ? (
@@ -153,29 +328,94 @@ export default function Concierge() {
             {error ? <p className="concierge-error">{error}</p> : null}
           </div>
 
-          <form className="concierge-form" onSubmit={onSubmit}>
-            <label className="sr-only" htmlFor="concierge-input">
-              Ask the concierge
-            </label>
-            <input
-              id="concierge-input"
-              ref={inputRef}
-              type="text"
-              value={input}
-              maxLength={800}
-              disabled={busy}
-              placeholder="Ask about Sprouts, projects, thesis…"
-              onChange={(e) => setInput(e.target.value)}
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              className="btn-primary concierge-send"
-              disabled={busy || !input.trim()}
-            >
-              Send
-            </button>
-          </form>
+          <div className="concierge-composer">
+            {(listening || speaking || voiceOn) && (
+              <p className="concierge-status" aria-live="polite">
+                {listening
+                  ? "Listening…"
+                  : speaking
+                    ? "Speaking…"
+                    : "Voice mode on"}
+              </p>
+            )}
+
+            <form className="concierge-form" onSubmit={onSubmit}>
+              <button
+                type="button"
+                className={
+                  voiceOn
+                    ? "concierge-icon-ctl is-active"
+                    : "concierge-icon-ctl"
+                }
+                disabled={busy && !voiceOn}
+                onClick={toggleVoiceMode}
+                aria-pressed={voiceOn}
+                aria-label={
+                  voiceOn
+                    ? "Turn off voice conversation"
+                    : "Start voice conversation"
+                }
+                title={
+                  voiceOn
+                    ? "Voice conversation on"
+                    : "Hands-free voice conversation"
+                }
+              >
+                <IconHeadset />
+              </button>
+
+              <label className="sr-only" htmlFor="concierge-input">
+                Ask the concierge
+              </label>
+              <input
+                id="concierge-input"
+                ref={inputRef}
+                type="text"
+                value={input}
+                maxLength={800}
+                disabled={busy}
+                placeholder={
+                  listening
+                    ? "Listening…"
+                    : speaking
+                      ? "Concierge is speaking…"
+                      : "Ask about Sprouts, projects, thesis…"
+                }
+                onChange={(e) => setInput(e.target.value)}
+                autoComplete="off"
+              />
+
+              <button
+                type="button"
+                className={
+                  listening
+                    ? "concierge-icon-ctl is-listening"
+                    : "concierge-icon-ctl"
+                }
+                disabled={!voiceSupported || busy}
+                onClick={toggleMic}
+                aria-pressed={listening}
+                aria-label={listening ? "Stop microphone" : "Use microphone"}
+                title={
+                  voiceSupported
+                    ? listening
+                      ? "Stop listening"
+                      : "Ask with microphone"
+                    : "Voice input not supported here"
+                }
+              >
+                <IconMic />
+              </button>
+
+              <button
+                type="submit"
+                className="btn-primary concierge-send"
+                disabled={busy || !input.trim()}
+              >
+                Send
+              </button>
+            </form>
+          </div>
         </section>
       ) : null}
 
@@ -183,7 +423,7 @@ export default function Concierge() {
         type="button"
         className={open ? "concierge-fab is-open" : "concierge-fab"}
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (open ? closePanel() : setOpen(true))}
       >
         {open ? "Close" : "Ask AI"}
       </button>

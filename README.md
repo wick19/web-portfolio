@@ -15,7 +15,7 @@ Full-stack AI/ML Engineer portfolio (FastAPI, LLMs, cloud-native backends).
 - React 18 + Vite
 - Custom carbon/cyan UI
 - Content driven from `src/customization/*.json`
-- **Portfolio Concierge** — live Ask AI demo (Cloudflare Workers AI / Llama 3.1 fast)
+- **Portfolio Concierge** — multimodal Ask AI (LLM + voice I/O) on Cloudflare Workers AI
 
 ## Local development
 
@@ -32,17 +32,21 @@ VITE_CONCIERGE_URL=https://ritwik-portfolio-concierge.wick19.workers.dev
 # VITE_CONCIERGE_TOKEN=your-long-random-string
 ```
 
-## Portfolio Concierge (working)
+## Portfolio Concierge
 
-Floating **Ask AI** panel grounded in portfolio facts (experience, projects, thesis, contact).
+Live product demo: a grounded LLM concierge over portfolio knowledge (experience, projects, thesis, contact), with optional voice conversation.
 
-| Piece | Detail |
+| Layer | Detail |
 |--------|--------|
-| Frontend | `src/components/concierge/Concierge.jsx` |
-| API client | `src/lib/conciergeApi.js` |
-| Backend | Cloudflare Worker in `worker/` |
-| Model | `@cf/meta/llama-3.1-8b-instruct-fast` (Workers AI free tier) |
-| Live Worker | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
+| UI | `src/components/concierge/Concierge.jsx` |
+| Speech I/O | `src/lib/voice.js` — client-side STT/TTS orchestration (Web Speech API); keeps Workers AI quota on the chat model |
+| Client API | `src/lib/conciergeApi.js` |
+| Edge inference | Cloudflare Worker (`worker/`) + Workers AI `@cf/meta/llama-3.1-8b-instruct-fast` |
+| Endpoint | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
+
+**Controls:** headset = continuous voice session · mic = single utterance · Send = text. Chromium recommended for speech recognition.
+
+**Architecture:** prompt-grounded generation (curated portfolio context in the system prompt), not a vector RAG store — the right fit for a fixed personal knowledge pack. Speech stays on-device so Workers AI Neurons are spent on reasoning, not transcription/TTS.
 
 Deploy / update the Worker:
 
@@ -59,9 +63,9 @@ Then rebuild/redeploy the site so `VITE_CONCIERGE_URL` is baked in:
 npm run deploy
 ```
 
-### Cost & abuse protection (important)
+### Cost & abuse protection
 
-This Concierge uses **Cloudflare Workers AI free neurons**, not a paid OpenAI/Gemini bill — but abuse can still burn free quota or (if you leave paid billing on) create cost. Protections already in the Worker:
+Text replies use **Cloudflare Workers AI** free Neurons; voice capture/playback is browser-side. Protections in the Worker:
 
 | Control | What it does |
 |---------|----------------|
@@ -73,23 +77,9 @@ This Concierge uses **Cloudflare Workers AI free neurons**, not a paid OpenAI/Ge
 | Optional token | `ACCESS_TOKEN` secret + `VITE_CONCIERGE_TOKEN` header |
 | UI cooldown | ~2.5s between sends in the browser |
 
-**Free quota (Cloudflare Workers AI):** **10,000 Neurons per day**, resets at **00:00 UTC**. On the Free Workers plan, going over fails (no paid overage). On Paid, overage can bill — keep a $0–$1 billing alert.
+**Free quota:** **10,000 Neurons / day** (resets **00:00 UTC**). Prefer Workers Free + a $0–$1 billing alert. If needed, set `CONCIERGE_ENABLED=false` or unpublish the Worker.
 
-1. Stay on the **Free** Workers / Workers AI plan if possible.
-2. Open **Billing →** set a **low spending limit / alert** (ideally $0–$1) so a spike cannot run up a card.
-3. Watch **Workers AI usage / neurons** periodically.
-4. If anything looks wrong: set Worker var `CONCIERGE_ENABLED` = `false` and redeploy (or edit in dashboard), or delete/disable the Worker.
-
-**Hardening plan (recommended next steps):**
-
-1. **Now (done in code):** origin lock + rate limits + kill switch + optional access token + small generations.
-2. **This week:** set `ACCESS_TOKEN` / `VITE_CONCIERGE_TOKEN` to a long random string; redeploy Worker + site.
-3. **Stronger bot filter:** add [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) (free) so only real browsers get a one-time token before chat.
-4. **Durable limits:** move counters to Workers KV or Durable Objects if traffic grows (Cache API is best-effort).
-5. **Observability:** enable Workers logs; alert on 429/502 spikes.
-6. **Nuclear option:** remove `VITE_CONCIERGE_URL` and redeploy the static site (UI shows disconnected), or unpublish the Worker.
-
-Prompt injection cannot empty your bank on this design (no paid provider key in the app), but it can waste neurons — grounding + short outputs + rate limits keep that bounded.
+**Hardening next steps:** Cloudflare Turnstile (prefer over a static `VITE_*` token), KV/DO rate counters, Workers logs/alerts.
 
 ## Deploy site
 
