@@ -7,10 +7,12 @@ import {
 import {
   canUseVoiceInput,
   canUseVoiceOutput,
+  createMicLevelMeter,
   createSpeechListener,
   speakText,
   stopSpeaking,
 } from "../../lib/voice";
+import VoiceWaveIcon from "./VoiceWaveIcon";
 
 const SUGGESTIONS = [
   "What does Ritwik ship at Sprouts.ai?",
@@ -82,6 +84,7 @@ export default function Concierge() {
   const listenerRef = useRef(null);
   const speakCancelRef = useRef(null);
   const voiceLoopRef = useRef(false);
+  const meterRef = useRef(null);
 
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -92,6 +95,7 @@ export default function Concierge() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
+  const [micLevel, setMicLevel] = useState(0);
   const [voiceSupported] = useState(() => canUseVoiceInput());
   const configured = isConciergeConfigured();
 
@@ -105,10 +109,38 @@ export default function Concierge() {
   useEffect(() => {
     return () => {
       listenerRef.current?.abort();
+      meterRef.current?.stop();
       speakCancelRef.current?.();
       stopSpeaking();
     };
   }, []);
+
+  // Drive wave from real mic amplitude only while capturing
+  useEffect(() => {
+    if (!listening) {
+      meterRef.current?.stop();
+      meterRef.current = null;
+      setMicLevel(0);
+      return undefined;
+    }
+
+    const meter = createMicLevelMeter({
+      onLevel: (level) => {
+        setMicLevel((prev) =>
+          Math.abs(prev - level) < 0.045 ? prev : level
+        );
+      },
+    });
+    meterRef.current = meter;
+    meter.start().catch(() => {
+      setMicLevel(0);
+    });
+
+    return () => {
+      meter.stop();
+      if (meterRef.current === meter) meterRef.current = null;
+    };
+  }, [listening]);
 
   function stopVoiceCapture() {
     listenerRef.current?.stop();
@@ -344,7 +376,7 @@ export default function Concierge() {
                 type="button"
                 className={
                   voiceOn
-                    ? "concierge-icon-ctl is-active"
+                    ? "concierge-icon-ctl is-active is-voice-on"
                     : "concierge-icon-ctl"
                 }
                 disabled={busy && !voiceOn}
@@ -361,7 +393,14 @@ export default function Concierge() {
                     : "Hands-free voice conversation"
                 }
               >
-                <IconHeadset />
+                {voiceOn ? (
+                  <VoiceWaveIcon
+                    level={micLevel}
+                    speakingOut={speaking}
+                  />
+                ) : (
+                  <IconHeadset />
+                )}
               </button>
 
               <label className="sr-only" htmlFor="concierge-input">

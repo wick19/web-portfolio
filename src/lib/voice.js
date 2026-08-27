@@ -113,3 +113,85 @@ export function speakText(text, { onEnd, rate = 1.02 } = {}) {
 export function stopSpeaking() {
   if (canUseVoiceOutput()) window.speechSynthesis.cancel();
 }
+
+/**
+ * Live mic amplitude (0–1) via Web Audio AnalyserNode.
+ * Noise-gated so silence ≈ 0. Call stop() to release the track.
+ * @returns {{ start: () => Promise<void>, stop: () => void }}
+ */
+export function createMicLevelMeter({ onLevel } = {}) {
+  let stream = null;
+  let ctx = null;
+  let analyser = null;
+  let raf = 0;
+  let stopped = true;
+  let data = new Uint8Array(128);
+
+  function report(level) {
+    if (onLevel) onLevel(level);
+  }
+
+  function tick() {
+    if (stopped || !analyser) return;
+    analyser.getByteFrequencyData(data);
+    let sum = 0;
+    const bins = Math.min(40, data.length);
+    for (let i = 0; i < bins; i += 1) sum += data[i];
+    const avg = sum / bins / 255;
+    // Gate ambient noise — only move when someone is actually talking
+    const gated = avg < 0.08 ? 0 : Math.min(1, (avg - 0.08) / 0.42);
+    report(gated);
+    raf = requestAnimationFrame(tick);
+  }
+
+  const meter = {
+    async start() {
+      meter.stop();
+      stopped = false;
+      if (!navigator.mediaDevices?.getUserMedia) {
+        report(0);
+        return;
+      }
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+        video: false,
+      });
+      const AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC();
+      if (ctx.state === "suspended") {
+        try {
+          await ctx.resume();
+        } catch {
+          /* ignore */
+        }
+      }
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.65;
+      data = new Uint8Array(analyser.frequencyBinCount);
+      ctx.createMediaStreamSource(stream).connect(analyser);
+      raf = requestAnimationFrame(tick);
+    },
+    stop() {
+      stopped = true;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+        stream = null;
+      }
+      if (ctx) {
+        ctx.close().catch(() => {});
+        ctx = null;
+      }
+      analyser = null;
+      report(0);
+    },
+  };
+
+  return meter;
+}
