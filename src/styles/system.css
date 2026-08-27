@@ -1819,6 +1819,8 @@ img {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  min-height: 0;
 }
 
 .concierge-header {
@@ -1826,6 +1828,7 @@ img {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .concierge-header h2 {
@@ -1845,6 +1848,7 @@ img {
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .concierge-icon-btn:hover,
@@ -1859,12 +1863,18 @@ img {
   color: var(--muted);
   font-size: 0.86rem;
   line-height: 1.45;
+  flex-shrink: 0;
 }
 
 .concierge-suggestions {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex-shrink: 0;
+}
+
+.concierge-suggestions:empty {
+  display: none;
 }
 
 .concierge-chip {
@@ -1878,6 +1888,7 @@ img {
   border-radius: var(--radius);
   padding: 8px 10px;
   cursor: pointer;
+  overflow-wrap: anywhere;
 }
 
 .concierge-chip:hover:not(:disabled),
@@ -1892,16 +1903,18 @@ img {
 }
 
 .concierge-thread {
-  flex: 1;
-  min-height: 140px;
-  max-height: 240px;
+  flex: 1 1 auto;
+  min-height: 120px;
+  max-height: none;
+  overflow-x: hidden;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 8px 2px;
+  padding: 10px 4px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
+  overscroll-behavior: contain;
 }
 
 .concierge-empty,
@@ -1910,6 +1923,7 @@ img {
   color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .concierge-warn {
@@ -1921,15 +1935,20 @@ img {
   color: #f0a8a0;
   font-size: 0.8rem;
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .concierge-msg {
   align-self: flex-start;
-  max-width: 92%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 8px 10px;
   border-radius: var(--radius);
   background: var(--surface-2);
   border: 1px solid var(--line);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .concierge-msg-user {
@@ -1944,16 +1963,21 @@ img {
   line-height: 1.45;
   color: var(--text);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .concierge-form {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .concierge-form input {
   width: 100%;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--bg-deep);

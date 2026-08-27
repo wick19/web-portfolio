@@ -13,6 +13,17 @@
     },
     {
       "project_img": "",
+      "project_name": "Portfolio Concierge — Live AI Demo",
+      "project_about": "Interactive Ask AI concierge on this portfolio: grounded answers about experience, projects, and thesis via a Cloudflare Worker calling Workers AI (Llama), with origin checks, rate limits, and a daily free-quota kill-switch so the demo stays safe on the free tier.",
+      "project_tool": "React, Vite, Cloudflare Workers, Workers AI, rate limiting",
+      "project_link": "https://wick19.github.io/web-portfolio/",
+      "featured": false,
+      "badge": "Public · Live on this site",
+      "challenge": "Ship a real LLM chat demo on a static GitHub Pages site without exposing provider keys, while bounding abuse and free-tier cost.",
+      "outcome": "Delivered a floating Concierge UI plus a Worker proxy with grounded portfolio knowledge, CORS/origin allowlisting, per-IP and daily caps, and auto-pause when Workers AI free Neurons are exhausted."
+    },
+    {
+      "project_img": "",
       "project_name": "Eye Tracker Workplace Wellness Platform",
       "project_about": "Full-stack blink-tracking wellness system: PyQt6 desktop client with MediaPipe face mesh, FastAPI + JWT backend, offline SQLite sync queue, and a Next.js Chart.js dashboard.",
       "project_tool": "Python, FastAPI, PyQt6, MediaPipe, OpenCV, Next.js, SQLAlchemy, JWT, SQLite, PostgreSQL, Docker",
