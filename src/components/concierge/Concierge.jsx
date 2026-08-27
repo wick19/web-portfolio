@@ -111,24 +111,26 @@ export default function Concierge() {
           <p className="concierge-lede">{WELCOME}</p>
 
           <div className="concierge-suggestions" aria-label="Suggested questions">
-            {SUGGESTIONS.map((q) => (
-              <button
-                key={q}
-                type="button"
-                className="concierge-chip"
-                disabled={busy}
-                onClick={() => send(q)}
-              >
-                {q}
-              </button>
-            ))}
+            {messages.length === 0
+              ? SUGGESTIONS.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    className="concierge-chip"
+                    disabled={busy}
+                    onClick={() => send(q)}
+                  >
+                    {q}
+                  </button>
+                ))
+              : null}
           </div>
 
           <div className="concierge-thread" ref={listRef} aria-live="polite">
             {messages.length === 0 ? (
               <p className="concierge-empty">
-                Powered by Cloudflare Workers AI (Llama) via a rate-limited
-                Worker — no API key in this static site.
+                Start a quick conversation about Ritwik — his AI work, projects,
+                research, or how to reach him.
                 {!configured ? (
                   <>
                     {" "}

@@ -37,6 +37,7 @@ EDUCATION
 - SRM Institute of Science And Technology — B. Tech, Computer Science Engineering (Jun 2017 – Jun 2021, Chennai)
 
 SELECTED PROJECTS
+- Portfolio Concierge — Live AI Demo (Public · on this site): Ask AI chat grounded in portfolio facts; React UI + Cloudflare Worker + Workers AI (Llama); origin allowlist, rate limits, daily free-neuron kill-switch. Live: https://wick19.github.io/web-portfolio/
 - Production AI Contact Enrichment Platform (Proprietary · Sprouts.ai): FastAPI microservices, provider orchestration, Redis caching, OAuth2/JWT, K8s.
 - Eye Tracker Workplace Wellness Platform (Public): PyQt6 + MediaPipe client, FastAPI JWT backend, Next.js dashboard. Repo: https://github.com/wick19/eye_tracker_solution
 - Football Video Analysis with Pose + YOLO (Public): MediaPipe + YOLOv8. Repo: https://github.com/wick19/SportsAnalysis

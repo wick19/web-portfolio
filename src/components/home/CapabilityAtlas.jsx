@@ -9,6 +9,7 @@ const PILLARS = [
     evidence: [
       "Sprouts.ai contact enrichment: FastAPI microservices with intelligent provider orchestration",
       "Hybrid LLM + deterministic services, caching, and async execution for reliability and cost control",
+      "Portfolio Concierge: grounded LLM chat on this site via Cloudflare Worker + Workers AI, with rate limits and daily quota kill-switch",
       "LangChain / LangGraph, RAG, prompt engineering, Hugging Face, OpenAI API (Technical Expertise)",
     ],
     links: [
