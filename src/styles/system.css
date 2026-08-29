@@ -1360,17 +1360,26 @@ img {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   gap: 8px;
-  margin-top: 8px;
+  margin: 8px 0 0;
+  padding: 0;
 }
 
 .stack-list li {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 0.72rem;
+  line-height: 1.2;
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 5px 8px;
+  white-space: nowrap;
 }
 
 .project-evidence-actions,
@@ -1980,6 +1989,14 @@ img {
   border-top: 1px solid var(--line);
 }
 
+.concierge-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
 .concierge-status {
   margin: 0;
   font-family: var(--font-mono);
@@ -1987,6 +2004,30 @@ img {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+.concierge-stop-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.concierge-stop-btn:hover,
+.concierge-stop-btn:focus-visible {
+  color: var(--bg-deep);
+  background: var(--accent);
+  border-color: var(--accent);
+  outline: none;
 }
 
 .concierge-form {

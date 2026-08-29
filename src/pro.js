@@ -84,8 +84,8 @@ export default function Pro() {
             <div className="evidence-block">
               <h3>Stack</h3>
               <ul className="stack-list">
-                {tools.map((tool) => (
-                  <li key={tool}>{tool}</li>
+                {tools.map((tool, i) => (
+                  <li key={`${tool}-${i}`}>{tool}</li>
                 ))}
               </ul>
             </div>
