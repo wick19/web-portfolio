@@ -1360,17 +1360,26 @@ img {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   gap: 8px;
-  margin-top: 8px;
+  margin: 8px 0 0;
+  padding: 0;
 }
 
 .stack-list li {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 0.72rem;
+  line-height: 1.2;
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 5px 8px;
+  white-space: nowrap;
 }
 
 .project-evidence-actions,
@@ -1980,6 +1989,14 @@ img {
   border-top: 1px solid var(--line);
 }
 
+.concierge-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
 .concierge-status {
   margin: 0;
   font-family: var(--font-mono);
@@ -1987,6 +2004,30 @@ img {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+.concierge-stop-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.concierge-stop-btn:hover,
+.concierge-stop-btn:focus-visible {
+  color: var(--bg-deep);
+  background: var(--accent);
+  border-color: var(--accent);
+  outline: none;
 }
 
 .concierge-form {
@@ -2031,10 +2072,94 @@ img {
   border-color: var(--accent);
 }
 
+.concierge-icon-ctl.is-voice-on {
+  border-radius: 12px;
+}
+
 .concierge-icon-ctl.is-listening {
   color: var(--accent);
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent-dim);
+}
+
+/* Voice talk-mode equalizer (headset → wave) */
+.voice-wave {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5px;
+  width: 20px;
+  height: 18px;
+}
+
+.voice-wave__bar {
+  display: block;
+  width: 2.5px;
+  height: 100%;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: center;
+  transform: scaleY(0.35);
+  opacity: 0.95;
+  will-change: transform;
+  transition: transform 60ms linear;
+}
+
+.voice-wave.is-idle .voice-wave__bar {
+  transition: none;
+}
+
+/* TTS output only — gentle wave while the concierge is speaking */
+.voice-wave.is-tts .voice-wave__bar {
+  animation: voice-wave-pulse 0.95s ease-in-out infinite;
+  animation-delay: calc(var(--bar-i) * 0.12s);
+}
+
+.voice-wave.is-tts .voice-wave__bar:nth-child(1),
+.voice-wave.is-tts .voice-wave__bar:nth-child(5) {
+  --wave-mid: 0.38;
+  --wave-peak: 0.72;
+}
+
+.voice-wave.is-tts .voice-wave__bar:nth-child(2),
+.voice-wave.is-tts .voice-wave__bar:nth-child(4) {
+  --wave-mid: 0.55;
+  --wave-peak: 0.92;
+}
+
+.voice-wave.is-tts .voice-wave__bar:nth-child(3) {
+  --wave-mid: 0.7;
+  --wave-peak: 1;
+}
+
+@keyframes voice-wave-pulse {
+  0%,
+  100% {
+    transform: scaleY(var(--wave-mid, 0.4));
+  }
+  50% {
+    transform: scaleY(var(--wave-peak, 0.9));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-wave__bar {
+    transition: none;
+  }
+
+  .voice-wave.is-tts .voice-wave__bar {
+    animation: none;
+    transform: scaleY(0.55);
+  }
+
+  .voice-wave.is-tts .voice-wave__bar:nth-child(3) {
+    transform: scaleY(0.9);
+  }
+
+  .voice-wave.is-tts .voice-wave__bar:nth-child(2),
+  .voice-wave.is-tts .voice-wave__bar:nth-child(4) {
+    transform: scaleY(0.7);
+  }
 }
 
 .concierge-voice-bar,

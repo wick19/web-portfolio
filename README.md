@@ -15,7 +15,7 @@ Full-stack AI/ML Engineer portfolio (FastAPI, LLMs, cloud-native backends).
 - React 18 + Vite
 - Custom carbon/cyan UI
 - Content driven from `src/customization/*.json`
-- **Portfolio Concierge** — multimodal Ask AI (LLM + voice I/O) on Cloudflare Workers AI
+- **Portfolio Concierge** — multimodal Ask AI (LLM + hybrid voice) on Cloudflare Workers AI
 
 ## Local development
 
@@ -38,15 +38,17 @@ Live product demo: a grounded LLM concierge over portfolio knowledge (experience
 
 | Layer | Detail |
 |--------|--------|
-| UI | `src/components/concierge/Concierge.jsx` |
-| Speech I/O | `src/lib/voice.js` — client-side STT/TTS orchestration (Web Speech API); keeps Workers AI quota on the chat model |
-| Client API | `src/lib/conciergeApi.js` |
-| Edge inference | Cloudflare Worker (`worker/`) + Workers AI `@cf/meta/llama-3.1-8b-instruct-fast` |
+| UI | `src/components/concierge/Concierge.jsx` + `VoiceWaveIcon.jsx` |
+| Speech I/O | `src/lib/voice.js` — **hybrid STT**: desktop Web Speech when available (0 STT Neurons); Firefox/mobile use `MediaRecorder` → Workers AI **Whisper** (`POST /stt`). TTS stays browser `speechSynthesis`. |
+| Client API | `src/lib/conciergeApi.js` — chat `POST /`, STT `POST /stt` |
+| Edge inference | Cloudflare Worker (`worker/`) + Workers AI `@cf/meta/llama-3.1-8b-instruct-fast` + `@cf/openai/whisper-tiny-en` |
 | Endpoint | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
 
-**Controls:** headset = continuous voice session · mic = single utterance · Send = text. Chromium recommended for speech recognition.
+**Controls:** headset = continuous voice session (wave while talking) · mic = single utterance · Send = text.
 
-**Architecture:** prompt-grounded generation (curated portfolio context in the system prompt), not a vector RAG store — the right fit for a fixed personal knowledge pack. Speech stays on-device so Workers AI Neurons are spent on reasoning, not transcription/TTS.
+**Browsers:** Chrome / Edge / Firefox / Safari (desktop + mobile) with mic permission. In-app WebViews that block the mic still need typing.
+
+**Architecture:** prompt-grounded generation (curated portfolio context in the system prompt), not a vector RAG store. Hybrid STT keeps free Neurons on reasoning when browser speech works; Whisper only when needed.
 
 Deploy / update the Worker:
 
@@ -65,13 +67,15 @@ npm run deploy
 
 ### Cost & abuse protection
 
-Text replies use **Cloudflare Workers AI** free Neurons; voice capture/playback is browser-side. Protections in the Worker:
+Text replies + Whisper STT use **Cloudflare Workers AI** free Neurons; browser Web Speech / TTS do not. Protections in the Worker:
 
 | Control | What it does |
 |---------|----------------|
 | Origin allowlist | Only `wick19.github.io` + local Vite origins can POST |
-| Rate limits | ~3/min/IP, ~10/hour/IP, ~120/day global (Cache API) |
-| Payload caps | Short messages, short history, low `max_tokens` |
+| Chat rate limits | ~3/min/IP, ~10/hour/IP, ~120/day global |
+| **STT rate limits** | Stricter: ~2/min/IP, ~6/hour/IP, ~40/day global |
+| **Audio caps** | ~8s / ~280KB max; reject tiny/huge payloads |
+| Payload caps (chat) | Short messages, short history, low `max_tokens` |
 | Kill switch | Set `CONCIERGE_ENABLED=false` in Worker vars → instant pause |
 | **Daily free-quota kill** | On Workers AI **4006** (10,000 Neurons/day used), auto-pause until **00:00 UTC** |
 | Optional token | `ACCESS_TOKEN` secret + `VITE_CONCIERGE_TOKEN` header |
