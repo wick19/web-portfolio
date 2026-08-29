@@ -51,3 +51,52 @@ export async function askConcierge(messages, opts = {}) {
 
   return { reply: data.reply, model: data.model };
 }
+
+/**
+ * Cloud STT via Workers AI Whisper (POST /stt).
+ * @param {Blob} blob
+ * @param {{ signal?: AbortSignal }} [opts]
+ */
+export async function transcribeAudio(blob, opts = {}) {
+  const base = getConciergeUrl();
+  if (!base) {
+    throw new Error("Concierge URL is not configured");
+  }
+  if (!blob || !blob.size) {
+    throw new Error("No audio to transcribe");
+  }
+
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": blob.type || "application/octet-stream",
+    "X-Audio-Format": blob.type || "audio/webm",
+  };
+  if (ACCESS_TOKEN) {
+    headers["X-Portfolio-Token"] = ACCESS_TOKEN;
+  }
+
+  const res = await fetch(`${base}/stt`, {
+    method: "POST",
+    headers,
+    body: blob,
+    signal: opts.signal,
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
+
+  if (!res.ok) {
+    throw new Error(data.error || `Transcription failed (${res.status})`);
+  }
+
+  const text = String(data.text || "").trim();
+  if (!text) {
+    throw new Error("Empty transcription");
+  }
+
+  return { text, model: data.model };
+}

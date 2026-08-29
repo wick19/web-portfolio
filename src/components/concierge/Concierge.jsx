@@ -3,14 +3,21 @@ import {
   askConcierge,
   getConciergeUrl,
   isConciergeConfigured,
+  transcribeAudio,
 } from "../../lib/conciergeApi";
 import {
-  canUseVoiceInput,
+  canUseAnyVoiceInput,
+  canUseCloudSttCapture,
   canUseVoiceOutput,
   createMicLevelMeter,
   createSpeechListener,
+  isMobileVoiceClient,
+  preferBrowserStt,
+  shouldUseMicMeter,
   speakText,
+  startCloudUtterance,
   stopSpeaking,
+  unlockSpeechAudio,
 } from "../../lib/voice";
 import VoiceWaveIcon from "./VoiceWaveIcon";
 
@@ -22,6 +29,8 @@ const SUGGESTIONS = [
 
 const WELCOME =
   "Ask about Ritwik’s experience, projects, thesis, or how to reach him. For the full picture, please go through the website — Home, Projects, Thesis, Experience, and Contact.";
+
+const SOFT_SPEECH_ERRORS = new Set(["no-speech", "aborted"]);
 
 function IconHeadset({ className }) {
   return (
@@ -65,6 +74,21 @@ function IconMic({ className }) {
   );
 }
 
+function IconStop({ className }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width="14"
+      height="14"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <rect x="6" y="6" width="12" height="12" rx="2" />
+    </svg>
+  );
+}
+
 function MessageBubble({ role, content }) {
   return (
     <div
@@ -82,9 +106,15 @@ export default function Concierge() {
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const listenerRef = useRef(null);
+  const cloudRecRef = useRef(null);
   const speakCancelRef = useRef(null);
   const voiceLoopRef = useRef(false);
   const meterRef = useRef(null);
+  const busyRef = useRef(false);
+  const listeningRef = useRef(false);
+  const restartTimerRef = useRef(0);
+  const useMeter = useRef(shouldUseMicMeter());
+  const useBrowserStt = useRef(preferBrowserStt());
 
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -96,8 +126,11 @@ export default function Concierge() {
   const [speaking, setSpeaking] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
-  const [voiceSupported] = useState(() => canUseVoiceInput());
+  const [voiceSupported] = useState(() => canUseAnyVoiceInput());
   const configured = isConciergeConfigured();
+
+  busyRef.current = busy;
+  listeningRef.current = listening;
 
   useEffect(() => {
     if (!open) return;
@@ -108,19 +141,21 @@ export default function Concierge() {
 
   useEffect(() => {
     return () => {
+      if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
       listenerRef.current?.abort();
+      cloudRecRef.current?.abort();
       meterRef.current?.stop();
       speakCancelRef.current?.();
       stopSpeaking();
     };
   }, []);
 
-  // Drive wave from real mic amplitude only while capturing
+  // Desktop browser-STT analyser only
   useEffect(() => {
-    if (!listening) {
+    if (!listening || !useMeter.current || !useBrowserStt.current) {
       meterRef.current?.stop();
       meterRef.current = null;
-      setMicLevel(0);
+      if (!listening) setMicLevel(0);
       return undefined;
     }
 
@@ -132,9 +167,7 @@ export default function Concierge() {
       },
     });
     meterRef.current = meter;
-    meter.start().catch(() => {
-      setMicLevel(0);
-    });
+    meter.start().catch(() => setMicLevel(0));
 
     return () => {
       meter.stop();
@@ -142,10 +175,38 @@ export default function Concierge() {
     };
   }, [listening]);
 
-  function stopVoiceCapture() {
-    listenerRef.current?.stop();
+  function clearRestartTimer() {
+    if (restartTimerRef.current) {
+      window.clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = 0;
+    }
+  }
+
+  function scheduleListenRestart(delayMs = 450) {
+    clearRestartTimer();
+    const wait = isMobileVoiceClient() ? Math.max(delayMs, 550) : delayMs;
+    restartTimerRef.current = window.setTimeout(() => {
+      restartTimerRef.current = 0;
+      if (
+        voiceLoopRef.current &&
+        !busyRef.current &&
+        !listeningRef.current
+      ) {
+        startListening({ loop: true });
+      }
+    }, wait);
+  }
+
+  function stopVoiceCapture({ abort = false } = {}) {
+    clearRestartTimer();
+    if (abort) listenerRef.current?.abort();
+    else listenerRef.current?.stop();
     listenerRef.current = null;
+    if (abort) cloudRecRef.current?.abort();
+    else cloudRecRef.current?.stop();
+    cloudRecRef.current = null;
     setListening(false);
+    setMicLevel(0);
   }
 
   function haltSpeech() {
@@ -158,14 +219,14 @@ export default function Concierge() {
   function closePanel() {
     voiceLoopRef.current = false;
     setVoiceOn(false);
-    stopVoiceCapture();
+    stopVoiceCapture({ abort: true });
     haltSpeech();
     setOpen(false);
   }
 
   async function send(text, { fromVoice = false } = {}) {
     const content = String(text || "").trim();
-    if (!content || busy) return;
+    if (!content || busyRef.current) return;
 
     if (!configured) {
       setError(
@@ -177,10 +238,11 @@ export default function Concierge() {
     const now = Date.now();
     if (now - lastSentAt < 2500) {
       setError("Slow down a second — short cooldown to protect the demo.");
+      if (voiceLoopRef.current) scheduleListenRestart(800);
       return;
     }
 
-    stopVoiceCapture();
+    stopVoiceCapture({ abort: true });
     haltSpeech();
 
     const next = [...messages, { role: "user", content }];
@@ -200,11 +262,11 @@ export default function Concierge() {
           onEnd: () => {
             setSpeaking(false);
             speakCancelRef.current = null;
-            if (voiceLoopRef.current) {
-              window.setTimeout(() => startListening({ loop: true }), 350);
-            }
+            if (voiceLoopRef.current) scheduleListenRestart(400);
           },
         });
+      } else if (voiceLoopRef.current) {
+        scheduleListenRestart(400);
       }
     } catch (err) {
       setError(err?.message || "Something went wrong");
@@ -215,40 +277,123 @@ export default function Concierge() {
     }
   }
 
-  function startListening({ loop = false } = {}) {
-    if (!voiceSupported || busy || listening) return;
+  async function startCloudListening({ loop = false } = {}) {
+    if (!canUseCloudSttCapture()) {
+      setError(
+        "This browser can’t record audio. Type your question, or try Chrome / Edge / Firefox / Safari."
+      );
+      return;
+    }
 
-    haltSpeech();
+    setListening(true);
     setError("");
 
+    try {
+      const rec = await startCloudUtterance({
+        maxMs: 8000,
+        silenceMs: 1400,
+        onLevel: (level) => {
+          setMicLevel((prev) =>
+            Math.abs(prev - level) < 0.045 ? prev : level
+          );
+        },
+      });
+      cloudRecRef.current = rec;
+
+      const blob = await rec.done;
+      cloudRecRef.current = null;
+      setListening(false);
+      setMicLevel(0);
+
+      if (!blob?.size || blob.size < 800) {
+        if (loop || voiceLoopRef.current) scheduleListenRestart(600);
+        return;
+      }
+
+      setInput("Transcribing…");
+      const { text } = await transcribeAudio(blob);
+      setInput(text);
+      if (text) await send(text, { fromVoice: true });
+      else if (loop || voiceLoopRef.current) scheduleListenRestart(500);
+    } catch (err) {
+      cloudRecRef.current = null;
+      setListening(false);
+      setMicLevel(0);
+      const msg = String(err?.message || err || "");
+      if (msg === "aborted") return;
+      if (/notallowed|permission|denied/i.test(msg)) {
+        setError("Microphone permission blocked — allow mic access to talk.");
+        voiceLoopRef.current = false;
+        setVoiceOn(false);
+        return;
+      }
+      setError(msg || "Couldn’t catch that — try again or type your question.");
+      if (loop || voiceLoopRef.current) scheduleListenRestart(900);
+    }
+  }
+
+  function startBrowserListening({ loop = false } = {}) {
     const listener = createSpeechListener({
       onPartial: (partial) => setInput(partial),
       onFinal: (finalText) => {
         setInput(finalText);
-        stopVoiceCapture();
+        stopVoiceCapture({ abort: true });
         if (finalText) send(finalText, { fromVoice: true });
+      },
+      onActivity: (active) => {
+        if (useMeter.current) return;
+        setMicLevel(active ? 0.72 : 0);
       },
       onError: (code) => {
         setListening(false);
         listenerRef.current = null;
+        setMicLevel(0);
+
         if (code === "not-allowed") {
           setError("Microphone permission blocked — allow mic access to talk.");
-        } else if (code !== "aborted" && code !== "no-speech") {
-          setError("Couldn’t catch that — try again or type your question.");
-        }
-        if (loop) {
           voiceLoopRef.current = false;
           setVoiceOn(false);
+          return;
         }
+
+        if (code === "network") {
+          // Fall back to cloud Whisper when Google speech network fails
+          if (canUseCloudSttCapture()) {
+            startCloudListening({ loop: loop || voiceLoopRef.current });
+            return;
+          }
+          setError(
+            "Speech service needs network. Check connectivity or type your question."
+          );
+          if (loop || voiceLoopRef.current) scheduleListenRestart(1200);
+          return;
+        }
+
+        if (SOFT_SPEECH_ERRORS.has(code)) {
+          if (loop || voiceLoopRef.current) scheduleListenRestart(500);
+          return;
+        }
+
+        setError("Couldn’t catch that — try again or type your question.");
+        if (loop || voiceLoopRef.current) scheduleListenRestart(700);
       },
-      onEnd: () => {
+      onEnd: ({ committed, stoppedByUs } = {}) => {
         setListening(false);
         listenerRef.current = null;
+        setMicLevel(0);
+        if (
+          !committed &&
+          !stoppedByUs &&
+          voiceLoopRef.current &&
+          !busyRef.current
+        ) {
+          scheduleListenRestart(500);
+        }
       },
     });
 
     if (!listener) {
-      setError("Voice input isn’t supported in this browser. Try Chrome.");
+      startCloudListening({ loop });
       return;
     }
 
@@ -257,11 +402,26 @@ export default function Concierge() {
     listener.start();
   }
 
+  function startListening({ loop = false } = {}) {
+    if (!voiceSupported || busyRef.current || listeningRef.current) return;
+
+    haltSpeech();
+    setError("");
+    clearRestartTimer();
+
+    if (useBrowserStt.current) {
+      startBrowserListening({ loop });
+    } else {
+      startCloudListening({ loop });
+    }
+  }
+
   function toggleMic() {
     if (listening) {
-      stopVoiceCapture();
+      stopVoiceCapture({ abort: true });
       return;
     }
+    unlockSpeechAudio();
     startListening({ loop: voiceLoopRef.current });
   }
 
@@ -269,17 +429,31 @@ export default function Concierge() {
     if (voiceOn) {
       voiceLoopRef.current = false;
       setVoiceOn(false);
-      stopVoiceCapture();
+      stopVoiceCapture({ abort: true });
       haltSpeech();
       return;
     }
     if (!voiceSupported) {
-      setError("Voice mode needs Chrome/Edge (or Safari with speech support).");
+      setError(
+        "Voice needs mic access in Chrome, Edge, Firefox, or Safari."
+      );
       return;
     }
+    unlockSpeechAudio();
     voiceLoopRef.current = true;
     setVoiceOn(true);
     startListening({ loop: true });
+  }
+
+  /** Explicit Stop — ends voice mode, mic capture, and TTS. */
+  function stopAllVoice() {
+    voiceLoopRef.current = false;
+    setVoiceOn(false);
+    stopVoiceCapture({ abort: true });
+    haltSpeech();
+    if (input === "Transcribing…" || input === "Listening…") {
+      setInput("");
+    }
   }
 
   function onSubmit(e) {
@@ -362,13 +536,24 @@ export default function Concierge() {
 
           <div className="concierge-composer">
             {(listening || speaking || voiceOn) && (
-              <p className="concierge-status" aria-live="polite">
-                {listening
-                  ? "Listening…"
-                  : speaking
-                    ? "Speaking…"
-                    : "Voice mode on"}
-              </p>
+              <div className="concierge-status-row">
+                <p className="concierge-status" aria-live="polite">
+                  {listening
+                    ? "Listening…"
+                    : speaking
+                      ? "Speaking…"
+                      : "Voice mode on"}
+                </p>
+                <button
+                  type="button"
+                  className="concierge-stop-btn"
+                  onClick={stopAllVoice}
+                  aria-label="Stop voice and listening"
+                  title="Stop"
+                >
+                  <IconStop />
+                </button>
+              </div>
             )}
 
             <form className="concierge-form" onSubmit={onSubmit}>
@@ -394,10 +579,7 @@ export default function Concierge() {
                 }
               >
                 {voiceOn ? (
-                  <VoiceWaveIcon
-                    level={micLevel}
-                    speakingOut={speaking}
-                  />
+                  <VoiceWaveIcon level={micLevel} speakingOut={speaking} />
                 ) : (
                   <IconHeadset />
                 )}
