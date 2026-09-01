@@ -8,15 +8,7 @@ import SiteHeader from "./components/site/SiteHeader";
 import SiteFooter from "./components/site/SiteFooter";
 import HomePage from "./components/home/HomePage";
 import Concierge from "./components/concierge/Concierge";
-
-function getHashRoute(hashValue) {
-  if (hashValue === "#projects-page") return "projects";
-  if (hashValue === "#thesis-page") return "thesis";
-  if (hashValue === "#experience-page") return "experience";
-  if (hashValue === "#certification-page") return "certification";
-  if (hashValue === "#contact-page") return "contact";
-  return "home";
-}
+import { getHashRoute, parseAppHash } from "./lib/hashRoutes";
 
 function App() {
   const [hash, setHash] = useState(window.location.hash || "#home");
@@ -37,7 +29,8 @@ function App() {
       return;
     }
 
-    const sectionId = (hash || "#home").replace("#", "");
+    const { path } = parseAppHash(hash);
+    const sectionId = path.replace("#", "") || "home";
     const target = document.getElementById(sectionId);
 
     if (target) {
@@ -56,7 +49,7 @@ function App() {
       ) : currentPage === "thesis" ? (
         <ThesisPage />
       ) : currentPage === "experience" ? (
-        <ExperiencePage />
+        <ExperiencePage hash={hash} />
       ) : currentPage === "certification" ? (
         <CertificationPage />
       ) : currentPage === "contact" ? (

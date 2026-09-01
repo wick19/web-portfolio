@@ -27,27 +27,77 @@ export function canUseAnyVoiceInput() {
 }
 
 /**
- * Prefer free on-device STT on desktop when available.
- * Mobile + Firefox use cloud Whisper (universal + more reliable).
+ * Prefer free on-device STT whenever the browser exposes it (desktop + mobile
+ * Chrome/Safari). Whisper is for Firefox / missing API / soft fallbacks.
+ * Never pair a second getUserMedia meter with SpeechRecognition on mobile.
  */
 export function preferBrowserStt() {
-  return canUseVoiceInput() && !isMobileVoiceClient();
+  return canUseVoiceInput();
 }
 
 export function canUseVoiceOutput() {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
-/** Desktop analyser only when using browser STT (not dual-mic with SpeechRecognition on mobile). */
+/** Analyser mic meter only on desktop browser-STT (avoids Android mic conflicts). */
 export function shouldUseMicMeter() {
   if (typeof navigator === "undefined") return false;
   if (!preferBrowserStt()) return false;
+  if (isMobileVoiceClient()) return false;
   return Boolean(window.AudioContext || window.webkitAudioContext);
 }
 
 export function isMobileVoiceClient() {
   if (typeof navigator === "undefined") return false;
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+}
+
+/**
+ * LinkedIn / Instagram / Facebook / generic WebViews often block or break mic access.
+ * Detect so the UI can nudge visitors to open in Chrome/Safari.
+ */
+export function isInAppBrowser() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return (
+    /LinkedInApp|LinkedInBot|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|MicroMessenger/i.test(
+      ua
+    ) ||
+    // Android WebView marker (LinkedIn/in-app browsers)
+    (/Android/i.test(ua) && /; wv\)/i.test(ua)) ||
+    // iOS in-app often lacks "Safari" while including mobile markers
+    (/iPhone|iPad|iPod/i.test(ua) &&
+      !/Safari/i.test(ua) &&
+      /AppleWebKit/i.test(ua))
+  );
+}
+
+/** Best-effort link to leave an in-app WebView for real Chrome/Safari. */
+export function getExternalBrowserUrl(pageUrl = "https://wick19.github.io/web-portfolio/") {
+  if (typeof navigator === "undefined") return pageUrl;
+  const ua = navigator.userAgent || "";
+  if (/Android/i.test(ua)) {
+    const hostPath = pageUrl.replace(/^https?:\/\//, "");
+    return `intent://${hostPath}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(pageUrl)};end`;
+  }
+  return pageUrl;
+}
+
+/**
+ * Ask for mic once (then release). Helps Android/iOS show the permission prompt
+ * before Web Speech starts — otherwise recognition can "listen" with no audio.
+ */
+export async function ensureMicPermission() {
+  if (!navigator.mediaDevices?.getUserMedia) return;
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+    video: false,
+  });
+  stream.getTracks().forEach((t) => t.stop());
 }
 
 /**
@@ -399,7 +449,8 @@ export function pickRecorderMimeType() {
  */
 export async function startCloudUtterance({
   maxMs = 8000,
-  silenceMs = 1400,
+  silenceMs = 1800,
+  minMs = 2200,
   onLevel,
 } = {}) {
   if (!canUseCloudSttCapture()) {
@@ -427,6 +478,7 @@ export async function startCloudUtterance({
   let ctx = null;
   let heardSpeech = false;
   let aborted = false;
+  const startedAt = Date.now();
 
   const AC = window.AudioContext || window.webkitAudioContext;
   if (AC) {
@@ -446,10 +498,11 @@ export async function startCloudUtterance({
         const bins = Math.min(40, data.length);
         for (let i = 0; i < bins; i += 1) sum += data[i];
         const avg = sum / bins / 255;
-        const level = avg < 0.08 ? 0 : Math.min(1, (avg - 0.08) / 0.42);
+        const level = avg < 0.1 ? 0 : Math.min(1, (avg - 0.1) / 0.4);
         if (onLevel) onLevel(level);
 
-        if (level > 0.12) {
+        const elapsed = Date.now() - startedAt;
+        if (level > 0.18) {
           heardSpeech = true;
           if (silenceTimer) {
             window.clearTimeout(silenceTimer);
@@ -457,6 +510,7 @@ export async function startCloudUtterance({
           }
         } else if (
           heardSpeech &&
+          elapsed >= minMs &&
           !silenceTimer &&
           recorder.state === "recording"
         ) {
