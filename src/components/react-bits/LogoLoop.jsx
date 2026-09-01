@@ -253,13 +253,17 @@ export const LogoLoop = memo(
           />
         );
         const itemAriaLabel = isNodeItem ? (item.ariaLabel ?? item.title) : (item.alt ?? item.title);
+        const isExternal =
+          typeof item.href === 'string' &&
+          /^(https?:)?\/\//i.test(item.href);
         const itemContent = item.href ? (
           <a
             className="logoloop__link"
             href={item.href}
             aria-label={itemAriaLabel || 'logo link'}
-            target="_blank"
-            rel="noreferrer noopener"
+            {...(isExternal
+              ? { target: '_blank', rel: 'noreferrer noopener' }
+              : {})}
           >
             {content}
           </a>
