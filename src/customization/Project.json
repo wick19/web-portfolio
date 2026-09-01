@@ -14,7 +14,7 @@
     {
       "project_img": "",
       "project_name": "Portfolio Concierge — Live AI Demo",
-      "project_about": "Interactive Ask AI on this portfolio: text or voice, grounded in experience/projects/thesis via a Cloudflare Worker + Workers AI (Llama). Hybrid speech — free Web Speech on desktop Chrome/Edge/Safari, Workers AI Whisper STT for Firefox/mobile — with origin allowlisting, rate limits, short-audio caps, and a daily free-quota kill-switch.",
+      "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by conversation (text or voice). React UI with a Cloudflare Worker and Workers AI — hybrid speech (Web Speech on desktop where available; Whisper STT for Firefox/mobile), plus origin allowlisting, rate limits, short-audio caps, and a daily free-quota kill-switch.",
       "project_tool": "React, Vite, Web Speech API, MediaRecorder, Cloudflare Workers, Workers AI, Whisper STT, rate limiting",
       "project_link": "https://wick19.github.io/web-portfolio/",
       "featured": false,

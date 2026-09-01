@@ -11,6 +11,9 @@ import {
   canUseVoiceOutput,
   createMicLevelMeter,
   createSpeechListener,
+  ensureMicPermission,
+  getExternalBrowserUrl,
+  isInAppBrowser,
   isMobileVoiceClient,
   preferBrowserStt,
   shouldUseMicMeter,
@@ -28,9 +31,15 @@ const SUGGESTIONS = [
 ];
 
 const WELCOME =
-  "Ask about Ritwik’s experience, projects, thesis, or how to reach him. For the full picture, please go through the website — Home, Projects, Thesis, Experience, and Contact.";
+  "Ask about Ritwik’s experience, projects, thesis, or how to reach him — by text or voice. For the full picture, also browse Home, Projects, Thesis, Experience, and Contact.";
 
+const PORTFOLIO_URL = "https://wick19.github.io/web-portfolio/";
+const EXTERNAL_BROWSER_URL = getExternalBrowserUrl(PORTFOLIO_URL);
 const SOFT_SPEECH_ERRORS = new Set(["no-speech", "aborted"]);
+
+function inAppVoiceHint() {
+  return "Voice needs a full browser with mic permission. If you opened this from LinkedIn, use ⋯ → Open in browser (Safari/Chrome). Text chat still works here.";
+}
 
 function IconHeadset({ className }) {
   return (
@@ -127,6 +136,7 @@ export default function Concierge() {
   const [voiceOn, setVoiceOn] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
   const [voiceSupported] = useState(() => canUseAnyVoiceInput());
+  const [inAppBrowser] = useState(() => isInAppBrowser());
   const configured = isConciergeConfigured();
 
   busyRef.current = busy;
@@ -291,7 +301,8 @@ export default function Concierge() {
     try {
       const rec = await startCloudUtterance({
         maxMs: 8000,
-        silenceMs: 1400,
+        silenceMs: isMobileVoiceClient() ? 2000 : 1800,
+        minMs: 2200,
         onLevel: (level) => {
           setMicLevel((prev) =>
             Math.abs(prev - level) < 0.045 ? prev : level
@@ -322,7 +333,11 @@ export default function Concierge() {
       const msg = String(err?.message || err || "");
       if (msg === "aborted") return;
       if (/notallowed|permission|denied/i.test(msg)) {
-        setError("Microphone permission blocked — allow mic access to talk.");
+        setError(
+          inAppBrowser
+            ? inAppVoiceHint()
+            : "Microphone permission blocked — allow mic access to talk."
+        );
         voiceLoopRef.current = false;
         setVoiceOn(false);
         return;
@@ -332,7 +347,22 @@ export default function Concierge() {
     }
   }
 
-  function startBrowserListening({ loop = false } = {}) {
+  async function startBrowserListening({ loop = false } = {}) {
+    try {
+      if (isMobileVoiceClient()) {
+        await ensureMicPermission();
+      }
+    } catch {
+      setError(
+        inAppBrowser
+          ? inAppVoiceHint()
+          : "Microphone permission blocked — allow mic access to talk."
+      );
+      voiceLoopRef.current = false;
+      setVoiceOn(false);
+      return;
+    }
+
     const listener = createSpeechListener({
       onPartial: (partial) => setInput(partial),
       onFinal: (finalText) => {
@@ -350,7 +380,11 @@ export default function Concierge() {
         setMicLevel(0);
 
         if (code === "not-allowed") {
-          setError("Microphone permission blocked — allow mic access to talk.");
+          setError(
+            inAppBrowser
+              ? inAppVoiceHint()
+              : "Microphone permission blocked — allow mic access to talk."
+          );
           voiceLoopRef.current = false;
           setVoiceOn(false);
           return;
@@ -402,7 +436,7 @@ export default function Concierge() {
     listener.start();
   }
 
-  function startListening({ loop = false } = {}) {
+  async function startListening({ loop = false } = {}) {
     if (!voiceSupported || busyRef.current || listeningRef.current) return;
 
     haltSpeech();
@@ -410,9 +444,9 @@ export default function Concierge() {
     clearRestartTimer();
 
     if (useBrowserStt.current) {
-      startBrowserListening({ loop });
+      await startBrowserListening({ loop });
     } else {
-      startCloudListening({ loop });
+      await startCloudListening({ loop });
     }
   }
 
@@ -486,6 +520,18 @@ export default function Concierge() {
           </header>
 
           <p className="concierge-lede">{WELCOME}</p>
+
+          {inAppBrowser ? (
+            <p className="concierge-browser-hint">
+              Voice needs Safari/Chrome — LinkedIn’s in-app view often blocks the
+              mic. Use{" "}
+              <strong>⋯ → Open in browser</strong>, or{" "}
+              <a href={EXTERNAL_BROWSER_URL} rel="noreferrer">
+                open here
+              </a>
+              . Text chat works either way.
+            </p>
+          ) : null}
 
           <div className="concierge-suggestions" aria-label="Suggested questions">
             {messages.length === 0

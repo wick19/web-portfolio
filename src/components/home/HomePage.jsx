@@ -7,6 +7,7 @@ import CapabilityAtlas from "./CapabilityAtlas";
 import EvidenceTag from "../site/EvidenceTag";
 import LogoLoop from "../react-bits/LogoLoop";
 import { useProductMode } from "../../ProductModeContext";
+import { PROOF_ORG_LINKS } from "../../lib/hashRoutes";
 
 const socialLinks = [
   { label: "GitHub", href: IntroRaw.github },
@@ -14,24 +15,13 @@ const socialLinks = [
   { label: "Email", href: `mailto:${ContactRaw.email}` },
 ];
 
-const proofOrgs = [
-  { label: "Sprouts.ai", href: "#experience-page" },
-  { label: "TekGigz", href: "#experience-page" },
-  { label: "PTC Onshape", href: "#experience-page" },
-  { label: "Adidas", href: "#experience-page" },
-  { label: "MS CIS", href: "#experience-page" },
-  { label: "USM", href: "#experience-page" },
-  { label: "SRM", href: "#experience-page" },
-];
+const proofOrgs = PROOF_ORG_LINKS;
 
 const proofLoopItems = proofOrgs.map((org) => ({
-  node: (
-    <a className="proof-loop-link" href={org.href}>
-      {org.label}
-    </a>
-  ),
+  node: <span className="proof-loop-link">{org.label}</span>,
   ariaLabel: org.label,
   title: org.label,
+  href: org.href,
 }));
 
 function ProofOrgRail({ useLoop, direction = "left", labelledBy }) {
@@ -48,7 +38,6 @@ function ProofOrgRail({ useLoop, direction = "left", labelledBy }) {
           gap={48}
           logoHeight={22}
           fadeOut
-          fadeOutColor="#111315"
           pauseOnHover
           ariaLabel={labelledBy || "Organizations and education"}
           className="proof-logo-loop"
