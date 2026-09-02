@@ -13,3 +13,7 @@ CONCIERGE_ENABLED = "true"
 
 # Optional shared token (also set the same value in site .env.local as VITE_CONCIERGE_TOKEN):
 #   npx wrangler secret put ACCESS_TOKEN
+
+# Warm LeetCode stats daily (06:00 UTC) so Contact proof stays fresh without a site visit
+[triggers]
+crons = ["0 6 * * *"]

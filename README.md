@@ -15,6 +15,7 @@ Full-stack AI/ML Engineer portfolio: production systems narrative, research proo
 - **Product surface** — evidence-led Home, Projects, Thesis, Experience, Certification, Contact (JSON-driven content)
 - **Interactive Concierge** — grounded Ask AI (text + voice) over portfolio facts, not a toy chatbot
 - **Edge AI stack** — Cloudflare Worker + Workers AI (Llama chat, Whisper STT when needed)
+- **Scheduled live data plane** — Worker Cron Triggers warm a shared Cache API snapshot so public stats stay fresh without depending on a browser visit
 - **Responsible free-tier design** — origin allowlist, dual rate limits, audio caps, daily Neurons kill-switch
 - **UX polish** — light/dark theme, deep-linked org rail → Experience tabs, in-app browser voice guidance
 
@@ -23,7 +24,8 @@ Full-stack AI/ML Engineer portfolio: production systems narrative, research proo
 - React 18 + Vite, custom carbon/cyan design system (`src/styles/system.css`)
 - Content from `src/customization/*.json`
 - **Portfolio Concierge** — hybrid speech + Workers AI inference
-- GitHub Pages (`gh-pages`) for the static site; Cloudflare Worker for inference
+- Cloudflare Worker Cron Triggers + Cache API for scheduled live stats refresh
+- GitHub Pages (`gh-pages`) for the static site; Cloudflare Worker for inference + data plane
 
 ## Local development
 
@@ -62,6 +64,21 @@ Live demo: prompt-grounded LLM over curated portfolio knowledge (experience, pro
 | Endpoint | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
 
 **Architecture choice:** prompt-grounded generation (fixed personal knowledge pack in the system prompt), not a vector RAG store — correct fit for a bounded portfolio corpus. Speech stays client-side when the browser supports it so Neurons go to reasoning; Whisper is the universal fallback (Firefox / missing Web Speech).
+
+### Automated live data refresh (edge cron + cache)
+
+Beyond inference, the same Worker runs a **scheduled upstream pull** so Contact-facing proof metrics stay current without a client-driven poll loop.
+
+| Piece | Implementation |
+|--------|----------------|
+| Trigger | Cloudflare **Cron Triggers** — `0 6 * * *` (06:00 UTC daily) via `wrangler.toml` `[triggers]` |
+| Handler | Worker `scheduled()` → `ctx.waitUntil(refresh…)` so the cron finishes after the response path returns |
+| Upstream call | Server-side `fetch` to the public stats API; normalize + validate payload before write |
+| Shared store | **Cache API** key (`concierge.cache/…`) with `Cache-Control: max-age` aligned to next UTC midnight |
+| Read path | `GET /leetcode` — cache hit returns the daily snapshot; miss refreshes on demand (same code path as cron) |
+| Client | Site prefers `VITE_CONCIERGE_URL/leetcode`; short browser TTL; falls back to direct upstream if the Worker is unreachable |
+
+**Why this shape:** the source of truth lives at the edge, not in each visitor’s `localStorage`. A single scheduled job amortizes the upstream call; every subsequent page load reads a warm snapshot. That is the same pattern used for low-cost “live” badges and third-party KPI surfaces when you do not need a full database.
 
 Deploy / update the Worker:
 
