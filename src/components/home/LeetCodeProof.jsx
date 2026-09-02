@@ -46,7 +46,7 @@ export default function LeetCodeProof() {
         <p className="section-label">// Algorithms</p>
         <h2 id="leetcode-heading">LeetCode</h2>
         <p className="section-lede">
-          Live problem-solving stats — refreshed at most once per day.
+          Live problem-solving stats — refreshed daily by the portfolio Worker.
         </p>
       </div>
 

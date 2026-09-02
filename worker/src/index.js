@@ -1,4 +1,8 @@
 import { SYSTEM_PROMPT } from "./knowledge.js";
+import {
+  getOrRefreshLeetCode,
+  refreshLeetCodeCache,
+} from "./leetcode.js";
 
 const ALLOWED_ORIGINS = [
   "https://wick19.github.io",
@@ -455,6 +459,23 @@ export default {
     }
 
     if (request.method === "GET") {
+      if (path === "/leetcode") {
+        try {
+          const data = await getOrRefreshLeetCode();
+          return json(data, 200, origin);
+        } catch (err) {
+          return json(
+            {
+              ok: false,
+              error: "LeetCode stats unavailable",
+              detail: String(err?.message || err),
+            },
+            502,
+            origin
+          );
+        }
+      }
+
       const quotaPaused = await isDailyQuotaKilled(caches.default);
       return json(
         {
@@ -468,7 +489,11 @@ export default {
           freeNeuronsPerDay: FREE_NEURONS_PER_DAY,
           quotaPaused,
           resetsAt: "00:00 UTC",
-          endpoints: { chat: "POST /", stt: "POST /stt" },
+          endpoints: {
+            chat: "POST /",
+            stt: "POST /stt",
+            leetcode: "GET /leetcode",
+          },
         },
         200,
         origin
@@ -487,5 +512,14 @@ export default {
     }
 
     return handleChat(request, env, origin);
+  },
+
+  /** Daily cron — pull LeetCode into Cache API (no site visit needed). */
+  async scheduled(_event, _env, ctx) {
+    ctx.waitUntil(
+      refreshLeetCodeCache().catch((err) => {
+        console.error("LeetCode cron refresh failed:", err);
+      })
+    );
   },
 };
