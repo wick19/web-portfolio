@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ExpRaw from "./customization/Experience.json";
 import EduRaw from "./customization/Education.json";
 import sproutsLogo from "./img/sprot_logo.jpeg";
@@ -7,6 +7,11 @@ import onshapeLogo from "./img/ons.jpeg";
 import adidasLogo from "./img/adi.png";
 import usmLogo from "./img/usm.png";
 import srmLogo from "./img/Srmseal.png";
+import {
+  isEducationOrg,
+  matchExperienceOrg,
+  parseAppHash,
+} from "./lib/hashRoutes";
 
 const LOGO_BY_PATH = {
   "./img/sprot_logo.jpeg": sproutsLogo,
@@ -21,12 +26,62 @@ function resolveLogo(path) {
   return LOGO_BY_PATH[path] || null;
 }
 
-export default function ExperiencePage() {
+function schoolKey(school) {
+  const name = (school?.name || "").toLowerCase();
+  if (name.includes("southern mississippi") || name.includes("usm")) {
+    return "usm";
+  }
+  if (name.includes("srm")) return "srm";
+  return "";
+}
+
+export default function ExperiencePage({ hash = "" }) {
   const roles = ExpRaw.companies || [];
   const schools = EduRaw.schools || [];
   const [activeIndex, setActiveIndex] = useState(0);
-  const active = useMemo(() => roles[activeIndex] || roles[0], [roles, activeIndex]);
+  const [focusEdu, setFocusEdu] = useState("");
+  const active = useMemo(
+    () => roles[activeIndex] || roles[0],
+    [roles, activeIndex]
+  );
   const activeLogo = resolveLogo(active?.logo);
+
+  useEffect(() => {
+    const apply = (hashValue) => {
+      const { org } = parseAppHash(hashValue || window.location.hash);
+      if (!org) {
+        setFocusEdu("");
+        return;
+      }
+
+      if (isEducationOrg(org)) {
+        const key = org === "ms-cis" ? "usm" : org;
+        setFocusEdu(key);
+        window.setTimeout(() => {
+          const el =
+            document.getElementById(`edu-${key}`) ||
+            document.getElementById("edu-heading");
+          el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 80);
+        return;
+      }
+
+      const idx = roles.findIndex((role) =>
+        matchExperienceOrg(role.name, org)
+      );
+      if (idx >= 0) {
+        setActiveIndex(idx);
+        setFocusEdu("");
+        window.setTimeout(() => {
+          document
+            .getElementById("experience-story")
+            ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 80);
+      }
+    };
+
+    apply(hash);
+  }, [hash, roles]);
 
   if (!active) return null;
 
@@ -57,7 +112,10 @@ export default function ExperiencePage() {
                     ? "experience-rail-item is-active"
                     : "experience-rail-item"
                 }
-                onClick={() => setActiveIndex(index)}
+                onClick={() => {
+                  setActiveIndex(index);
+                  setFocusEdu("");
+                }}
               >
                 <span className="experience-rail-head">
                   {logo ? (
@@ -80,7 +138,11 @@ export default function ExperiencePage() {
           })}
         </div>
 
-        <article className="experience-story" role="tabpanel">
+        <article
+          className="experience-story"
+          id="experience-story"
+          role="tabpanel"
+        >
           <div className="experience-meta-row">
             <div className="experience-meta-main">
               {activeLogo ? (
@@ -132,8 +194,16 @@ export default function ExperiencePage() {
         <ul>
           {schools.map((school) => {
             const logo = resolveLogo(school.logo);
+            const key = schoolKey(school);
+            const highlighted = focusEdu && focusEdu === key;
             return (
-              <li key={school.name} className="academic-row">
+              <li
+                key={school.name}
+                id={key ? `edu-${key}` : undefined}
+                className={
+                  highlighted ? "academic-row is-focused" : "academic-row"
+                }
+              >
                 {logo ? (
                   <img
                     className="experience-logo experience-logo-lg"

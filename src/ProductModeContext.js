@@ -4,11 +4,29 @@ const ProductModeContext = createContext({
   cinema: true,
   setCinema: () => {},
   reducedMotion: false,
+  theme: "dark",
+  setTheme: () => {},
+  toggleTheme: () => {},
 });
+
+const THEME_KEY = "portfolio-theme";
+
+function readStoredTheme() {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    /* ignore */
+  }
+  return "dark";
+}
 
 export function ProductModeProvider({ children }) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [cinema, setCinema] = useState(true);
+  const [theme, setThemeState] = useState(() =>
+    typeof window !== "undefined" ? readStoredTheme() : "dark"
+  );
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -22,19 +40,44 @@ export function ProductModeProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    document.documentElement.dataset.mode = cinema && !reducedMotion ? "product" : "screen";
+    document.documentElement.dataset.mode =
+      cinema && !reducedMotion ? "product" : "screen";
   }, [cinema, reducedMotion]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      /* ignore */
+    }
+  }, [theme]);
+
+  const setTheme = (next) => {
+    setThemeState(next === "light" ? "light" : "dark");
+  };
+
+  const toggleTheme = () => {
+    setThemeState((prev) => (prev === "light" ? "dark" : "light"));
+  };
 
   const value = useMemo(
     () => ({
       cinema: cinema && !reducedMotion,
       setCinema,
       reducedMotion,
+      theme,
+      setTheme,
+      toggleTheme,
     }),
-    [cinema, reducedMotion]
+    [cinema, reducedMotion, theme]
   );
 
-  return <ProductModeContext.Provider value={value}>{children}</ProductModeContext.Provider>;
+  return (
+    <ProductModeContext.Provider value={value}>
+      {children}
+    </ProductModeContext.Provider>
+  );
 }
 
 export function useProductMode() {
