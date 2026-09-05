@@ -12,7 +12,7 @@ Portfolio: https://wick19.github.io/web-portfolio/
 GitHub: https://github.com/wick19
 LinkedIn: https://www.linkedin.com/in/ritwik-k-527914151/
 LeetCode: https://leetcode.com/u/wick19/
-Resume (PDF): https://drive.google.com/file/d/1Pu-Y8YigNo-lJYwXHzi2lZndeNZ3FXQK/view?usp=sharing
+Resume (PDF): https://drive.google.com/file/d/1mTKXffz8l3aTCHOKyOdpT_1WRVtlZYSr/view?usp=sharing
 Email: ritwikshandilya1999@gmail.com
 Phone: +91 7250146461
 

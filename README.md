@@ -8,7 +8,7 @@ Full-stack AI/ML Engineer portfolio: production systems narrative, research proo
 
 ## Resume
 
-[View resume (PDF)](https://drive.google.com/file/d/1Pu-Y8YigNo-lJYwXHzi2lZndeNZ3FXQK/view?usp=sharing)
+[View resume (PDF)](https://drive.google.com/file/d/1mTKXffz8l3aTCHOKyOdpT_1WRVtlZYSr/view?usp=sharing)
 
 ## What this site demonstrates
 
