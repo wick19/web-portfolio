@@ -4,7 +4,7 @@
  * - Firefox / mobile / fallback: MediaRecorder → Workers AI Whisper
  * - Hands-free: “Hey Wick” after Ask AI is open; Wait holds the follow-up window
  * - Follow-up listen resets while the visitor talks; Stop / Wick stop / ■ ends the turn
- * - Auto language: reply and TTS follow the latest utterance (script + romanized cues, e.g. tumi / aap / hola)
+ * - Auto language: reply and TTS follow the latest utterance (script + romanized cues, e.g. tumi / aap / hola, etc.)
  */
 
 export function getSpeechRecognitionCtor() {
@@ -195,6 +195,14 @@ export function detectLangFromText(text) {
   if (/\b(aap|kaise|kya hai|namaste|hindi)\b/i.test(src)) {
     return "hi-IN";
   }
+  if (/\b(meeru|ela unnaru|telugu)\b/i.test(src)) return "te-IN";
+  if (/\b(tumhi|kasa aahat|marathi)\b/i.test(src)) return "mr-IN";
+  if (/\b(neenga|eppadi|tamil)\b/i.test(src)) return "ta-IN";
+  if (/\b(tame|kem cho|gujarati)\b/i.test(src)) return "gu-IN";
+  if (/\b(neevu|hegiddira|kannada)\b/i.test(src)) return "kn-IN";
+  if (/\b(ningal|engane|malayalam)\b/i.test(src)) return "ml-IN";
+  if (/\b(tusi|ki haal|punjabi)\b/i.test(src)) return "pa-IN";
+  if (/\b(shukriya|urdu)\b/i.test(src)) return "ur-IN";
   return null;
 }
 

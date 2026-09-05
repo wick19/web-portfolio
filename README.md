@@ -85,11 +85,11 @@ The turn loop is listen → think → speak → listen. Chrome speech alternativ
 
 ### Language support
 
-**Auto** detects the latest message (script, and common romanized cues such as Bengali *tumi*, Hindi *aap*, Spanish *hola*) and tells the Worker to reply entirely in that language. Spoken output uses the same locale. An explicit picker language overrides Auto.
+**Auto** detects the latest message (script, and common romanized cues such as Bengali *tumi*, Hindi *aap*, Spanish *hola*, etc.) and replies in that language for every locale this demo supports: English, Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Spanish, French, and German. Spoken output uses the same locale. An explicit picker language overrides Auto.
 
 | Group | Selectable languages |
 |---|---|
-| Auto | Detect from the latest message (Bengali / Hindi / Spanish in → same language out) |
+| Auto | Script + romanized cues (Bengali *tumi*, Hindi *aap*, Spanish *hola*, etc.) → reply in that language |
 | English | English · English (India) |
 | India | Hindi (हिन्दी) · Bengali (বাংলা) · Telugu (తెలుగు) · Marathi (मराठी) · Tamil (தமிழ்) · Gujarati (ગુજરાતી) · Kannada (ಕನ್ನಡ) · Malayalam (മലയാളം) · Punjabi (ਪੰਜਾਬੀ) · Urdu (اردو) |
 | Europe | Spanish (Español) · French (Français) · German (Deutsch) |
