@@ -14,8 +14,11 @@ import {
   createSpeechListener,
   ensureMicPermission,
   getExternalBrowserUrl,
+  detectLangFromText,
+  inferReplyLang,
   isInAppBrowser,
   isMobileVoiceClient,
+  languageDisplayName,
   parseInterruptUtterance,
   parseWakeUtterance,
   preferBrowserStt,
@@ -39,10 +42,11 @@ const SUGGESTIONS = [
 ];
 
 const WELCOME = "Ask about experience, projects, thesis, or how to reach him.";
-const VOICE_HINT = `Say “Hey ${WAKE_WORD}” or tap the mic. After an answer you have 6 seconds to follow up.`;
+const VOICE_HINT = `Say “Hey ${WAKE_WORD}” or tap the mic. After an answer, keep talking — it waits for you.`;
 
 const LANG_KEY = "portfolio:concierge-lang";
-const FOLLOWUP_MS = 6000;
+const FOLLOWUP_MS = 14000;
+const POST_TTS_LISTEN_MS = 450;
 const PORTFOLIO_URL = "https://wick19.github.io/web-portfolio/";
 
 function playWakeChime() {
@@ -78,7 +82,6 @@ function readSavedLang() {
   return "auto";
 }
 const EXTERNAL_BROWSER_URL = getExternalBrowserUrl(PORTFOLIO_URL);
-const SOFT_SPEECH_ERRORS = new Set(["no-speech", "aborted"]);
 
 function inAppVoiceHint() {
   return "Voice needs a full browser with mic permission. If you opened this from LinkedIn, use ⋯ → Open in browser (Safari/Chrome). Text chat still works here.";
@@ -227,8 +230,6 @@ export default function Concierge() {
   const restartTimerRef = useRef(0);
   const useMeter = useRef(shouldUseMicMeter());
   const useBrowserStt = useRef(preferBrowserStt());
-  const wakeArmedRef = useRef(false);
-  const wakeTimerRef = useRef(0);
   const langPrefRef = useRef("auto");
   const openRef = useRef(false);
   const standbyOnRef = useRef(false);
@@ -236,8 +237,11 @@ export default function Concierge() {
   const standbyRestartRef = useRef(0);
   const phaseRef = useRef("sleep");
   const followupTimerRef = useRef(0);
-  const turnMissRef = useRef(0);
+  const postTtsTimerRef = useRef(0);
+  const listenGenRef = useRef(0);
+  const lastSentAtRef = useRef(0);
   const fromVoiceRef = useRef(false);
+  const lastDetectedRef = useRef("");
 
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -256,9 +260,6 @@ export default function Concierge() {
   const [inAppBrowser] = useState(() => isInAppBrowser());
   const configured = isConciergeConfigured();
 
-  busyRef.current = busy;
-  listeningRef.current = listening;
-  speakingRef.current = speaking;
   langPrefRef.current = voiceLang;
   openRef.current = open;
 
@@ -272,8 +273,8 @@ export default function Concierge() {
   useEffect(() => {
     return () => {
       if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
-      if (wakeTimerRef.current) window.clearTimeout(wakeTimerRef.current);
       if (followupTimerRef.current) window.clearTimeout(followupTimerRef.current);
+      if (postTtsTimerRef.current) window.clearTimeout(postTtsTimerRef.current);
       if (standbyRestartRef.current) window.clearTimeout(standbyRestartRef.current);
       listenerRef.current?.abort();
       standbyListenerRef.current?.abort();
@@ -309,18 +310,17 @@ export default function Concierge() {
     };
   }, [listening]);
 
-  function clearWakeArm() {
-    wakeArmedRef.current = false;
-    if (wakeTimerRef.current) {
-      window.clearTimeout(wakeTimerRef.current);
-      wakeTimerRef.current = 0;
-    }
-  }
-
   function clearFollowUp() {
     if (followupTimerRef.current) {
       window.clearTimeout(followupTimerRef.current);
       followupTimerRef.current = 0;
+    }
+  }
+
+  function clearPostTts() {
+    if (postTtsTimerRef.current) {
+      window.clearTimeout(postTtsTimerRef.current);
+      postTtsTimerRef.current = 0;
     }
   }
 
@@ -330,17 +330,30 @@ export default function Concierge() {
 
   function listenLang() {
     if (phaseRef.current === "sleep") return "en-US";
-    return sttLang();
+    if (langPrefRef.current !== "auto") return sttLang();
+    return lastDetectedRef.current || sttLang();
+  }
+
+  function armFollowUpTimer() {
+    clearFollowUp();
+    followupTimerRef.current = window.setTimeout(() => {
+      followupTimerRef.current = 0;
+      if (phaseRef.current !== "followup") return;
+      if (listeningRef.current || busyRef.current || speakingRef.current) {
+        armFollowUpTimer();
+        return;
+      }
+      sleepSession();
+    }, FOLLOWUP_MS);
   }
 
   function sleepSession({ keepPanel = true } = {}) {
     phaseRef.current = "sleep";
     voiceLoopRef.current = false;
     fromVoiceRef.current = false;
-    turnMissRef.current = 0;
     setVoiceOn(false);
-    clearWakeArm();
     clearFollowUp();
+    clearPostTts();
     stopVoiceCapture({ abort: true });
     setInput("");
     standbyOnRef.current = false;
@@ -356,8 +369,6 @@ export default function Concierge() {
     phaseRef.current = "turn";
     voiceLoopRef.current = true;
     fromVoiceRef.current = true;
-    turnMissRef.current = 0;
-    wakeArmedRef.current = true;
     setVoiceOn(true);
     setOpen(true);
     setWakeHint("Listening… ask your question.");
@@ -370,25 +381,16 @@ export default function Concierge() {
     phaseRef.current = "followup";
     voiceLoopRef.current = true;
     fromVoiceRef.current = true;
-    wakeArmedRef.current = true;
     setVoiceOn(true);
-    setWakeHint("Your turn — ask now, or I’ll sleep.");
-    clearFollowUp();
-    followupTimerRef.current = window.setTimeout(() => {
-      followupTimerRef.current = 0;
-      if (phaseRef.current === "followup") sleepSession();
-    }, FOLLOWUP_MS);
+    setWakeHint("Your turn — I’m listening.");
+    armFollowUpTimer();
     scheduleListenRestart(280);
   }
 
   function extendFollowUp() {
     if (phaseRef.current !== "followup") return;
     setWakeHint("Still listening…");
-    clearFollowUp();
-    followupTimerRef.current = window.setTimeout(() => {
-      followupTimerRef.current = 0;
-      if (phaseRef.current === "followup") sleepSession();
-    }, FOLLOWUP_MS);
+    armFollowUpTimer();
   }
 
   function stopStandby() {
@@ -452,6 +454,7 @@ export default function Concierge() {
 
     const listener = createSpeechListener({
       lang: "en-US",
+      preferWake: true,
       onFinal: (finalText) => {
         standbyListenerRef.current = null;
         if (finalText) onStandbyHeard(finalText);
@@ -499,7 +502,9 @@ export default function Concierge() {
     }
     haltSpeech();
     setBusy(false);
+    busyRef.current = false;
     setError("");
+    lastSentAtRef.current = 0;
     setLastSentAt(0);
   }
 
@@ -545,7 +550,6 @@ export default function Concierge() {
       return;
     }
 
-    clearWakeArm();
     clearFollowUp();
     send(parsed.action === "command" ? parsed.command : spoken, {
       fromVoice: true,
@@ -553,19 +557,11 @@ export default function Concierge() {
   }
 
   function onListenMiss() {
-    if (phaseRef.current === "followup") {
-      sleepSession();
-      return;
-    }
-    if (phaseRef.current === "turn") {
-      turnMissRef.current += 1;
-      if (turnMissRef.current >= 2) {
-        sleepSession();
-        return;
-      }
-      setWakeHint("Still listening…");
-      scheduleListenRestart(400);
-    }
+    if (phaseRef.current === "sleep") return;
+    if (busyRef.current || speakingRef.current) return;
+    setWakeHint("Still listening…");
+    if (phaseRef.current === "followup") extendFollowUp();
+    scheduleListenRestart(350);
   }
 
   function clearRestartTimer() {
@@ -587,6 +583,8 @@ export default function Concierge() {
   }
 
   function stopVoiceCapture({ abort = false } = {}) {
+    listenGenRef.current += 1;
+    listeningRef.current = false;
     clearRestartTimer();
     if (abort) listenerRef.current?.abort();
     else listenerRef.current?.stop();
@@ -602,13 +600,13 @@ export default function Concierge() {
     speakCancelRef.current?.();
     speakCancelRef.current = null;
     stopSpeaking();
+    speakingRef.current = false;
     setSpeaking(false);
   }
 
   function closePanel() {
     voiceLoopRef.current = false;
     setVoiceOn(false);
-    clearWakeArm();
     stopVoiceCapture({ abort: true });
     haltSpeech();
     if (chatAbortRef.current) {
@@ -639,15 +637,17 @@ export default function Concierge() {
     }
 
     const now = Date.now();
-    if (now - lastSentAt < 2500) {
+    if (!fromVoice && now - lastSentAtRef.current < 2500) {
       setError("Slow down a second — short cooldown to protect the demo.");
       return;
     }
 
     fromVoiceRef.current = fromVoice || fromVoiceRef.current;
+    busyRef.current = true;
     stopVoiceCapture({ abort: true });
     haltSpeech();
     clearFollowUp();
+    clearPostTts();
 
     if (chatAbortRef.current) {
       chatAbortRef.current.abort();
@@ -661,27 +661,50 @@ export default function Concierge() {
     setInput("");
     setError("");
     setBusy(true);
+    lastSentAtRef.current = now;
     setLastSentAt(now);
     setWakeHint("Thinking…");
 
     try {
-      const { reply } = await askConcierge(next, { signal: ac.signal });
+      const detected = detectLangFromText(content);
+      const replyLangId = inferReplyLang(content, langPrefRef.current);
+      if (langPrefRef.current !== "auto") lastDetectedRef.current = replyLangId;
+      else if (detected) lastDetectedRef.current = detected;
+      const { reply } = await askConcierge(next, {
+        signal: ac.signal,
+        language: languageDisplayName(replyLangId),
+      });
       if (ac.signal.aborted) return;
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 
       const useVoice = fromVoiceRef.current && canUseVoiceOutput();
       if (useVoice) {
         const spoken = stripMarkdown(reply);
-        const ttsLang = resolveVoiceLang(langPrefRef.current, spoken);
+        const fromReply = detectLangFromText(spoken);
+        const ttsLang =
+          langPrefRef.current !== "auto"
+            ? resolveVoiceLang(langPrefRef.current, spoken)
+            : fromReply || lastDetectedRef.current || resolveVoiceLang("auto", spoken);
+        speakingRef.current = true;
         setSpeaking(true);
         setWakeHint("Speaking… tap ■ to stop");
         speakCancelRef.current = speakText(spoken, {
           lang: ttsLang,
           onEnd: () => {
+            speakingRef.current = false;
             setSpeaking(false);
             speakCancelRef.current = null;
-            if (fromVoiceRef.current) beginFollowUp();
-            else sleepSession();
+            if (!fromVoiceRef.current) {
+              sleepSession();
+              return;
+            }
+            if (postTtsTimerRef.current) window.clearTimeout(postTtsTimerRef.current);
+            postTtsTimerRef.current = window.setTimeout(() => {
+              postTtsTimerRef.current = 0;
+              if (fromVoiceRef.current && phaseRef.current !== "sleep") {
+                beginFollowUp();
+              }
+            }, POST_TTS_LISTEN_MS);
           },
         });
       } else if (fromVoiceRef.current) {
@@ -696,6 +719,7 @@ export default function Concierge() {
     } finally {
       if (chatAbortRef.current === ac) {
         chatAbortRef.current = null;
+        busyRef.current = false;
         setBusy(false);
       }
     }
@@ -709,15 +733,17 @@ export default function Concierge() {
       return;
     }
 
+    listeningRef.current = true;
     setListening(true);
     setError("");
 
     try {
       const rec = await startCloudUtterance({
-        maxMs: 8000,
-        silenceMs: isMobileVoiceClient() ? 2000 : 1800,
-        minMs: 2200,
+        maxMs: phaseRef.current === "followup" ? 16000 : 12000,
+        silenceMs: isMobileVoiceClient() ? 3200 : 2800,
+        minMs: 1800,
         onLevel: (level) => {
+          if (level > 0.12 && phaseRef.current === "followup") extendFollowUp();
           setMicLevel((prev) =>
             Math.abs(prev - level) < 0.045 ? prev : level
           );
@@ -727,6 +753,7 @@ export default function Concierge() {
 
       const blob = await rec.done;
       cloudRecRef.current = null;
+      listeningRef.current = false;
       setListening(false);
       setMicLevel(0);
 
@@ -742,6 +769,7 @@ export default function Concierge() {
       else onListenMiss();
     } catch (err) {
       cloudRecRef.current = null;
+      listeningRef.current = false;
       setListening(false);
       setMicLevel(0);
       const msg = String(err?.message || err || "");
@@ -762,11 +790,13 @@ export default function Concierge() {
   }
 
   async function startBrowserListening({ loop = false } = {}) {
+    listeningRef.current = true;
     try {
       if (isMobileVoiceClient()) {
         await ensureMicPermission();
       }
     } catch {
+      listeningRef.current = false;
       setError(
         inAppBrowser
           ? inAppVoiceHint()
@@ -777,19 +807,33 @@ export default function Concierge() {
       return;
     }
 
+    const gen = listenGenRef.current;
     const listener = createSpeechListener({
       lang: listenLang(),
-      onPartial: (partial) => setInput(partial),
+      continuous:
+        phaseRef.current === "turn" || phaseRef.current === "followup",
+      settleMs: isMobileVoiceClient() ? 1400 : 1100,
+      onPartial: (partial) => {
+        if (gen !== listenGenRef.current) return;
+        setInput(partial);
+        if (String(partial || "").trim()) extendFollowUp();
+      },
       onFinal: (finalText) => {
+        if (gen !== listenGenRef.current) return;
         setInput(finalText);
         stopVoiceCapture({ abort: true });
         if (finalText) handleVoiceTranscript(finalText);
       },
       onActivity: (active) => {
+        if (gen !== listenGenRef.current) return;
         if (useMeter.current) return;
         setMicLevel(active ? 0.72 : 0);
       },
       onError: (code) => {
+        if (gen !== listenGenRef.current) return;
+        if (code === "aborted") return;
+
+        listeningRef.current = false;
         setListening(false);
         listenerRef.current = null;
         setMicLevel(0);
@@ -806,7 +850,6 @@ export default function Concierge() {
         }
 
         if (code === "network") {
-          // Fall back to cloud Whisper when Google speech network fails
           if (canUseCloudSttCapture()) {
             startCloudListening({ loop: loop || voiceLoopRef.current });
             return;
@@ -818,15 +861,11 @@ export default function Concierge() {
           return;
         }
 
-        if (SOFT_SPEECH_ERRORS.has(code)) {
-          onListenMiss();
-          return;
-        }
-
-        setError("Couldn’t catch that — try again or type your question.");
         onListenMiss();
       },
       onEnd: ({ committed, stoppedByUs } = {}) => {
+        if (gen !== listenGenRef.current) return;
+        listeningRef.current = false;
         setListening(false);
         listenerRef.current = null;
         setMicLevel(0);
@@ -839,7 +878,9 @@ export default function Concierge() {
       return;
     }
 
+    if (gen !== listenGenRef.current) return;
     listenerRef.current = listener;
+    listeningRef.current = true;
     setListening(true);
     listener.start();
   }

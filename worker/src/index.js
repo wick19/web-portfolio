@@ -179,6 +179,13 @@ async function allowRequest(request, { stt = false } = {}) {
   return { ok: true };
 }
 
+function sanitizeLanguage(raw) {
+  const value = String(raw || "").trim().slice(0, 40);
+  if (!value) return "";
+  if (!/^[A-Za-z][A-Za-z .()/-]{0,39}$/.test(value)) return "";
+  return value;
+}
+
 function sanitizeMessages(raw) {
   if (!Array.isArray(raw)) return null;
   const cleaned = [];
@@ -197,10 +204,13 @@ function sanitizeMessages(raw) {
   return cleaned;
 }
 
-async function callWorkersAI(ai, messages) {
+async function callWorkersAI(ai, messages, language) {
+  const steer = language
+    ? `\n\nReply language: ${language}. Write the entire answer in ${language}. Do not switch to English unless the visitor wrote in English and no other language was requested.`
+    : "";
   const result = await ai.run(CF_CHAT_MODEL, {
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: SYSTEM_PROMPT + steer },
       ...messages.map((m) => ({
         role: m.role === "assistant" ? "assistant" : "user",
         content: m.content,
@@ -324,7 +334,8 @@ async function handleChat(request, env, origin) {
   }
 
   try {
-    const reply = await callWorkersAI(env.AI, messages);
+    const language = sanitizeLanguage(payload?.language);
+    const reply = await callWorkersAI(env.AI, messages, language);
     return json({ reply, model: CF_CHAT_MODEL }, 200, origin);
   } catch (err) {
     if (isNeuronQuotaError(err)) {

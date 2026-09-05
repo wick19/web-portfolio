@@ -11,7 +11,7 @@ export function isConciergeConfigured() {
 
 /**
  * @param {{ role: 'user' | 'assistant', content: string }[]} messages
- * @param {{ signal?: AbortSignal }} [opts]
+ * @param {{ signal?: AbortSignal, language?: string }} [opts]
  */
 export async function askConcierge(messages, opts = {}) {
   const base = getConciergeUrl();
@@ -30,7 +30,10 @@ export async function askConcierge(messages, opts = {}) {
   const res = await fetch(base, {
     method: "POST",
     headers,
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({
+      messages,
+      ...(opts.language ? { language: opts.language } : {}),
+    }),
     signal: opts.signal,
   });
 

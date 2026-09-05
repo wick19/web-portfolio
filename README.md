@@ -48,8 +48,8 @@ VITE_CONCIERGE_URL=https://ritwik-portfolio-concierge.wick19.workers.dev
 |---------|----------|
 | Theme | Header sun/moon toggle · `light` / `dark` · persisted in `localStorage` |
 | Org rail (Home) | Click Sprouts / TekGigz / Onshape / Adidas → matching Experience tab; USM / MS CIS / SRM → Education highlight |
-| Concierge controls | Headset = voice turn · mic = one question · ■ = stop · Send = text · language picker |
-| Voice conversation | Open Ask AI, then **Hey Wick** or tap the mic. The mic is off while it talks; a 6-second follow-up window then returns it to off. **Wait** holds that window. ■ cuts a reply |
+| Concierge controls | Headset = voice turn · mic = one question · ■ = stop · Send = text · language picker (Auto or lock a language) |
+| Voice conversation | Open Ask AI, then **Hey Wick** or tap the mic. Mic off while it thinks/speaks. After the answer it keeps listening for a follow-up (window resets while you talk; short pauses do not end the turn). **Wait** holds the window. **Stop** / **Wick stop** / ■ ends it |
 | In-app browsers | LinkedIn/WebView often block mic — UI hints to open in Safari/Chrome; **text chat still works** |
 
 ## Portfolio Concierge
@@ -62,7 +62,7 @@ Live demo: prompt-grounded LLM over curated portfolio knowledge (experience, pro
 | Speech I/O | `src/lib/voice.js` — **hybrid STT**: Web Speech when available (0 STT Neurons); else `MediaRecorder` → Workers AI **Whisper** (`POST /stt`). TTS = browser `speechSynthesis` |
 | Replies | `src/lib/formatReply.js` — lists, bold, and links in the bubble; TTS speaks a stripped version |
 | Knowledge | `worker/src/knowledge.js` — keep claims aligned with `src/customization/*.json` |
-| Client API | `src/lib/conciergeApi.js` — chat `POST /`, STT `POST /stt` |
+| Client API | `src/lib/conciergeApi.js` — chat `POST /` (optional `language`), STT `POST /stt` |
 | Edge | `worker/` + `@cf/meta/llama-3.1-8b-instruct-fast` + `@cf/openai/whisper-tiny-en` |
 | Endpoint | `https://ritwik-portfolio-concierge.wick19.workers.dev` |
 
@@ -70,29 +70,31 @@ Live demo: prompt-grounded LLM over curated portfolio knowledge (experience, pro
 
 ### Voice conversation (privacy-first, Siri-style)
 
-The page does **not** listen while Ask AI is closed. It also releases the mic while the Concierge thinks or speaks, and after a short follow-up window. This keeps the interaction intentional: visitors opt in to voice, retain a clear stop control, and never see a permanently active microphone.
+The page does **not** listen while Ask AI is closed. The mic is also off while the Concierge thinks or speaks. After each answer it listens for a follow-up, then sleeps. Visitors opt in, have a clear stop control, and never see a permanently active microphone.
 
 | Step | What happens |
 |------|----------------|
 | Open **Ask AI**, allow the mic | Wake listen starts only inside the panel |
-| **Hey Wick** or tap the mic | One question. “Hey Wick, tell me about Sprouts” also works |
-| Thinking / speaking | Mic **off**. Tap **■** to cut the reply |
-| After the answer | ~6 seconds to ask a follow-up (no Wick needed) |
-| **Wait** / **Hold on** | Only in that 6s window — keeps the mic a bit longer |
-| Stay quiet or tap **■** | Sleep. Mic fully off. Headset or mic to talk again |
+| **Hey Wick** or tap the mic / headset | One question. “Hey Wick, tell me about Sprouts” also works |
+| Thinking / speaking | Mic **off**. Spoken replies are slower than default browser TTS. Tap **■** to cut the reply |
+| After the answer | Follow-up listen (~14s of idle silence). The window **resets while you are talking**; a short pause does not end the turn. No wake word needed |
+| **Wait** / **Hold on** | Only in that follow-up window — keeps the mic open longer |
+| **Stop** / **Wick stop** / **■** / long silence | Sleep. Mic fully off. Headset or mic to talk again |
+
+The turn loop is listen → think → speak → listen. Chrome speech alternatives are not treated as Stop. Typed sends keep a short cooldown; voice follow-ups are not blocked by that cooldown.
 
 ### Language support
 
-The language control applies an explicit locale to browser speech recognition and synthesis, so the Concierge can align spoken input and output with the visitor’s selected language when that capability is available.
+**Auto** detects the latest message (script, and common romanized cues such as Bengali *tumi*, Hindi *aap*, Spanish *hola*, etc.) and replies in that language for every locale this demo supports: English, Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Spanish, French, and German. Spoken output uses the same locale. An explicit picker language overrides Auto.
 
 | Group | Selectable languages |
 |---|---|
-| Auto | Auto detection |
+| Auto | Script + romanized cues (Bengali *tumi*, Hindi *aap*, Spanish *hola*, etc.) → reply in that language |
 | English | English · English (India) |
 | India | Hindi (हिन्दी) · Bengali (বাংলা) · Telugu (తెలుగు) · Marathi (मराठी) · Tamil (தமிழ்) · Gujarati (ગુજરાતી) · Kannada (ಕನ್ನಡ) · Malayalam (മലയാളം) · Punjabi (ਪੰਜਾਬੀ) · Urdu (اردو) |
 | Europe | Spanish (Español) · French (Français) · German (Deutsch) |
 
-**Compatibility note:** availability of speech recognition and voices depends on the visitor’s browser and operating system. Chrome and Safari provide the best experience. When browser speech recognition is unavailable, the Worker falls back to Workers AI Whisper for **English** audio; visitors can always type in any language. The Concierge is instructed to answer in the visitor’s language when it can.
+**Compatibility note:** speech recognition and voices depend on the visitor’s browser and OS. Chrome and Safari work best for Indian languages. When browser speech is unavailable, the Worker falls back to Workers AI Whisper for **English** audio; visitors can always type in any language.
 
 How-to copy is shown in full before the first message, then collapses to **// How to use**.
 
@@ -135,12 +137,12 @@ Chat + Whisper consume **Workers AI** free Neurons; browser Web Speech / TTS do 
 | Origin allowlist | Only `wick19.github.io` + local Vite origins |
 | Chat rate limits | ~3/min/IP, ~10/hour/IP, ~120/day global |
 | STT rate limits | Stricter: ~2/min/IP, ~6/hour/IP, ~40/day global |
-| Audio caps | ~8s / ~280KB; reject empty/oversized payloads |
+| Audio caps | Client capture ~12–16s; Worker rejects empty / >~280KB payloads |
 | Chat payload caps | Short messages, short history, low `max_tokens` |
 | Kill switch | `CONCIERGE_ENABLED=false` → instant pause |
 | Daily free-quota kill | Workers AI **4006** → auto-pause until **00:00 UTC** |
 | Optional token | `ACCESS_TOKEN` + `VITE_CONCIERGE_TOKEN` header |
-| UI cooldown | ~2.5s between sends |
+| UI cooldown | ~2.5s between **typed** sends (voice follow-ups skip this) |
 
 **Free quota:** **10,000 Neurons / day** (resets **00:00 UTC**). Stay on Workers Free + a $0–$1 billing alert. Kill switch or unpublish if needed.
 
