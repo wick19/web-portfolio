@@ -5,6 +5,7 @@ import {
   isConciergeConfigured,
   transcribeAudio,
 } from "../../lib/conciergeApi";
+import { stripMarkdown } from "../../lib/formatReply";
 import {
   canUseAnyVoiceInput,
   canUseCloudSttCapture,
@@ -15,13 +16,20 @@ import {
   getExternalBrowserUrl,
   isInAppBrowser,
   isMobileVoiceClient,
+  parseInterruptUtterance,
+  parseWakeUtterance,
   preferBrowserStt,
+  resolveVoiceLang,
   shouldUseMicMeter,
   speakText,
   startCloudUtterance,
   stopSpeaking,
   unlockSpeechAudio,
+  VOICE_LANG_GROUPS,
+  VOICE_LANGS,
+  WAKE_WORD,
 } from "../../lib/voice";
+import ReplyBody from "./ReplyBody";
 import VoiceWaveIcon from "./VoiceWaveIcon";
 
 const SUGGESTIONS = [
@@ -30,10 +38,45 @@ const SUGGESTIONS = [
   "Where should I start on this site?",
 ];
 
-const WELCOME =
-  "Ask about Ritwik’s experience, projects, thesis, or how to reach him — by text or voice. For the full picture, also browse Home, Projects, Thesis, Experience, and Contact.";
+const WELCOME = "Ask about experience, projects, thesis, or how to reach him.";
+const VOICE_HINT = `Say “Hey ${WAKE_WORD}” or tap the mic. After an answer you have 6 seconds to follow up.`;
 
+const LANG_KEY = "portfolio:concierge-lang";
+const FOLLOWUP_MS = 6000;
 const PORTFOLIO_URL = "https://wick19.github.io/web-portfolio/";
+
+function playWakeChime() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.13);
+    osc.onended = () => {
+      ctx.close().catch(() => {});
+    };
+  } catch {
+    /* ignore */
+  }
+}
+
+function readSavedLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved && VOICE_LANGS.some((l) => l.id === saved)) return saved;
+  } catch {
+    /* ignore */
+  }
+  return "auto";
+}
 const EXTERNAL_BROWSER_URL = getExternalBrowserUrl(PORTFOLIO_URL);
 const SOFT_SPEECH_ERRORS = new Set(["no-speech", "aborted"]);
 
@@ -98,6 +141,64 @@ function IconStop({ className }) {
   );
 }
 
+function LangPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+  const current =
+    VOICE_LANGS.find((lang) => lang.id === value) || VOICE_LANGS[0];
+
+  useEffect(() => {
+    function onDoc(e) {
+      if (!rootRef.current?.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("pointerdown", onDoc);
+    return () => document.removeEventListener("pointerdown", onDoc);
+  }, []);
+
+  return (
+    <div className="concierge-lang" ref={rootRef}>
+      <button
+        type="button"
+        className={open ? "concierge-lang-btn is-open" : "concierge-lang-btn"}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span>{current.label}</span>
+        <span aria-hidden="true">▾</span>
+      </button>
+      {open ? (
+        <div className="concierge-lang-menu" role="listbox" aria-label="Voice language">
+          {VOICE_LANG_GROUPS.map((group) => (
+            <div key={group.id} className="concierge-lang-group">
+              <p className="concierge-lang-group-label">{group.label}</p>
+              {group.options.map((lang) => (
+                <button
+                  key={lang.id}
+                  type="button"
+                  role="option"
+                  aria-selected={lang.id === value}
+                  className={
+                    lang.id === value
+                      ? "concierge-lang-option is-active"
+                      : "concierge-lang-option"
+                  }
+                  onClick={() => {
+                    onChange(lang.id);
+                    setOpen(false);
+                  }}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function MessageBubble({ role, content }) {
   return (
     <div
@@ -105,7 +206,7 @@ function MessageBubble({ role, content }) {
         role === "user" ? "concierge-msg concierge-msg-user" : "concierge-msg"
       }
     >
-      <p>{content}</p>
+      {role === "assistant" ? <ReplyBody text={content} /> : <p>{content}</p>}
     </div>
   );
 }
@@ -121,9 +222,22 @@ export default function Concierge() {
   const meterRef = useRef(null);
   const busyRef = useRef(false);
   const listeningRef = useRef(false);
+  const speakingRef = useRef(false);
+  const chatAbortRef = useRef(null);
   const restartTimerRef = useRef(0);
   const useMeter = useRef(shouldUseMicMeter());
   const useBrowserStt = useRef(preferBrowserStt());
+  const wakeArmedRef = useRef(false);
+  const wakeTimerRef = useRef(0);
+  const langPrefRef = useRef("auto");
+  const openRef = useRef(false);
+  const standbyOnRef = useRef(false);
+  const standbyListenerRef = useRef(null);
+  const standbyRestartRef = useRef(0);
+  const phaseRef = useRef("sleep");
+  const followupTimerRef = useRef(0);
+  const turnMissRef = useRef(0);
+  const fromVoiceRef = useRef(false);
 
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -135,12 +249,18 @@ export default function Concierge() {
   const [speaking, setSpeaking] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
+  const [voiceLang, setVoiceLang] = useState(readSavedLang);
+  const [wakeHint, setWakeHint] = useState("");
+  const [wakeGuideOpen, setWakeGuideOpen] = useState(false);
   const [voiceSupported] = useState(() => canUseAnyVoiceInput());
   const [inAppBrowser] = useState(() => isInAppBrowser());
   const configured = isConciergeConfigured();
 
   busyRef.current = busy;
   listeningRef.current = listening;
+  speakingRef.current = speaking;
+  langPrefRef.current = voiceLang;
+  openRef.current = open;
 
   useEffect(() => {
     if (!open) return;
@@ -152,7 +272,11 @@ export default function Concierge() {
   useEffect(() => {
     return () => {
       if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
+      if (wakeTimerRef.current) window.clearTimeout(wakeTimerRef.current);
+      if (followupTimerRef.current) window.clearTimeout(followupTimerRef.current);
+      if (standbyRestartRef.current) window.clearTimeout(standbyRestartRef.current);
       listenerRef.current?.abort();
+      standbyListenerRef.current?.abort();
       cloudRecRef.current?.abort();
       meterRef.current?.stop();
       speakCancelRef.current?.();
@@ -185,6 +309,265 @@ export default function Concierge() {
     };
   }, [listening]);
 
+  function clearWakeArm() {
+    wakeArmedRef.current = false;
+    if (wakeTimerRef.current) {
+      window.clearTimeout(wakeTimerRef.current);
+      wakeTimerRef.current = 0;
+    }
+  }
+
+  function clearFollowUp() {
+    if (followupTimerRef.current) {
+      window.clearTimeout(followupTimerRef.current);
+      followupTimerRef.current = 0;
+    }
+  }
+
+  function sttLang() {
+    return resolveVoiceLang(langPrefRef.current);
+  }
+
+  function listenLang() {
+    if (phaseRef.current === "sleep") return "en-US";
+    return sttLang();
+  }
+
+  function sleepSession({ keepPanel = true } = {}) {
+    phaseRef.current = "sleep";
+    voiceLoopRef.current = false;
+    fromVoiceRef.current = false;
+    turnMissRef.current = 0;
+    setVoiceOn(false);
+    clearWakeArm();
+    clearFollowUp();
+    stopVoiceCapture({ abort: true });
+    setInput("");
+    standbyOnRef.current = false;
+    stopStandby();
+    setWakeHint(
+      keepPanel
+        ? "Sleeping. Tap the headset or mic to talk again."
+        : ""
+    );
+  }
+
+  function beginTurn() {
+    phaseRef.current = "turn";
+    voiceLoopRef.current = true;
+    fromVoiceRef.current = true;
+    turnMissRef.current = 0;
+    wakeArmedRef.current = true;
+    setVoiceOn(true);
+    setOpen(true);
+    setWakeHint("Listening… ask your question.");
+    playWakeChime();
+    stopStandby();
+    scheduleListenRestart(220);
+  }
+
+  function beginFollowUp() {
+    phaseRef.current = "followup";
+    voiceLoopRef.current = true;
+    fromVoiceRef.current = true;
+    wakeArmedRef.current = true;
+    setVoiceOn(true);
+    setWakeHint("Your turn — ask now, or I’ll sleep.");
+    clearFollowUp();
+    followupTimerRef.current = window.setTimeout(() => {
+      followupTimerRef.current = 0;
+      if (phaseRef.current === "followup") sleepSession();
+    }, FOLLOWUP_MS);
+    scheduleListenRestart(280);
+  }
+
+  function extendFollowUp() {
+    if (phaseRef.current !== "followup") return;
+    setWakeHint("Still listening…");
+    clearFollowUp();
+    followupTimerRef.current = window.setTimeout(() => {
+      followupTimerRef.current = 0;
+      if (phaseRef.current === "followup") sleepSession();
+    }, FOLLOWUP_MS);
+  }
+
+  function stopStandby() {
+    if (standbyRestartRef.current) {
+      window.clearTimeout(standbyRestartRef.current);
+      standbyRestartRef.current = 0;
+    }
+    standbyListenerRef.current?.abort();
+    standbyListenerRef.current = null;
+  }
+
+  function scheduleStandbyRestart(delayMs = 400) {
+    if (standbyRestartRef.current) window.clearTimeout(standbyRestartRef.current);
+    standbyRestartRef.current = window.setTimeout(() => {
+      standbyRestartRef.current = 0;
+      if (
+        standbyOnRef.current &&
+        openRef.current &&
+        phaseRef.current === "sleep" &&
+        !voiceLoopRef.current
+      ) {
+        startStandby();
+      }
+    }, delayMs);
+  }
+
+  function onStandbyHeard(text) {
+    const parsed = parseWakeUtterance(text, { armed: false });
+    if (parsed.action === "ignore") {
+      if (openRef.current && phaseRef.current === "sleep") {
+        scheduleStandbyRestart(280);
+      }
+      return;
+    }
+
+    stopStandby();
+    unlockSpeechAudio();
+    setOpen(true);
+
+    if (parsed.action === "arm") {
+      beginTurn();
+      return;
+    }
+    phaseRef.current = "turn";
+    voiceLoopRef.current = true;
+    fromVoiceRef.current = true;
+    setVoiceOn(true);
+    playWakeChime();
+    send(parsed.command, { fromVoice: true });
+  }
+
+  function startStandby() {
+    if (!voiceSupported || inAppBrowser || !preferBrowserStt()) return;
+    if (!openRef.current) return;
+    if (phaseRef.current !== "sleep") return;
+    if (voiceLoopRef.current || listeningRef.current) return;
+    if (standbyListenerRef.current) return;
+
+    standbyOnRef.current = true;
+    unlockSpeechAudio();
+
+    const listener = createSpeechListener({
+      lang: "en-US",
+      onFinal: (finalText) => {
+        standbyListenerRef.current = null;
+        if (finalText) onStandbyHeard(finalText);
+        else scheduleStandbyRestart(280);
+      },
+      onError: (code) => {
+        standbyListenerRef.current = null;
+        if (code === "not-allowed") {
+          standbyOnRef.current = false;
+          return;
+        }
+        if (
+          standbyOnRef.current &&
+          openRef.current &&
+          phaseRef.current === "sleep" &&
+          !voiceLoopRef.current
+        ) {
+          scheduleStandbyRestart(code === "no-speech" ? 250 : 500);
+        }
+      },
+      onEnd: ({ committed, stoppedByUs } = {}) => {
+        standbyListenerRef.current = null;
+        if (
+          !committed &&
+          !stoppedByUs &&
+          standbyOnRef.current &&
+          openRef.current &&
+          phaseRef.current === "sleep" &&
+          !voiceLoopRef.current
+        ) {
+          scheduleStandbyRestart(280);
+        }
+      },
+    });
+
+    if (!listener) return;
+    standbyListenerRef.current = listener;
+    listener.start();
+  }
+
+  function interruptReply() {
+    if (chatAbortRef.current) {
+      chatAbortRef.current.abort();
+      chatAbortRef.current = null;
+    }
+    haltSpeech();
+    setBusy(false);
+    setError("");
+    setLastSentAt(0);
+  }
+
+  function handleVoiceTranscript(text) {
+    const spoken = String(text || "").trim();
+    if (!spoken) {
+      onListenMiss();
+      return;
+    }
+
+    const cut = parseInterruptUtterance(spoken);
+    if (cut.action === "hold") {
+      if (phaseRef.current === "followup") {
+        setInput("");
+        extendFollowUp();
+        scheduleListenRestart(220);
+      }
+      return;
+    }
+    if (cut.action === "stop") {
+      interruptReply();
+      setInput("");
+      sleepSession();
+      return;
+    }
+    if (cut.action === "redirect") {
+      interruptReply();
+      send(cut.command, { fromVoice: true });
+      return;
+    }
+
+    const inSession =
+      phaseRef.current === "turn" || phaseRef.current === "followup";
+
+    if (!inSession) {
+      send(spoken, { fromVoice: true });
+      return;
+    }
+
+    const parsed = parseWakeUtterance(spoken, { armed: true });
+    if (parsed.action === "arm") {
+      beginTurn();
+      return;
+    }
+
+    clearWakeArm();
+    clearFollowUp();
+    send(parsed.action === "command" ? parsed.command : spoken, {
+      fromVoice: true,
+    });
+  }
+
+  function onListenMiss() {
+    if (phaseRef.current === "followup") {
+      sleepSession();
+      return;
+    }
+    if (phaseRef.current === "turn") {
+      turnMissRef.current += 1;
+      if (turnMissRef.current >= 2) {
+        sleepSession();
+        return;
+      }
+      setWakeHint("Still listening…");
+      scheduleListenRestart(400);
+    }
+  }
+
   function clearRestartTimer() {
     if (restartTimerRef.current) {
       window.clearTimeout(restartTimerRef.current);
@@ -197,13 +580,9 @@ export default function Concierge() {
     const wait = isMobileVoiceClient() ? Math.max(delayMs, 550) : delayMs;
     restartTimerRef.current = window.setTimeout(() => {
       restartTimerRef.current = 0;
-      if (
-        voiceLoopRef.current &&
-        !busyRef.current &&
-        !listeningRef.current
-      ) {
-        startListening({ loop: true });
-      }
+      if (busyRef.current || speakingRef.current) return;
+      if (phaseRef.current === "sleep") return;
+      if (!listeningRef.current) startListening({ loop: true });
     }, wait);
   }
 
@@ -229,9 +608,23 @@ export default function Concierge() {
   function closePanel() {
     voiceLoopRef.current = false;
     setVoiceOn(false);
+    clearWakeArm();
     stopVoiceCapture({ abort: true });
     haltSpeech();
+    if (chatAbortRef.current) {
+      chatAbortRef.current.abort();
+      chatAbortRef.current = null;
+    }
+    openRef.current = false;
     setOpen(false);
+    sleepSession({ keepPanel: false });
+  }
+
+  function openPanel() {
+    openRef.current = true;
+    setOpen(true);
+    setWakeHint(`Say “Hey ${WAKE_WORD}”, or tap the mic.`);
+    startStandby();
   }
 
   async function send(text, { fromVoice = false } = {}) {
@@ -248,42 +641,63 @@ export default function Concierge() {
     const now = Date.now();
     if (now - lastSentAt < 2500) {
       setError("Slow down a second — short cooldown to protect the demo.");
-      if (voiceLoopRef.current) scheduleListenRestart(800);
       return;
     }
 
+    fromVoiceRef.current = fromVoice || fromVoiceRef.current;
     stopVoiceCapture({ abort: true });
     haltSpeech();
+    clearFollowUp();
+
+    if (chatAbortRef.current) {
+      chatAbortRef.current.abort();
+    }
+    const ac = new AbortController();
+    chatAbortRef.current = ac;
 
     const next = [...messages, { role: "user", content }];
     setMessages(next);
+    setWakeGuideOpen(false);
     setInput("");
     setError("");
     setBusy(true);
     setLastSentAt(now);
+    setWakeHint("Thinking…");
 
     try {
-      const { reply } = await askConcierge(next);
+      const { reply } = await askConcierge(next, { signal: ac.signal });
+      if (ac.signal.aborted) return;
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 
-      if ((fromVoice || voiceLoopRef.current) && canUseVoiceOutput()) {
+      const useVoice = fromVoiceRef.current && canUseVoiceOutput();
+      if (useVoice) {
+        const spoken = stripMarkdown(reply);
+        const ttsLang = resolveVoiceLang(langPrefRef.current, spoken);
         setSpeaking(true);
-        speakCancelRef.current = speakText(reply, {
+        setWakeHint("Speaking… tap ■ to stop");
+        speakCancelRef.current = speakText(spoken, {
+          lang: ttsLang,
           onEnd: () => {
             setSpeaking(false);
             speakCancelRef.current = null;
-            if (voiceLoopRef.current) scheduleListenRestart(400);
+            if (fromVoiceRef.current) beginFollowUp();
+            else sleepSession();
           },
         });
-      } else if (voiceLoopRef.current) {
-        scheduleListenRestart(400);
+      } else if (fromVoiceRef.current) {
+        beginFollowUp();
       }
     } catch (err) {
+      if (err?.name === "AbortError" || /abort/i.test(String(err?.message || ""))) {
+        return;
+      }
       setError(err?.message || "Something went wrong");
-      voiceLoopRef.current = false;
-      setVoiceOn(false);
+      sleepSession();
     } finally {
-      setBusy(false);
+      if (chatAbortRef.current === ac) {
+        chatAbortRef.current = null;
+        setBusy(false);
+      }
     }
   }
 
@@ -317,15 +731,15 @@ export default function Concierge() {
       setMicLevel(0);
 
       if (!blob?.size || blob.size < 800) {
-        if (loop || voiceLoopRef.current) scheduleListenRestart(600);
+        onListenMiss();
         return;
       }
 
       setInput("Transcribing…");
       const { text } = await transcribeAudio(blob);
       setInput(text);
-      if (text) await send(text, { fromVoice: true });
-      else if (loop || voiceLoopRef.current) scheduleListenRestart(500);
+      if (text) handleVoiceTranscript(text);
+      else onListenMiss();
     } catch (err) {
       cloudRecRef.current = null;
       setListening(false);
@@ -343,7 +757,7 @@ export default function Concierge() {
         return;
       }
       setError(msg || "Couldn’t catch that — try again or type your question.");
-      if (loop || voiceLoopRef.current) scheduleListenRestart(900);
+      onListenMiss();
     }
   }
 
@@ -364,11 +778,12 @@ export default function Concierge() {
     }
 
     const listener = createSpeechListener({
+      lang: listenLang(),
       onPartial: (partial) => setInput(partial),
       onFinal: (finalText) => {
         setInput(finalText);
         stopVoiceCapture({ abort: true });
-        if (finalText) send(finalText, { fromVoice: true });
+        if (finalText) handleVoiceTranscript(finalText);
       },
       onActivity: (active) => {
         if (useMeter.current) return;
@@ -399,30 +814,23 @@ export default function Concierge() {
           setError(
             "Speech service needs network. Check connectivity or type your question."
           );
-          if (loop || voiceLoopRef.current) scheduleListenRestart(1200);
+          if (phaseRef.current !== "sleep") scheduleListenRestart(1200);
           return;
         }
 
         if (SOFT_SPEECH_ERRORS.has(code)) {
-          if (loop || voiceLoopRef.current) scheduleListenRestart(500);
+          onListenMiss();
           return;
         }
 
         setError("Couldn’t catch that — try again or type your question.");
-        if (loop || voiceLoopRef.current) scheduleListenRestart(700);
+        onListenMiss();
       },
       onEnd: ({ committed, stoppedByUs } = {}) => {
         setListening(false);
         listenerRef.current = null;
         setMicLevel(0);
-        if (
-          !committed &&
-          !stoppedByUs &&
-          voiceLoopRef.current &&
-          !busyRef.current
-        ) {
-          scheduleListenRestart(500);
-        }
+        if (!committed && !stoppedByUs) onListenMiss();
       },
     });
 
@@ -437,17 +845,29 @@ export default function Concierge() {
   }
 
   async function startListening({ loop = false } = {}) {
-    if (!voiceSupported || busyRef.current || listeningRef.current) return;
+    if (!voiceSupported || listeningRef.current) return;
+    if (busyRef.current || speakingRef.current) return;
+    if (phaseRef.current === "sleep" && !loop) {
+      /* one-shot mic tap */
+    } else if (phaseRef.current === "sleep") {
+      return;
+    }
 
-    haltSpeech();
+    stopStandby();
     setError("");
     clearRestartTimer();
 
     if (useBrowserStt.current) {
       await startBrowserListening({ loop });
-    } else {
-      await startCloudListening({ loop });
+      return;
     }
+    if (!sttLang().startsWith("en")) {
+      setError(
+        "This language needs Chrome or Safari speech. Switch Voice to English, or type your question."
+      );
+      return;
+    }
+    await startCloudListening({ loop });
   }
 
   function toggleMic() {
@@ -456,15 +876,14 @@ export default function Concierge() {
       return;
     }
     unlockSpeechAudio();
-    startListening({ loop: voiceLoopRef.current });
+    fromVoiceRef.current = true;
+    startListening({ loop: false });
   }
 
   function toggleVoiceMode() {
-    if (voiceOn) {
-      voiceLoopRef.current = false;
-      setVoiceOn(false);
-      stopVoiceCapture({ abort: true });
-      haltSpeech();
+    if (voiceOn || phaseRef.current !== "sleep") {
+      interruptReply();
+      sleepSession();
       return;
     }
     if (!voiceSupported) {
@@ -474,20 +893,13 @@ export default function Concierge() {
       return;
     }
     unlockSpeechAudio();
-    voiceLoopRef.current = true;
-    setVoiceOn(true);
-    startListening({ loop: true });
+    beginTurn();
   }
 
-  /** Explicit Stop — ends voice mode, mic capture, and TTS. */
+  /** Square stop — cut the reply and sleep. */
   function stopAllVoice() {
-    voiceLoopRef.current = false;
-    setVoiceOn(false);
-    stopVoiceCapture({ abort: true });
-    haltSpeech();
-    if (input === "Transcribing…" || input === "Listening…") {
-      setInput("");
-    }
+    interruptReply();
+    sleepSession();
   }
 
   function onSubmit(e) {
@@ -509,17 +921,63 @@ export default function Concierge() {
               <p className="section-label">// Live demo</p>
               <h2 id={titleId}>Portfolio Concierge</h2>
             </div>
-            <button
-              type="button"
-              className="concierge-icon-btn"
-              aria-label="Close concierge"
-              onClick={closePanel}
-            >
-              ×
-            </button>
+            <div className="concierge-header-tools">
+              <LangPicker
+                value={voiceLang}
+                onChange={(next) => {
+                  setVoiceLang(next);
+                  try {
+                    localStorage.setItem(LANG_KEY, next);
+                  } catch {
+                    /* ignore */
+                  }
+                  if (listeningRef.current) {
+                    stopVoiceCapture({ abort: true });
+                    startListening({ loop: voiceLoopRef.current });
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="concierge-icon-btn"
+                aria-label="Close concierge"
+                onClick={closePanel}
+              >
+                ×
+              </button>
+            </div>
           </header>
 
-          <p className="concierge-lede">{WELCOME}</p>
+          {messages.length === 0 ? (
+            <>
+              <p className="concierge-lede">{WELCOME}</p>
+              <p className="concierge-wake-hint">
+                <span className="section-label">// Voice</span>
+                {VOICE_HINT}
+              </p>
+            </>
+          ) : (
+            <div className="concierge-wake-fold">
+              <button
+                type="button"
+                className={
+                  wakeGuideOpen
+                    ? "concierge-wake-toggle is-open"
+                    : "concierge-wake-toggle"
+                }
+                aria-expanded={wakeGuideOpen}
+                onClick={() => setWakeGuideOpen((v) => !v)}
+              >
+                <span className="section-label">// How to use</span>
+                <span className="concierge-wake-arrow" aria-hidden="true">
+                  ▸
+                </span>
+              </button>
+              {wakeGuideOpen ? (
+                <p className="concierge-wake-hint">{VOICE_HINT}</p>
+              ) : null}
+            </div>
+          )}
 
           {inAppBrowser ? (
             <p className="concierge-browser-hint">
@@ -551,18 +1009,13 @@ export default function Concierge() {
 
           <div className="concierge-thread" ref={listRef} aria-live="polite">
             {messages.length === 0 ? (
-              <p className="concierge-empty">
-                Start a quick conversation about Ritwik — type, tap the mic, or
-                turn on Voice for a back-and-forth talk.
-                {!configured ? (
-                  <>
-                    {" "}
-                    <span className="concierge-warn">
-                      Endpoint not set ({getConciergeUrl() || "missing"}).
-                    </span>
-                  </>
-                ) : null}
-              </p>
+              !configured ? (
+                <p className="concierge-empty">
+                  <span className="concierge-warn">
+                    Endpoint not set ({getConciergeUrl() || "missing"}).
+                  </span>
+                </p>
+              ) : null
             ) : (
               messages.map((m, i) => (
                 <MessageBubble
@@ -585,10 +1038,10 @@ export default function Concierge() {
               <div className="concierge-status-row">
                 <p className="concierge-status" aria-live="polite">
                   {listening
-                    ? "Listening…"
+                    ? wakeHint || "Listening…"
                     : speaking
-                      ? "Speaking…"
-                      : "Voice mode on"}
+                      ? "Speaking… tap ■ to stop"
+                      : wakeHint || `Say “Hey ${WAKE_WORD}”`}
                 </p>
                 <button
                   type="button"
@@ -620,8 +1073,8 @@ export default function Concierge() {
                 }
                 title={
                   voiceOn
-                    ? "Voice conversation on"
-                    : "Hands-free voice conversation"
+                    ? "End this voice turn"
+                    : `Start a voice turn (or say Hey ${WAKE_WORD})`
                 }
               >
                 {voiceOn ? (
@@ -690,7 +1143,10 @@ export default function Concierge() {
         type="button"
         className={open ? "concierge-fab is-open" : "concierge-fab"}
         aria-expanded={open}
-        onClick={() => (open ? closePanel() : setOpen(true))}
+        onClick={() => {
+          if (open) closePanel();
+          else openPanel();
+        }}
       >
         {open ? "Close" : "Ask AI"}
       </button>

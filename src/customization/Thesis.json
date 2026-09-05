@@ -17,6 +17,8 @@
         "NumPy",
         "Matplotlib",
         "Seaborn",
+        "TensorFlow",
+        "PyTorch",
         "MLPRegressor"
       ]
     }

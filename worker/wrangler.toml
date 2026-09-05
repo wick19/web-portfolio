@@ -14,6 +14,7 @@ CONCIERGE_ENABLED = "true"
 # Optional shared token (also set the same value in site .env.local as VITE_CONCIERGE_TOKEN):
 #   npx wrangler secret put ACCESS_TOKEN
 
-# Warm LeetCode stats daily (06:00 UTC) so Contact proof stays fresh without a site visit
+# Warm LeetCode stats 3x/day (00:00, 08:00, 16:00 UTC) so Contact proof stays fresh without a site visit.
+# No Workers AI Neurons used — this is a plain fetch + Cache API write, so it stays on the free tier.
 [triggers]
-crons = ["0 6 * * *"]
+crons = ["0 0,8,16 * * *"]

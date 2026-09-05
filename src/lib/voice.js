@@ -2,6 +2,7 @@
  * Browser voice helpers.
  * - Desktop Chromium/Safari: Web Speech API (0 Workers AI STT Neurons)
  * - Firefox / mobile / fallback: MediaRecorder → Workers AI Whisper
+ * - Hands-free: “Hey Wick” after Ask AI is open; Wait holds the follow-up window
  */
 
 export function getSpeechRecognitionCtor() {
@@ -119,15 +120,199 @@ export function unlockSpeechAudio() {
   }
 }
 
-function pickEnglishVoice() {
+export const VOICE_LANG_GROUPS = [
+  {
+    id: "detect",
+    label: "Detect",
+    options: [{ id: "auto", label: "Auto" }],
+  },
+  {
+    id: "english",
+    label: "English",
+    options: [
+      { id: "en-US", label: "English" },
+      { id: "en-IN", label: "English · India" },
+    ],
+  },
+  {
+    id: "india",
+    label: "India",
+    options: [
+      { id: "hi-IN", label: "Hindi · हिन्दी" },
+      { id: "bn-IN", label: "Bengali · বাংলা" },
+      { id: "te-IN", label: "Telugu · తెలుగు" },
+      { id: "mr-IN", label: "Marathi · मराठी" },
+      { id: "ta-IN", label: "Tamil · தமிழ்" },
+      { id: "gu-IN", label: "Gujarati · ગુજરાતી" },
+      { id: "kn-IN", label: "Kannada · ಕನ್ನಡ" },
+      { id: "ml-IN", label: "Malayalam · മലയാളം" },
+      { id: "pa-IN", label: "Punjabi · ਪੰਜਾਬੀ" },
+      { id: "ur-IN", label: "Urdu · اردو" },
+    ],
+  },
+  {
+    id: "europe",
+    label: "Europe",
+    options: [
+      { id: "es-ES", label: "Spanish · Español" },
+      { id: "fr-FR", label: "French · Français" },
+      { id: "de-DE", label: "German · Deutsch" },
+    ],
+  },
+];
+
+export const VOICE_LANGS = VOICE_LANG_GROUPS.flatMap((group) => group.options);
+
+const LANG_IDS = new Set(
+  VOICE_LANGS.map((l) => l.id).filter((id) => id !== "auto")
+);
+
+export function detectLangFromText(text) {
+  const src = String(text || "");
+  if (/[\u0B80-\u0BFF]/.test(src)) return "ta-IN";
+  if (/[\u0C00-\u0C7F]/.test(src)) return "te-IN";
+  if (/[\u0C80-\u0CFF]/.test(src)) return "kn-IN";
+  if (/[\u0D00-\u0D7F]/.test(src)) return "ml-IN";
+  if (/[\u0A80-\u0AFF]/.test(src)) return "gu-IN";
+  if (/[\u0A00-\u0A7F]/.test(src)) return "pa-IN";
+  if (/[\u0980-\u09FF]/.test(src)) return "bn-IN";
+  if (/[\u0600-\u06FF]/.test(src)) return "ur-IN";
+  if (/[\u0900-\u097F]/.test(src)) return "hi-IN";
+  return null;
+}
+
+export function resolveVoiceLang(pref = "auto", textHint = "") {
+  if (pref && LANG_IDS.has(pref)) return pref;
+  const fromText = detectLangFromText(textHint);
+  if (fromText && LANG_IDS.has(fromText)) return fromText;
+  const nav =
+    typeof navigator !== "undefined" ? String(navigator.language || "en-US") : "en-US";
+  if (LANG_IDS.has(nav)) return nav;
+  const prefix = nav.slice(0, 2).toLowerCase();
+  const match = [...LANG_IDS].find((id) => id.toLowerCase().startsWith(prefix));
+  return match || "en-US";
+}
+
+export const WAKE_WORD = "Wick";
+/** Exact phrase plus how Chrome/Safari often hear “Wick”. Only match at the start. */
+const WAKE_HEADS = [
+  "wick",
+  "vic",
+  "vick",
+  "vik",
+  "wiki",
+  "wic",
+  "wig",
+  "week",
+  "wake",
+];
+const WAKE_PREFIXES = ["hey ", "ok ", "okay ", "hi "];
+export const WAKE_PHRASES = [
+  ...WAKE_HEADS,
+  ...WAKE_PREFIXES.flatMap((prefix) => WAKE_HEADS.map((head) => `${prefix}${head}`)),
+];
+export const HOLD_PHRASES = ["hold on", "wait"];
+export const STOP_PHRASES = ["wick stop", "stop"];
+
+function normalizeUtterance(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function remainderAfterPhrase(raw, phrase) {
+  const normalized = normalizeUtterance(raw);
+  if (normalized === phrase) return "";
+  if (!normalized.startsWith(`${phrase} `)) return null;
+  const skip = phrase.split(/\s+/).length;
+  return String(raw)
+    .trim()
+    .split(/\s+/)
+    .slice(skip)
+    .join(" ")
+    .replace(/^[,.:-]+\s*/, "")
+    .trim();
+}
+
+/**
+ * Voice-mode gate: ignore background talk until the visitor says “Wick”.
+ * - "Wick" alone → arm the next utterance
+ * - "Wick, tell me about Sprouts" → command
+ */
+export function parseWakeUtterance(text, { armed = false } = {}) {
+  const raw = String(text || "").trim();
+  if (!raw) return { action: "ignore" };
+  if (armed) return { action: "command", command: raw };
+
+  const normalized = normalizeUtterance(raw);
+  if (!normalized) return { action: "ignore" };
+
+  const sorted = [...WAKE_PHRASES].sort((a, b) => b.length - a.length);
+  for (const phrase of sorted) {
+    const rest = remainderAfterPhrase(raw, phrase);
+    if (rest === null) continue;
+    if (!rest) return { action: "arm" };
+    return { action: "command", command: rest };
+  }
+
+  if (/\bwick\b/i.test(normalized)) {
+    const stripped = raw
+      .replace(/^\s*(?:hey |ok |okay |hi )?wick\b[,.\s:-]*/i, "")
+      .trim();
+    return stripped
+      ? { action: "command", command: stripped }
+      : { action: "arm" };
+  }
+
+  return { action: "ignore" };
+}
+
+/**
+ * Only while the mic is on (ask turn or 6s follow-up). Not used during TTS.
+ * - "Wait" / "Hold on" → keep the follow-up window
+ * - "Stop" → sleep
+ * - "Stop, what about the thesis?" → ask that instead
+ */
+export function parseInterruptUtterance(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return { action: "ignore" };
+
+  const holds = [...HOLD_PHRASES].sort((a, b) => b.length - a.length);
+  for (const phrase of holds) {
+    const rest = remainderAfterPhrase(raw, phrase);
+    if (rest === null) continue;
+    if (!rest) return { action: "hold" };
+    return { action: "redirect", command: rest };
+  }
+
+  const stops = [...STOP_PHRASES].sort((a, b) => b.length - a.length);
+  for (const phrase of stops) {
+    const rest = remainderAfterPhrase(raw, phrase);
+    if (rest === null) continue;
+    if (!rest) return { action: "stop" };
+    return { action: "redirect", command: rest };
+  }
+
+  return { action: "ignore" };
+}
+
+function pickVoiceForLang(lang = "en-US") {
   const voices = window.speechSynthesis.getVoices() || [];
+  const wanted = String(lang || "en-US").replace("_", "-");
+  const prefix = wanted.slice(0, 2).toLowerCase();
+  const norm = (v) => String(v.lang || "").replace("_", "-");
   return (
     voices.find(
       (v) =>
-        /en(-|_)US/i.test(v.lang) &&
-        /Google|Samsung|Samantha|Siri|Natural|Enhanced/i.test(v.name)
+        norm(v).toLowerCase() === wanted.toLowerCase() &&
+        /Google|Samsung|Samantha|Siri|Natural|Enhanced|Microsoft|Premium/i.test(
+          v.name
+        )
     ) ||
-    voices.find((v) => /en(-|_)US/i.test(v.lang)) ||
+    voices.find((v) => norm(v).toLowerCase() === wanted.toLowerCase()) ||
+    voices.find((v) => norm(v).toLowerCase().startsWith(prefix)) ||
     voices.find((v) => /^en/i.test(v.lang)) ||
     null
   );
@@ -141,6 +326,23 @@ function pickEnglishVoice() {
  *
  * @returns {{ start: () => void, stop: () => void, abort: () => void } | null}
  */
+/** Prefer an alternative that is a wake or stop phrase — Chrome often ranks “Vic” over “Wick”. */
+function pickUtteranceFromResult(result) {
+  if (!result?.length) return "";
+  const alts = [];
+  for (let i = 0; i < result.length; i += 1) {
+    const text = String(result[i]?.transcript || "").trim();
+    if (text) alts.push(text);
+  }
+  if (!alts.length) return "";
+  const useful = alts.find((text) => {
+    const wake = parseWakeUtterance(text);
+    if (wake.action !== "ignore") return true;
+    return parseInterruptUtterance(text).action !== "ignore";
+  });
+  return useful || alts[0];
+}
+
 export function createSpeechListener({
   onPartial,
   onFinal,
@@ -157,7 +359,7 @@ export function createSpeechListener({
   recognition.continuous = false;
   recognition.interimResults = true;
   recognition.lang = lang;
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 5;
 
   let lastInterim = "";
   let committed = false;
@@ -175,8 +377,9 @@ export function createSpeechListener({
     let interim = "";
     let finalText = "";
     for (let i = event.resultIndex; i < event.results.length; i += 1) {
-      const piece = event.results[i][0]?.transcript || "";
-      if (event.results[i].isFinal) finalText += piece;
+      const result = event.results[i];
+      const piece = pickUtteranceFromResult(result);
+      if (result.isFinal) finalText += piece;
       else interim += piece;
     }
     if (interim) {
@@ -249,7 +452,7 @@ export function createSpeechListener({
   };
 }
 
-export function speakText(text, { onEnd, rate = 1.02 } = {}) {
+export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
   if (!canUseVoiceOutput() || !text) {
     if (onEnd) onEnd();
     return () => {};
@@ -285,8 +488,8 @@ export function speakText(text, { onEnd, rate = 1.02 } = {}) {
     const utter = new SpeechSynthesisUtterance(String(text).slice(0, 1200));
     utter.rate = isMobileVoiceClient() ? Math.min(rate, 1) : rate;
     utter.pitch = 1;
-    utter.lang = "en-US";
-    const preferred = pickEnglishVoice();
+    utter.lang = lang || "en-US";
+    const preferred = pickVoiceForLang(utter.lang);
     if (preferred) utter.voice = preferred;
 
     utter.onend = finish;

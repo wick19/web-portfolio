@@ -1,6 +1,6 @@
 import { SYSTEM_PROMPT } from "./knowledge.js";
 import {
-  getOrRefreshLeetCode,
+  getFreshLeetCode,
   refreshLeetCodeCache,
 } from "./leetcode.js";
 
@@ -460,9 +460,18 @@ export default {
 
     if (request.method === "GET") {
       if (path === "/leetcode") {
+        const force = url.searchParams.get("fresh") === "1";
         try {
-          const data = await getOrRefreshLeetCode();
-          return json(data, 200, origin);
+          const data = await getFreshLeetCode({ force });
+          return new Response(JSON.stringify(data), {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+              // Always revalidate at the Worker so page opens get current stats.
+              "Cache-Control": "no-store",
+              ...corsHeaders(origin),
+            },
+          });
         } catch (err) {
           return json(
             {
