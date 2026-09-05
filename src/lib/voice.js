@@ -3,6 +3,8 @@
  * - Desktop Chromium/Safari: Web Speech API (0 Workers AI STT Neurons)
  * - Firefox / mobile / fallback: MediaRecorder → Workers AI Whisper
  * - Hands-free: “Hey Wick” after Ask AI is open; Wait holds the follow-up window
+ * - Follow-up listen resets while the visitor talks; Stop / Wick stop / ■ ends the turn
+ * - Auto language: reply and TTS follow the latest utterance (script + romanized cues, e.g. tumi / aap / hola)
  */
 
 export function getSpeechRecognitionCtor() {
@@ -178,6 +180,21 @@ export function detectLangFromText(text) {
   if (/[\u0980-\u09FF]/.test(src)) return "bn-IN";
   if (/[\u0600-\u06FF]/.test(src)) return "ur-IN";
   if (/[\u0900-\u097F]/.test(src)) return "hi-IN";
+  if (/[ñ¿¡]/i.test(src) || /\b(hola|gracias|por favor|qué|dónde)\b/i.test(src)) {
+    return "es-ES";
+  }
+  if (/[àâçèêëîïôùûœ]/i.test(src) || /\b(bonjour|merci|s'il vous plaît|pourquoi)\b/i.test(src)) {
+    return "fr-FR";
+  }
+  if (/[äöüß]/i.test(src) || /\b(danke|bitte|warum|guten tag)\b/i.test(src)) {
+    return "de-DE";
+  }
+  if (/\b(tumi|tomra|amake|kemon|achen|korcho|bangla|bengali)\b/i.test(src)) {
+    return "bn-IN";
+  }
+  if (/\b(aap|kaise|kya hai|namaste|hindi)\b/i.test(src)) {
+    return "hi-IN";
+  }
   return null;
 }
 
@@ -191,6 +208,36 @@ export function resolveVoiceLang(pref = "auto", textHint = "") {
   const prefix = nav.slice(0, 2).toLowerCase();
   const match = [...LANG_IDS].find((id) => id.toLowerCase().startsWith(prefix));
   return match || "en-US";
+}
+
+const LANG_NAMES = {
+  "en-US": "English",
+  "en-IN": "English",
+  "hi-IN": "Hindi",
+  "bn-IN": "Bengali",
+  "te-IN": "Telugu",
+  "mr-IN": "Marathi",
+  "ta-IN": "Tamil",
+  "gu-IN": "Gujarati",
+  "kn-IN": "Kannada",
+  "ml-IN": "Malayalam",
+  "pa-IN": "Punjabi",
+  "ur-IN": "Urdu",
+  "es-ES": "Spanish",
+  "fr-FR": "French",
+  "de-DE": "German",
+};
+
+export function languageDisplayName(id) {
+  return LANG_NAMES[id] || "English";
+}
+
+/** Picker wins; otherwise detect from this utterance. Latin/English stays English. */
+export function inferReplyLang(userText, pref = "auto") {
+  if (pref && LANG_IDS.has(pref)) return pref;
+  const fromText = detectLangFromText(userText);
+  if (fromText && LANG_IDS.has(fromText)) return fromText;
+  return "en-US";
 }
 
 export const WAKE_WORD = "Wick";
@@ -270,7 +317,7 @@ export function parseWakeUtterance(text, { armed = false } = {}) {
 }
 
 /**
- * Only while the mic is on (ask turn or 6s follow-up). Not used during TTS.
+ * Only while the mic is on (ask turn or follow-up). Not used during TTS.
  * - "Wait" / "Hold on" → keep the follow-up window
  * - "Stop" → sleep
  * - "Stop, what about the thesis?" → ask that instead
@@ -326,8 +373,8 @@ function pickVoiceForLang(lang = "en-US") {
  *
  * @returns {{ start: () => void, stop: () => void, abort: () => void } | null}
  */
-/** Prefer an alternative that is a wake or stop phrase — Chrome often ranks “Vic” over “Wick”. */
-function pickUtteranceFromResult(result) {
+/** Standby only: Chrome often ranks “Vic” over “Wick”. Never prefer stop/wait alts. */
+function pickUtteranceFromResult(result, { preferWake = false } = {}) {
   if (!result?.length) return "";
   const alts = [];
   for (let i = 0; i < result.length; i += 1) {
@@ -335,12 +382,11 @@ function pickUtteranceFromResult(result) {
     if (text) alts.push(text);
   }
   if (!alts.length) return "";
-  const useful = alts.find((text) => {
-    const wake = parseWakeUtterance(text);
-    if (wake.action !== "ignore") return true;
-    return parseInterruptUtterance(text).action !== "ignore";
-  });
-  return useful || alts[0];
+  if (preferWake) {
+    const useful = alts.find((text) => parseWakeUtterance(text).action !== "ignore");
+    return useful || alts[0];
+  }
+  return alts[0];
 }
 
 export function createSpeechListener({
@@ -350,47 +396,81 @@ export function createSpeechListener({
   onEnd,
   onActivity,
   lang = "en-US",
+  continuous = false,
+  settleMs = 1100,
+  preferWake = false,
 } = {}) {
   const Ctor = getSpeechRecognitionCtor();
   if (!Ctor) return null;
 
   const recognition = new Ctor();
-  // continuous=false is more portable; Concierge restarts the session in voice loop.
-  recognition.continuous = false;
+  recognition.continuous = Boolean(continuous);
   recognition.interimResults = true;
   recognition.lang = lang;
   recognition.maxAlternatives = 5;
 
   let lastInterim = "";
+  let finals = [];
   let committed = false;
   let stoppedByUs = false;
+  let settleTimer = 0;
+
+  function assembled() {
+    return [...finals, lastInterim].filter(Boolean).join(" ").trim();
+  }
+
+  function clearSettle() {
+    if (settleTimer) {
+      window.clearTimeout(settleTimer);
+      settleTimer = 0;
+    }
+  }
 
   const commit = (text) => {
     const value = String(text || "").trim();
     if (!value || committed) return false;
     committed = true;
+    clearSettle();
     if (onFinal) onFinal(value);
     return true;
   };
+
+  function scheduleCommit() {
+    const value = assembled();
+    if (!value || committed) return;
+    clearSettle();
+    settleTimer = window.setTimeout(() => {
+      settleTimer = 0;
+      commit(assembled());
+      stoppedByUs = true;
+      try {
+        recognition.stop();
+      } catch {
+        /* ignore */
+      }
+    }, settleMs);
+  }
 
   recognition.onresult = (event) => {
     let interim = "";
     let finalText = "";
     for (let i = event.resultIndex; i < event.results.length; i += 1) {
       const result = event.results[i];
-      const piece = pickUtteranceFromResult(result);
+      const piece = pickUtteranceFromResult(result, { preferWake });
       if (result.isFinal) finalText += piece;
       else interim += piece;
     }
     if (interim) {
       lastInterim = interim.trim();
-      if (onPartial) onPartial(lastInterim);
+      if (onPartial) onPartial(assembled());
       if (onActivity) onActivity(true);
     }
     if (finalText) {
+      finals.push(finalText.trim());
       lastInterim = "";
-      commit(finalText);
+      if (onPartial) onPartial(assembled());
     }
+    if (assembled()) scheduleCommit();
   };
 
   recognition.onsoundstart = () => {
@@ -414,9 +494,9 @@ export function createSpeechListener({
 
   recognition.onend = () => {
     if (onActivity) onActivity(false);
-    // Android often ends with only interim results — promote them.
-    if (!committed && lastInterim) {
-      commit(lastInterim);
+    if (!committed) {
+      const full = assembled();
+      if (full) commit(full);
     }
     if (onEnd) onEnd({ committed, stoppedByUs });
   };
@@ -425,7 +505,9 @@ export function createSpeechListener({
     start() {
       committed = false;
       lastInterim = "";
+      finals = [];
       stoppedByUs = false;
+      clearSettle();
       try {
         recognition.start();
       } catch {
@@ -434,6 +516,7 @@ export function createSpeechListener({
     },
     stop() {
       stoppedByUs = true;
+      clearSettle();
       try {
         recognition.stop();
       } catch {
@@ -443,6 +526,7 @@ export function createSpeechListener({
     abort() {
       stoppedByUs = true;
       committed = true; // prevent interim commit after abort
+      clearSettle();
       try {
         recognition.abort();
       } catch {
@@ -452,7 +536,7 @@ export function createSpeechListener({
   };
 }
 
-export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
+export function speakText(text, { onEnd, rate = 0.88, lang = "en-US" } = {}) {
   if (!canUseVoiceOutput() || !text) {
     if (onEnd) onEnd();
     return () => {};
@@ -460,9 +544,12 @@ export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
 
   let cancelled = false;
   let spoke = false;
+  let finished = false;
   let safetyTimer = 0;
 
   const finish = () => {
+    if (finished || cancelled) return;
+    finished = true;
     if (safetyTimer) window.clearTimeout(safetyTimer);
     safetyTimer = 0;
     if (onEnd) onEnd();
@@ -486,7 +573,7 @@ export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
     }
 
     const utter = new SpeechSynthesisUtterance(String(text).slice(0, 1200));
-    utter.rate = isMobileVoiceClient() ? Math.min(rate, 1) : rate;
+    utter.rate = isMobileVoiceClient() ? Math.min(rate, 0.86) : rate;
     utter.pitch = 1;
     utter.lang = lang || "en-US";
     const preferred = pickVoiceForLang(utter.lang);
@@ -496,7 +583,7 @@ export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
     utter.onerror = finish;
 
     // Safety: if onend never fires (known mobile bug), unblock the voice loop.
-    const ms = Math.min(60000, Math.max(4000, String(text).length * 80));
+    const ms = Math.min(90000, Math.max(6000, String(text).length * 110));
     safetyTimer = window.setTimeout(finish, ms);
 
     try {
@@ -528,7 +615,9 @@ export function speakText(text, { onEnd, rate = 1.02, lang = "en-US" } = {}) {
 
   return () => {
     cancelled = true;
+    finished = true;
     if (safetyTimer) window.clearTimeout(safetyTimer);
+    safetyTimer = 0;
     try {
       window.speechSynthesis.cancel();
     } catch {

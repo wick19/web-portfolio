@@ -11,7 +11,7 @@ const PILLARS = [
       "Production inference with Azure OpenAI, Hugging Face Transformers, TensorFlow, and PyTorch (chat, embeddings, ranking, semantic search)",
       "Two FastAPI microservices with JWT, OAuth2, multi-tenant RBAC, provider routing, caching, and rate limiting",
       "LangChain / LangGraph, RAG, Agentic AI, prompt engineering (Technical Expertise)",
-      "Portfolio Concierge: grounded LLM + privacy-first Siri-style voice (Hey Wick after Ask AI opens, mic off between turns) with multilingual browser speech, rate limits, and a daily quota kill-switch",
+      "Portfolio Concierge: grounded LLM + privacy-first Siri-style voice (Hey Wick after Ask AI opens, mic off while it talks, follow-up listen until Stop) with Auto language matching, multilingual browser speech, rate limits, and a daily quota kill-switch",
     ],
     links: [
       { href: "#experience-page", label: "View Experience" },

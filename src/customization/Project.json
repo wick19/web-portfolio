@@ -14,13 +14,13 @@
     {
       "project_img": "",
       "project_name": "Portfolio Concierge — Live AI Demo",
-      "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by text or voice. The privacy-first voice flow is intentionally turn-based: open Ask AI, say Hey Wick or tap the mic, ask one question, then the mic releases while the answer is generated and spoken. A short follow-up window supports natural conversation before the mic turns fully off. Browser speech is selectable across English, ten Indian languages, Spanish, French, and German; typed chat remains available everywhere.",
+      "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by text or voice. The privacy-first voice flow is turn-based: open Ask AI, say Hey Wick or tap the mic, ask a question, then the mic releases while the answer is generated and spoken. After each answer it keeps listening for a follow-up (the window resets while the visitor is talking; Stop or a long silence ends the turn). Auto replies in the visitor’s language; the picker can lock English, ten Indian languages, Spanish, French, or German. Typed chat remains available everywhere.",
       "project_tool": "React, Vite, Web Speech API, MediaRecorder, speechSynthesis, Cloudflare Workers, Workers AI, Whisper STT, rate limiting",
       "project_link": "https://wick19.github.io/web-portfolio/",
       "featured": false,
       "badge": "Public · Live on this site",
       "challenge": "Ship a real LLM + voice demo on static GitHub Pages without exposing keys; support natural, multilingual interaction while keeping the free Workers AI tier safe and avoiding an always-active microphone.",
-      "outcome": "Delivered a grounded, turn-based Concierge with browser STT/TTS, Workers AI Whisper fallback for English, Hey Wick after the panel opens, a six-second follow-up window, and no background listening. Added language selection for English, Indian regional languages, Spanish, French, and German; formatted replies; CORS/origin allowlisting; separate chat/STT rate limits; audio caps; and automatic free-quota pause."
+      "outcome": "Delivered a grounded, turn-based Concierge with browser STT/TTS, Workers AI Whisper fallback for English, Hey Wick after the panel opens, a follow-up listen that stays open through short pauses, and no background listening. Added Auto language matching (reply + speech in the visitor’s language) plus a picker for English, Indian regional languages, Spanish, French, and German; formatted replies; CORS/origin allowlisting; separate chat/STT rate limits; audio caps; and automatic free-quota pause."
     },
     {
       "project_img": "",
