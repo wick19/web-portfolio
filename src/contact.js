@@ -22,7 +22,7 @@ export default function ContactPage() {
         <p className="section-label">// Contact</p>
         <h1>Let&apos;s talk</h1>
         <p className="page-intro-lede">
-          Full-stack AI/ML Engineer currently shipping at Sprouts.ai — open to
+          {IntroRaw.role} currently shipping at Sprouts.ai — open to
           full-time roles.
         </p>
       </header>
@@ -128,6 +128,9 @@ export default function ContactPage() {
             href={IntroRaw.leetcode}
             target="_blank"
             rel="noreferrer"
+            onClick={() => {
+              window.dispatchEvent(new Event("portfolio:leetcode-refresh"));
+            }}
           >
             LeetCode
           </a>

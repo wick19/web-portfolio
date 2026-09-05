@@ -5,12 +5,13 @@ const PILLARS = [
     id: "ai",
     label: "AI Systems",
     summary:
-      "LLM-powered workflows, provider orchestration, and agentic patterns shipped in production.",
+      "Generative AI, retrieval, and agentic workflows shipped as production products.",
     evidence: [
-      "Sprouts.ai contact enrichment: FastAPI microservices with intelligent provider orchestration",
-      "Hybrid LLM + deterministic services, caching, and async execution for reliability and cost control",
-      "Portfolio Concierge: grounded LLM + hybrid voice (Web Speech / Workers AI Whisper) on this site, with rate limits and daily quota kill-switch",
-      "LangChain / LangGraph, RAG, prompt engineering, Hugging Face, OpenAI API (Technical Expertise)",
+      "Sprouts.ai contact enrichment: LLM reasoning, semantic retrieval, and entity resolution over Elasticsearch",
+      "Production inference with Azure OpenAI, Hugging Face Transformers, TensorFlow, and PyTorch (chat, embeddings, ranking, semantic search)",
+      "Two FastAPI microservices with JWT, OAuth2, multi-tenant RBAC, provider routing, caching, and rate limiting",
+      "LangChain / LangGraph, RAG, Agentic AI, prompt engineering (Technical Expertise)",
+      "Portfolio Concierge: grounded LLM + privacy-first Siri-style voice (Hey Wick after Ask AI opens, mic off between turns) with multilingual browser speech, rate limits, and a daily quota kill-switch",
     ],
     links: [
       { href: "#experience-page", label: "View Experience" },
@@ -23,7 +24,7 @@ const PILLARS = [
     summary:
       "Classical and deep models for wireless path-loss prediction — public code and paper.",
     evidence: [
-      "UAV Path Loss Prediction: Random Forest, ANN, KNN, Naive Bayes with feature engineering",
+      "UAV Path Loss Prediction: Random Forest, ANN, KNN, Naive Bayes with feature engineering vs Okumura–Hata / log-distance",
       "Stack: Python, Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch",
       "Research paper + repository (PathLossML_Prediction)",
     ],
@@ -40,10 +41,10 @@ const PILLARS = [
     id: "fullstack",
     label: "Full-stack Platforms",
     summary:
-      "Python backends, data systems, cloud-native delivery, and React/TypeScript product surfaces.",
+      "Python backends, data systems, cloud-native delivery, and React/Next.js product surfaces.",
     evidence: [
-      "Production FastAPI / Django / Flask with PostgreSQL, Redis, OAuth2/JWT",
-      "Sprouts dashboards and insights in React + TypeScript",
+      "Production FastAPI / Django / Flask with PostgreSQL, Redis, Elasticsearch, OAuth2/JWT",
+      "Sprouts product surfaces in React, Next.js, TypeScript, Vite, and Tailwind — dashboards, graph discovery, network viz, hierarchy views",
       "Docker, Kubernetes, Helm, GitHub Actions; hotel platform on Django + Azure SQL",
     ],
     links: [

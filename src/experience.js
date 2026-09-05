@@ -91,8 +91,8 @@ export default function ExperiencePage({ hash = "" }) {
         <p className="section-label">// Experience</p>
         <h1>Career history</h1>
         <p className="page-intro-lede">
-          Production AI systems, full-stack delivery, and verified impact — scan
-          the timeline, then read the active story.
+          Production AI systems, full-stack product delivery, and verified
+          impact — scan the timeline, then read the active story.
         </p>
       </header>
 

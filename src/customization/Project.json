@@ -3,24 +3,24 @@
     {
       "project_img": "",
       "project_name": "Production AI Contact Enrichment Platform",
-      "project_about": "Production AI-powered contact enrichment platform at Sprouts.ai supporting intelligent provider orchestration, workflow automation, distributed processing, authentication, caching, and scalable REST APIs.",
-      "project_tool": "Python, FastAPI, PostgreSQL, Redis, Docker, Kubernetes",
+      "project_about": "Production AI-powered contact enrichment platform at Sprouts.ai supporting intelligent provider orchestration, Elasticsearch retrieval, LLM reasoning, entity resolution, workflow automation, distributed processing, authentication, caching, and scalable REST APIs.",
+      "project_tool": "Python, FastAPI, PostgreSQL, Redis, Elasticsearch, Azure OpenAI, Hugging Face, Next.js, Docker, Kubernetes",
       "project_link": "",
       "featured": true,
       "badge": "Proprietary · Sprouts.ai",
-      "challenge": "Coordinate multiple external enrichment providers with async workflows, retries, rate limits, and cost-aware orchestration without sacrificing reliability.",
-      "outcome": "Shipped production FastAPI microservices with SQLAlchemy, Redis caching, OAuth2/JWT, Alembic, GitHub Actions, and cloud-native CI/CD—improving reliability, maintainability, and infrastructure efficiency."
+      "challenge": "Turn fragmented enterprise contact data into searchable, actionable enrichment using LLM reasoning, semantic retrieval, and entity resolution over Elasticsearch—while coordinating multiple providers with async workflows, retries, rate limits, and cost-aware orchestration.",
+      "outcome": "Shipped two production FastAPI microservices with Azure OpenAI / Hugging Face inference, SQLAlchemy, Redis caching, OAuth2/JWT, multi-tenant RBAC, Alembic, GitHub Actions, and Next.js product surfaces (dashboards, graph discovery, hierarchy views)—improving reliability, maintainability, and infrastructure efficiency."
     },
     {
       "project_img": "",
       "project_name": "Portfolio Concierge — Live AI Demo",
-      "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by conversation (text or voice). React UI with a Cloudflare Worker and Workers AI — hybrid speech (Web Speech on desktop where available; Whisper STT for Firefox/mobile), plus origin allowlisting, rate limits, short-audio caps, and a daily free-quota kill-switch.",
-      "project_tool": "React, Vite, Web Speech API, MediaRecorder, Cloudflare Workers, Workers AI, Whisper STT, rate limiting",
+      "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by text or voice. The privacy-first voice flow is intentionally turn-based: open Ask AI, say Hey Wick or tap the mic, ask one question, then the mic releases while the answer is generated and spoken. A short follow-up window supports natural conversation before the mic turns fully off. Browser speech is selectable across English, ten Indian languages, Spanish, French, and German; typed chat remains available everywhere.",
+      "project_tool": "React, Vite, Web Speech API, MediaRecorder, speechSynthesis, Cloudflare Workers, Workers AI, Whisper STT, rate limiting",
       "project_link": "https://wick19.github.io/web-portfolio/",
       "featured": false,
       "badge": "Public · Live on this site",
-      "challenge": "Ship a real LLM + voice demo on static GitHub Pages without exposing keys, keep the free Neurons tier safe, and make voice work beyond Chromium-only Web Speech.",
-      "outcome": "Delivered a floating Concierge with hybrid STT (browser speech or Whisper /stt), browser TTS, grounded portfolio knowledge, CORS/origin allowlisting, separate chat/STT rate limits, audio size caps, and auto-pause when Workers AI free Neurons are exhausted."
+      "challenge": "Ship a real LLM + voice demo on static GitHub Pages without exposing keys; support natural, multilingual interaction while keeping the free Workers AI tier safe and avoiding an always-active microphone.",
+      "outcome": "Delivered a grounded, turn-based Concierge with browser STT/TTS, Workers AI Whisper fallback for English, Hey Wick after the panel opens, a six-second follow-up window, and no background listening. Added language selection for English, Indian regional languages, Spanish, French, and German; formatted replies; CORS/origin allowlisting; separate chat/STT rate limits; audio caps; and automatic free-quota pause."
     },
     {
       "project_img": "",
@@ -47,8 +47,8 @@
     {
       "project_img": "",
       "project_name": "UAV Path Loss Prediction using Machine Learning",
-      "project_about": "Random Forest, ANN, KNN, Naive Bayes, and linear models for UAV air-to-air path loss prediction using terrain, elevation, clutter height, and communication parameters—paired with Okumura–Hata / log-distance baselines. Public research code + paper.",
-      "project_tool": "Python, scikit-learn, pandas, NumPy, Matplotlib, Seaborn",
+      "project_about": "Random Forest, ANN, KNN, Naive Bayes, and linear models for UAV air-to-air path loss prediction using terrain, elevation, clutter height, and communication parameters—paired with Okumura–Hata / log-distance baselines. Public research code + paper (Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch).",
+      "project_tool": "Python, scikit-learn, pandas, NumPy, Matplotlib, Seaborn, TensorFlow, PyTorch",
       "project_link": "https://github.com/wick19/PathLossML_Prediction",
       "featured": false,
       "badge": "Public · Research",
@@ -97,7 +97,7 @@
       "featured": false,
       "badge": "Academic / coursework",
       "challenge": "Support secure multi-user hotel operations with efficient relational data management at scale.",
-      "outcome": "Optimized relational performance, backend APIs, and modular architecture for scalability and maintainability."
+      "outcome": "Optimized relational database performance, backend APIs, and modular system design for scalability and maintainability."
     }
   ]
 }

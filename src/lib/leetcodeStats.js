@@ -7,18 +7,21 @@ const WORKER_BASE = (import.meta.env.VITE_CONCIERGE_URL || "").replace(
 );
 const WORKER_API = WORKER_BASE ? `${WORKER_BASE}/leetcode` : "";
 const CACHE_KEY = `portfolio:leetcode:${USERNAME}`;
-/** Short browser cache — Worker holds the daily snapshot. */
+/**
+ * Browser cache is only for instant first paint / offline fallback.
+ * Page open and "Open profile" always revalidate (force: true).
+ */
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
 /** Last known good snapshot — used until live fetch succeeds. */
 export const LEETCODE_FALLBACK = {
   username: USERNAME,
   profileUrl: PROFILE_URL,
-  totalSolved: 488,
-  easySolved: 124,
-  mediumSolved: 265,
-  hardSolved: 99,
-  ranking: 217571,
+  totalSolved: 503,
+  easySolved: 128,
+  mediumSolved: 274,
+  hardSolved: 101,
+  ranking: 209238,
   acceptanceRate: 94.28,
 };
 
@@ -69,10 +72,23 @@ function pickStats(payload) {
   };
 }
 
-async function fetchFromWorker() {
+function fresherOf(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  if (Number(b.totalSolved) !== Number(a.totalSolved)) {
+    return Number(b.totalSolved) > Number(a.totalSolved) ? b : a;
+  }
+  const aTime = Date.parse(a.fetchedAt || "") || 0;
+  const bTime = Date.parse(b.fetchedAt || "") || 0;
+  return bTime >= aTime ? b : a;
+}
+
+async function fetchFromWorker({ fresh = false } = {}) {
   if (!WORKER_API) return null;
-  const res = await fetch(WORKER_API, {
+  const url = fresh ? `${WORKER_API}?fresh=1` : WORKER_API;
+  const res = await fetch(url, {
     headers: { Accept: "application/json" },
+    cache: "no-store",
   });
   if (!res.ok) throw new Error(`Worker LeetCode ${res.status}`);
   const json = await res.json();
@@ -83,6 +99,7 @@ async function fetchFromWorker() {
 async function fetchFromUpstream() {
   const res = await fetch(UPSTREAM_API, {
     headers: { Accept: "application/json" },
+    cache: "no-store",
   });
   if (!res.ok) throw new Error(`LeetCode API ${res.status}`);
   const json = await res.json();
@@ -91,8 +108,9 @@ async function fetchFromUpstream() {
 }
 
 /**
- * Prefer Worker daily snapshot (cron-warmed). Fall back to public API.
- * Browser cache is short so Contact picks up the cron refresh quickly.
+ * force: true (page open / Open profile) hits live upstream + Worker in
+ * parallel and keeps the higher solved count, so a stale Worker snapshot
+ * cannot hide newer public stats.
  */
 export async function getLeetCodeStats({ force = false } = {}) {
   const cached = readCache();
@@ -103,27 +121,23 @@ export async function getLeetCodeStats({ force = false } = {}) {
     return { ...cached.data, source: "cache" };
   }
 
-  try {
-    const data = (await fetchFromWorker()) || (await fetchFromUpstream());
-    if (!data) throw new Error("No LeetCode payload");
+  const settled = await Promise.allSettled([
+    fetchFromUpstream(),
+    fetchFromWorker({ fresh: force }),
+  ]);
+
+  const payloads = settled
+    .filter((r) => r.status === "fulfilled" && r.value)
+    .map((r) => r.value);
+
+  if (payloads.length) {
+    const data = payloads.reduce((best, cur) => fresherOf(best, cur));
     writeCache(data);
-    return {
-      ...data,
-      source: WORKER_API ? "worker" : "live",
-    };
-  } catch {
-    try {
-      const data = await fetchFromUpstream();
-      if (data) {
-        writeCache(data);
-        return { ...data, source: "live" };
-      }
-    } catch {
-      /* fall through */
-    }
-    if (cached?.data) return { ...cached.data, source: "stale-cache" };
-    return { ...LEETCODE_FALLBACK, source: "fallback" };
+    return { ...data, source: "live" };
   }
+
+  if (cached?.data) return { ...cached.data, source: "stale-cache" };
+  return { ...LEETCODE_FALLBACK, source: "fallback" };
 }
 
 export { USERNAME as LEETCODE_USERNAME, PROFILE_URL as LEETCODE_PROFILE_URL };
