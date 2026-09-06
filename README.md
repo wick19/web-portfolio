@@ -156,6 +156,10 @@ npm run deploy
 
 Publishes `dist/` to GitHub Pages (`gh-pages`).
 
+## License
+
+This project is licensed under the [MIT License](LICENSE). Copyright (c) 2026 Ritwik.
+
 ## Repo hygiene
 
 Do not commit: `.env.local`, `worker/.dev.vars`, `.vscode/mcp.json`, `.cursor/`, internal plan markdown. Templates (`.env.example`, `worker/.dev.vars.example`) are safe to track.

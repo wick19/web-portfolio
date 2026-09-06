@@ -8,6 +8,8 @@ const PILLARS = [
       "Generative AI, retrieval, and agentic workflows shipped as production products.",
     evidence: [
       "Sprouts.ai contact enrichment: LLM reasoning, semantic retrieval, and entity resolution over Elasticsearch",
+      "Elasticsearch read-path debugging: resolve the search alias to the backing index, then domain-match cached emails against the current employer before treating them as resolved",
+      "LLM Search API regression testing: 41.6% failure rate across 3 root causes, 58.4% baseline pass rate used for parser fixes and release validation",
       "Production inference with Azure OpenAI, Hugging Face Transformers, TensorFlow, and PyTorch (chat, embeddings, ranking, semantic search)",
       "Two FastAPI microservices with JWT, OAuth2, multi-tenant RBAC, provider routing, caching, and rate limiting",
       "LangChain / LangGraph, RAG, Agentic AI, prompt engineering (Technical Expertise)",

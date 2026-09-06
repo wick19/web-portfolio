@@ -105,8 +105,8 @@ export default function LeetCodeProof() {
           <p className="section-label">// Algorithms</p>
           <h2 id="leetcode-heading">LeetCode</h2>
           <p className="section-lede">
-            Live problem-solving stats — pulled fresh when you open this page
-            or the profile.
+            Contest-grade problem-solving, kept current by a scheduled edge
+            refresh.
           </p>
         </div>
 
