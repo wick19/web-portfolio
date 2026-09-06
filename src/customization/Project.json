@@ -8,17 +8,17 @@
       "project_link": "",
       "featured": true,
       "badge": "Proprietary · Sprouts.ai",
-      "challenge": "Turn fragmented enterprise contact data into searchable, actionable enrichment using LLM reasoning, semantic retrieval, and entity resolution over Elasticsearch—while coordinating multiple providers with async workflows, retries, rate limits, and cost-aware orchestration.",
-      "outcome": "Shipped two production FastAPI microservices with Azure OpenAI / Hugging Face inference, SQLAlchemy, Redis caching, OAuth2/JWT, multi-tenant RBAC, Alembic, GitHub Actions, and Next.js product surfaces (dashboards, graph discovery, hierarchy views)—improving reliability, maintainability, and infrastructure efficiency."
+      "challenge": "Turn fragmented enterprise contact data into searchable, actionable enrichment using LLM reasoning, semantic retrieval, and entity resolution over Elasticsearch—while coordinating multiple providers and keeping search-index reads (alias → backing index) from serving leftover emails after a company change.",
+      "outcome": "Shipped two production FastAPI microservices with Azure OpenAI / Hugging Face inference, SQLAlchemy, Redis caching, OAuth2/JWT, multi-tenant RBAC, Alembic, GitHub Actions, and Next.js product surfaces (dashboards, relationship discovery, hierarchy views). Added a domain-match gate so a cached email is only treated as resolved if it still matches the current employer; otherwise the stale index fields are skipped and the verification waterfall re-runs. Search API regression testing established a 58.4% baseline pass rate after a 41.6% failure rate across 3 root causes."
     },
     {
       "project_img": "",
       "project_name": "Portfolio Concierge — Live AI Demo",
       "project_about": "Interactive Ask AI on this portfolio so visitors can explore experience, projects, and thesis by text or voice. The privacy-first voice flow is turn-based: open Ask AI, say Hey Wick or tap the mic, ask a question, then the mic releases while the answer is generated and spoken. After each answer it keeps listening for a follow-up (the window resets while the visitor is talking; Stop or a long silence ends the turn). Auto detects the latest message (script, and common romanized cues such as Bengali tumi, Hindi aap, Spanish hola, etc.) and replies in that language across English, Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Spanish, French, and German. The picker can lock any of those. Typed chat remains available everywhere.",
-      "project_tool": "React, Vite, Web Speech API, MediaRecorder, speechSynthesis, Cloudflare Workers, Workers AI, Whisper STT, rate limiting",
+      "project_tool": "React, Vite, Web Speech API, MediaRecorder, speechSynthesis, Cloudflare Workers, Workers AI, Whisper STT, rate limiting, MIT License",
       "project_link": "https://wick19.github.io/web-portfolio/",
       "featured": false,
-      "badge": "Public · Live on this site",
+      "badge": "Public · MIT · Live on this site",
       "challenge": "Ship a real LLM + voice demo on static GitHub Pages without exposing keys; support natural, multilingual interaction while keeping the free Workers AI tier safe and avoiding an always-active microphone.",
       "outcome": "Delivered a grounded, turn-based Concierge with browser STT/TTS, Workers AI Whisper fallback for English, Hey Wick after the panel opens, a follow-up listen that stays open through short pauses, and no background listening. Auto detects the latest message (script and romanized cues such as Bengali tumi, Hindi aap, Spanish hola, etc.) and replies in English, Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Spanish, French, or German; the picker can lock any of those. Also added formatted replies, CORS/origin allowlisting, separate chat/STT rate limits, audio caps, and automatic free-quota pause."
     },
