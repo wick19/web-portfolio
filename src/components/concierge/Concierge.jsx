@@ -12,7 +12,6 @@ import {
   canUseVoiceOutput,
   createMicLevelMeter,
   createSpeechListener,
-  ensureMicPermission,
   getExternalBrowserUrl,
   detectLangFromText,
   inferReplyLang,
@@ -43,6 +42,8 @@ const SUGGESTIONS = [
 
 const WELCOME = "Ask about experience, projects, thesis, or how to reach him.";
 const VOICE_HINT = `Say “Hey ${WAKE_WORD}” or tap the mic. After an answer, keep talking — it waits for you.`;
+const VOICE_HINT_PHONE =
+  "Tap the headset to start a voice conversation, then tap the mic to speak. After an answer, tap the mic again to keep talking. ■ ends it.";
 
 const LANG_KEY = "portfolio:concierge-lang";
 const FOLLOWUP_MS = 14000;
@@ -258,7 +259,9 @@ export default function Concierge() {
   const [wakeGuideOpen, setWakeGuideOpen] = useState(false);
   const [voiceSupported] = useState(() => canUseAnyVoiceInput());
   const [inAppBrowser] = useState(() => isInAppBrowser());
+  const [phoneVoice] = useState(() => isMobileVoiceClient());
   const configured = isConciergeConfigured();
+  const voiceHowTo = phoneVoice ? VOICE_HINT_PHONE : VOICE_HINT;
 
   langPrefRef.current = voiceLang;
   openRef.current = open;
@@ -267,6 +270,7 @@ export default function Concierge() {
     if (!open) return;
     const node = listRef.current;
     if (node) node.scrollTop = node.scrollHeight;
+    if (isMobileVoiceClient()) return;
     window.setTimeout(() => inputRef.current?.focus(), 50);
   }, [open, messages, busy, error, listening]);
 
@@ -360,7 +364,9 @@ export default function Concierge() {
     stopStandby();
     setWakeHint(
       keepPanel
-        ? "Sleeping. Tap the headset or mic to talk again."
+        ? isMobileVoiceClient()
+          ? "Voice paused. Tap the headset or mic to talk."
+          : "Sleeping. Tap the headset or mic to talk again."
         : ""
     );
   }
@@ -372,8 +378,13 @@ export default function Concierge() {
     setVoiceOn(true);
     setOpen(true);
     setWakeHint("Listening… ask your question.");
-    playWakeChime();
     stopStandby();
+    if (isMobileVoiceClient()) {
+      // Same tap as the headset — iOS rejects start() from the desktop timer.
+      startListening({ loop: true });
+      return;
+    }
+    playWakeChime();
     scheduleListenRestart(220);
   }
 
@@ -382,6 +393,12 @@ export default function Concierge() {
     voiceLoopRef.current = true;
     fromVoiceRef.current = true;
     setVoiceOn(true);
+    if (isMobileVoiceClient()) {
+      // Do not auto-restart SpeechRecognition after TTS — no user gesture.
+      setWakeHint("Your turn — tap the mic to keep talking.");
+      armFollowUpTimer();
+      return;
+    }
     setWakeHint("Your turn — I’m listening.");
     armFollowUpTimer();
     scheduleListenRestart(280);
@@ -443,6 +460,7 @@ export default function Concierge() {
   }
 
   function startStandby() {
+    if (isMobileVoiceClient()) return;
     if (!voiceSupported || inAppBrowser || !preferBrowserStt()) return;
     if (!openRef.current) return;
     if (phaseRef.current !== "sleep") return;
@@ -559,6 +577,11 @@ export default function Concierge() {
   function onListenMiss() {
     if (phaseRef.current === "sleep") return;
     if (busyRef.current || speakingRef.current) return;
+    if (isMobileVoiceClient()) {
+      setWakeHint("Didn’t catch that — tap the mic and speak.");
+      if (phaseRef.current === "followup") extendFollowUp();
+      return;
+    }
     setWakeHint("Still listening…");
     if (phaseRef.current === "followup") extendFollowUp();
     scheduleListenRestart(350);
@@ -621,6 +644,10 @@ export default function Concierge() {
   function openPanel() {
     openRef.current = true;
     setOpen(true);
+    if (isMobileVoiceClient()) {
+      setWakeHint("Tap the headset to talk, or the mic for one question.");
+      return;
+    }
     setWakeHint(`Say “Hey ${WAKE_WORD}”, or tap the mic.`);
     startStandby();
   }
@@ -790,28 +817,12 @@ export default function Concierge() {
   }
 
   async function startBrowserListening({ loop = false } = {}) {
-    listeningRef.current = true;
-    try {
-      if (isMobileVoiceClient()) {
-        await ensureMicPermission();
-      }
-    } catch {
-      listeningRef.current = false;
-      setError(
-        inAppBrowser
-          ? inAppVoiceHint()
-          : "Microphone permission blocked — allow mic access to talk."
-      );
-      voiceLoopRef.current = false;
-      setVoiceOn(false);
-      return;
-    }
-
     const gen = listenGenRef.current;
     const listener = createSpeechListener({
       lang: listenLang(),
       continuous:
-        phaseRef.current === "turn" || phaseRef.current === "followup",
+        !isMobileVoiceClient() &&
+        (phaseRef.current === "turn" || phaseRef.current === "followup"),
       settleMs: isMobileVoiceClient() ? 1400 : 1100,
       onPartial: (partial) => {
         if (gen !== listenGenRef.current) return;
@@ -897,6 +908,7 @@ export default function Concierge() {
     stopStandby();
     setError("");
     clearRestartTimer();
+    setWakeHint("Mic on — listening…");
 
     if (useBrowserStt.current) {
       await startBrowserListening({ loop });
@@ -916,8 +928,11 @@ export default function Concierge() {
       stopVoiceCapture({ abort: true });
       return;
     }
-    unlockSpeechAudio();
+    if (!isMobileVoiceClient()) unlockSpeechAudio();
     fromVoiceRef.current = true;
+    if (isMobileVoiceClient() && phaseRef.current === "followup") {
+      extendFollowUp();
+    }
     startListening({ loop: false });
   }
 
@@ -933,7 +948,7 @@ export default function Concierge() {
       );
       return;
     }
-    unlockSpeechAudio();
+    if (!isMobileVoiceClient()) unlockSpeechAudio();
     beginTurn();
   }
 
@@ -994,7 +1009,7 @@ export default function Concierge() {
               <p className="concierge-lede">{WELCOME}</p>
               <p className="concierge-wake-hint">
                 <span className="section-label">// Voice</span>
-                {VOICE_HINT}
+                {voiceHowTo}
               </p>
             </>
           ) : (
@@ -1015,7 +1030,7 @@ export default function Concierge() {
                 </span>
               </button>
               {wakeGuideOpen ? (
-                <p className="concierge-wake-hint">{VOICE_HINT}</p>
+                <p className="concierge-wake-hint">{voiceHowTo}</p>
               ) : null}
             </div>
           )}
@@ -1079,10 +1094,16 @@ export default function Concierge() {
               <div className="concierge-status-row">
                 <p className="concierge-status" aria-live="polite">
                   {listening
-                    ? wakeHint || "Listening…"
+                    ? "Mic on — listening…"
                     : speaking
                       ? "Speaking… tap ■ to stop"
-                      : wakeHint || `Say “Hey ${WAKE_WORD}”`}
+                      : busy
+                        ? "Thinking…"
+                        : wakeHint && !/^sleeping\./i.test(wakeHint)
+                          ? wakeHint
+                          : phoneVoice
+                            ? "Tap the mic to keep talking."
+                            : `Say “Hey ${WAKE_WORD}”`}
                 </p>
                 <button
                   type="button"
@@ -1115,7 +1136,9 @@ export default function Concierge() {
                 title={
                   voiceOn
                     ? "End this voice turn"
-                    : `Start a voice turn (or say Hey ${WAKE_WORD})`
+                    : phoneVoice
+                      ? "Start a voice conversation"
+                      : `Start a voice turn (or say Hey ${WAKE_WORD})`
                 }
               >
                 {voiceOn ? (
