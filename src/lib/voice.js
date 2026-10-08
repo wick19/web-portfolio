@@ -50,9 +50,20 @@ export function shouldUseMicMeter() {
   return Boolean(window.AudioContext || window.webkitAudioContext);
 }
 
+/**
+ * True when Web Speech behaves like a phone — including Chrome “Desktop site”.
+ * That mode spoofs a desktop User-Agent, but Android/iOS still reject
+ * recognition.start() from timers and still break continuous mode.
+ */
 export function isMobileVoiceClient() {
   if (typeof navigator === "undefined") return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "")) return true;
+  if (navigator.userAgentData?.mobile) return true;
+  const touch = (navigator.maxTouchPoints || 0) > 0;
+  const coarse =
+    typeof window !== "undefined" &&
+    Boolean(window.matchMedia?.("(pointer: coarse)")?.matches);
+  return touch && coarse;
 }
 
 /**
